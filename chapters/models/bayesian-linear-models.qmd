@@ -1,0 +1,424 @@
+---
+title: "Bayesian Linear Models: Exact Posterior Structure, Shrinkage, and Prediction"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- derive the posterior of Bayesian linear regression with Gaussian priors;
+- derive the Normal-Inverse-Gamma posterior when variance is unknown;
+- compute posterior predictive distributions for new covariates;
+- explain the connection between Gaussian priors and ridge regularization;
+- interpret $g$-priors and shrinkage in geometric terms.
+
+## 1. Why Bayesian Linear Models Matter
+
+Bayesian linear regression is the first model family in which prior specification, posterior uncertainty, prediction, shrinkage, and computation come together in a mathematically transparent way. It is not merely a Bayesian version of least squares. It is the prototype for:
+
+- structured priors on coefficients;
+- predictive inference rather than point estimation;
+- regularization through prior scale;
+- multilevel and generalized extensions later in the course [@gelman2013; @hoff2009].
+
+## 2. Model Setup
+
+Let
+
+$$
+y \in \mathbb{R}^n,\qquad X \in \mathbb{R}^{n \times p},
+$$
+
+and consider the Gaussian sampling model
+
+$$
+y \mid \beta,\sigma^2 \sim \mathcal{N}(X\beta,\sigma^2 I_n).
+$$
+
+The likelihood is
+
+$$
+p(y \mid \beta,\sigma^2)
+=
+(2\pi\sigma^2)^{-n/2}
+\exp\!\left\{
+-\frac{1}{2\sigma^2}(y-X\beta)^\top(y-X\beta)
+\right\}.
+$$
+
+The Bayesian task is to put a prior on $(\beta,\sigma^2)$ and update it.
+
+## 3. Known Variance, Gaussian Prior
+
+Suppose $\sigma^2$ is known and
+
+$$
+\beta \sim \mathcal{N}(b_0,B_0),
+$$
+
+with positive definite covariance $B_0$.
+
+### 3.1 Posterior derivation
+
+The prior kernel is
+
+$$
+\pi(\beta)
+\propto
+\exp\!\left\{
+-\frac12(\beta-b_0)^\top B_0^{-1}(\beta-b_0)
+\right\}.
+$$
+
+Multiplying prior and likelihood yields
+
+$$
+\log \pi(\beta \mid y)
+=
+-\frac{1}{2\sigma^2}(y-X\beta)^\top(y-X\beta)
+-\frac12(\beta-b_0)^\top B_0^{-1}(\beta-b_0)
++ C.
+$$
+
+Expand the quadratic form in $\beta$:
+
+$$
+\log \pi(\beta \mid y)
+=
+-\frac12 \beta^\top
+\left(
+\frac{X^\top X}{\sigma^2}+B_0^{-1}
+\right)\beta
++
+\beta^\top
+\left(
+\frac{X^\top y}{\sigma^2}+B_0^{-1}b_0
+\right)
++ C.
+$$
+
+Define
+
+$$
+B_n=
+\left(
+\frac{X^\top X}{\sigma^2}+B_0^{-1}
+\right)^{-1},
+$$
+
+and
+
+$$
+b_n
+=
+B_n
+\left(
+\frac{X^\top y}{\sigma^2}+B_0^{-1}b_0
+\right).
+$$
+
+Completing the square gives
+
+$$
+\beta \mid y,\sigma^2 \sim \mathcal{N}(b_n,B_n).
+$$
+
+### 3.2 Precision interpretation
+
+This posterior is easiest to interpret in precision form:
+
+$$
+B_n^{-1}=B_0^{-1}+\frac{X^\top X}{\sigma^2}.
+$$
+
+Posterior precision equals prior precision plus data precision. Bayesian updating is additive in information.
+
+### 3.3 Posterior mean as shrinkage
+
+The posterior mean satisfies
+
+$$
+b_n
+=
+\left(
+\frac{X^\top X}{\sigma^2}+B_0^{-1}
+\right)^{-1}
+\left(
+\frac{X^\top X}{\sigma^2}\hat\beta_{\text{OLS}}
++B_0^{-1}b_0
+\right),
+$$
+
+where
+
+$$
+\hat\beta_{\text{OLS}}=(X^\top X)^{-1}X^\top y
+$$
+
+when $X^\top X$ is invertible. Thus the posterior mean is a matrix-weighted compromise between the prior center and the least-squares estimator.
+
+## 4. Unknown Variance: Normal-Inverse-Gamma Prior
+
+Now assume
+
+$$
+\beta \mid \sigma^2 \sim \mathcal{N}(b_0,\sigma^2 B_0),
+\qquad
+\sigma^2 \sim \operatorname{InvGamma}\!\left(\frac{\nu_0}{2},\frac{s_0}{2}\right),
+$$
+
+where parameterization is chosen so that the prior density on $\sigma^2$ is proportional to
+
+$$
+(\sigma^2)^{-(\nu_0/2+1)}\exp\!\left(-\frac{s_0}{2\sigma^2}\right).
+$$
+
+### 4.1 Joint posterior
+
+The joint posterior kernel is
+
+$$
+\pi(\beta,\sigma^2 \mid y)
+\propto
+(\sigma^2)^{-(n+p+\nu_0)/2-1}
+\exp\!\left\{
+-\frac{1}{2\sigma^2}
+\left[
+(y-X\beta)^\top(y-X\beta)
++
+(\beta-b_0)^\top B_0^{-1}(\beta-b_0)
++
+s_0
+\right]
+\right\}.
+$$
+
+Complete the square in $\beta$ using
+
+$$
+B_n=(X^\top X+B_0^{-1})^{-1},
+\qquad
+b_n=B_n(X^\top y + B_0^{-1}b_0).
+$$
+
+Then
+
+$$
+(y-X\beta)^\top(y-X\beta)
++
+(\beta-b_0)^\top B_0^{-1}(\beta-b_0)
+=
+(\beta-b_n)^\top B_n^{-1}(\beta-b_n)
++
+s_n,
+$$
+
+where
+
+$$
+s_n
+=
+y^\top y + b_0^\top B_0^{-1}b_0 - b_n^\top B_n^{-1}b_n + s_0.
+$$
+
+Therefore
+
+$$
+\beta \mid \sigma^2,y \sim \mathcal{N}(b_n,\sigma^2 B_n),
+$$
+
+and
+
+$$
+\sigma^2 \mid y \sim \operatorname{InvGamma}\!\left(\frac{\nu_0+n}{2}, \frac{s_n}{2}\right).
+$$
+
+This is the multivariate analogue of the scalar Normal-Inverse-Gamma conjugate update.
+
+## 5. Posterior Predictive Distribution
+
+Let $\tilde y$ be a new response at covariate vector $\tilde x \in \mathbb{R}^p$. Conditional on parameters,
+
+$$
+\tilde y \mid \beta,\sigma^2 \sim \mathcal{N}(\tilde x^\top \beta,\sigma^2).
+$$
+
+### 5.1 Known variance
+
+When $\sigma^2$ is known,
+
+$$
+\tilde y \mid y
+\sim
+\mathcal{N}\!\left(
+\tilde x^\top b_n,\;
+\sigma^2 + \tilde x^\top B_n \tilde x
+\right).
+$$
+
+The predictive variance separates into:
+
+- observation noise $\sigma^2$;
+- parameter uncertainty $\tilde x^\top B_n \tilde x$.
+
+### 5.2 Unknown variance
+
+Under the Normal-Inverse-Gamma prior, integrating out $\sigma^2$ yields a Student-$t$ predictive distribution. The exact scale depends on parameterization, but structurally
+
+$$
+\tilde y \mid y
+\sim
+t_{\nu_0+n}
+\left(
+\tilde x^\top b_n,\;
+\frac{s_n}{\nu_0+n}
+\left(1+\tilde x^\top B_n \tilde x\right)
+\right).
+$$
+
+This heavier-tailed predictive distribution reflects uncertainty in both the coefficients and the variance.
+
+## 6. $g$-Priors
+
+Zellner's $g$-prior chooses
+
+$$
+\beta \mid \sigma^2 \sim \mathcal{N}\!\left(0,\; g\sigma^2(X^\top X)^{-1}\right).
+$$
+
+This prior is aligned with the design geometry.
+
+### 6.1 Why it is attractive
+
+- scale adapts automatically to the design matrix;
+- prior variance is large in weakly identified directions and smaller in well-identified ones;
+- posterior formulas simplify dramatically.
+
+### 6.2 Posterior mean under the $g$-prior
+
+If the prior mean is zero, then
+
+$$
+\mathbb{E}[\beta \mid y,\sigma^2]
+=
+\frac{g}{g+1}\hat\beta_{\text{OLS}}.
+$$
+
+This is explicit shrinkage toward zero. The parameter $g$ controls how much prior regularization is imposed:
+
+- large $g$ means weak shrinkage;
+- small $g$ means stronger shrinkage.
+
+### 6.3 Caution
+
+$g$-priors are elegant but not universally appropriate. They depend on the design matrix and can be sensitive in high dimensions or when predictors are not well behaved.
+
+## 7. Bayesian Ridge And Lasso Analogues
+
+Priors and regularization are two languages for the same object.
+
+### Gaussian prior
+
+If
+
+$$
+\beta \sim \mathcal{N}(0,\tau^2 I),
+$$
+
+then the MAP estimator solves
+
+$$
+\hat\beta_{\text{MAP}}
+\in
+\arg\min_\beta
+\left\{
+\frac{1}{2\sigma^2}(y-X\beta)^\top(y-X\beta)
++
+\frac{1}{2\tau^2}\beta^\top\beta
+\right\}.
+$$
+
+This is ridge regression.
+
+### Laplace prior
+
+If
+
+$$
+\pi(\beta_j)\propto \exp(-\lambda |\beta_j|),
+$$
+
+then the MAP objective becomes
+
+$$
+\frac{1}{2\sigma^2}(y-X\beta)^\top(y-X\beta)
++
+\lambda \sum_{j=1}^p |\beta_j|,
+$$
+
+which is lasso-style regularization.
+
+The Bayesian perspective matters because the full posterior distinguishes:
+
+- parameter uncertainty;
+- predictive uncertainty;
+- shrinkage induced by the prior;
+- uncertainty in regularization strength when hyperpriors are used.
+
+## 8. `R` Implementation
+
+The companion lab is [bayesian_linear_regression.R](../../labs/r/bayesian_linear_regression.R).
+
+```r
+posterior_linear_known_sigma <- function(X, y, sigma2, b0, B0) {
+  Bn <- solve(crossprod(X) / sigma2 + solve(B0))
+  bn <- Bn %*% (crossprod(X, y) / sigma2 + solve(B0, b0))
+  list(mean = drop(bn), cov = Bn)
+}
+```
+
+The point of this lab is to compare:
+
+- posterior coefficient summaries;
+- posterior predictive intervals;
+- OLS versus Bayesian shrinkage;
+- sensitivity to prior scale.
+
+## 9. Diagnostics And Pitfalls
+
+### Poor predictor scaling
+
+Weakly informative priors on coefficients become incoherent if predictors are on radically different scales.
+
+### Overinterpreting coefficient posteriors
+
+Predictive quantities are often more stable and more scientifically relevant than raw coefficient signs.
+
+### Treating ridge-style shrinkage as purely computational
+
+Shrinkage changes inference, not just numerical behavior.
+
+### Using conjugate priors without checking their substantive meaning
+
+Analytic tractability is useful, but it is not a sufficient reason to accept a prior.
+
+## 10. Exercises
+
+1. Derive the posterior mean and covariance for the known-variance Gaussian prior model in full detail.
+2. Show that the $g$-prior posterior mean equals $(g/(g+1))\hat\beta_{\text{OLS}}$ when the prior mean is zero.
+3. Derive the known-variance posterior predictive distribution for a new covariate vector.
+4. Show algebraically how a Gaussian prior induces ridge regularization in the MAP objective.
+5. Explain how posterior predictive uncertainty differs from confidence intervals for fitted means.
+
+## 11. Summary
+
+Bayesian linear models are fundamental because they exhibit the entire logic of Bayesian modeling in a tractable setting:
+
+- priors regularize coefficients;
+- posterior precision combines prior and data information additively;
+- predictive distributions integrate over parameter uncertainty;
+- shrinkage is geometric and inferential, not merely computational.
+
+## References
+
+Key references are @gelman2013, @hoff2009, @mackay2003, and @murphy2023.

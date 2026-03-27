@@ -1,0 +1,278 @@
+---
+title: "Hierarchical and Multilevel Models: Partial Pooling, Exchangeability, and Reparameterization"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- derive the normal-normal multilevel posterior and shrinkage factor;
+- explain exchangeability as the modeling rationale for partial pooling;
+- distinguish complete pooling, no pooling, and hierarchical pooling;
+- explain centered versus non-centered parameterizations geometrically;
+- justify hyperpriors for group-level scale parameters.
+
+## 1. Why Multilevel Modeling
+
+Grouped data are ubiquitous:
+
+- schools within districts;
+- patients within hospitals;
+- repeated measurements within individuals;
+- species within ecological regions;
+- regions within countries.
+
+A multilevel model is appropriate when units are similar enough to borrow strength from one another, but not so similar that they should be forced to share one common parameter. The Bayesian language for this is exchangeability plus hierarchical prior structure [@gelman2013].
+
+## 2. Partial Pooling As A Bayesian Compromise
+
+For group-specific parameters $\theta_1,\dots,\theta_J$:
+
+- **complete pooling** assumes $\theta_1=\cdots=\theta_J$;
+- **no pooling** estimates each $\theta_j$ separately;
+- **partial pooling** assumes the $\theta_j$ are related through a common prior.
+
+The hierarchical prior is what allows data-rich groups to remain distinct while data-poor groups borrow information.
+
+## 3. Normal-Normal Hierarchical Model
+
+Suppose the group-level sufficient statistics are
+
+$$
+\bar y_j \mid \theta_j \sim \mathcal{N}(\theta_j,\sigma_j^2),
+\qquad
+\theta_j \mid \mu,\tau^2 \sim \mathcal{N}(\mu,\tau^2),
+$$
+
+for $j=1,\dots,J$.
+
+Treat $\mu$ and $\tau^2$ as known for the moment.
+
+### 3.1 Posterior for group effects
+
+The posterior kernel for $\theta_j$ is
+
+$$
+\pi(\theta_j \mid \bar y_j,\mu,\tau^2)
+\propto
+\exp\!\left\{
+-\frac{1}{2\sigma_j^2}(\bar y_j-\theta_j)^2
+-\frac{1}{2\tau^2}(\theta_j-\mu)^2
+\right\}.
+$$
+
+Completing the square gives
+
+$$
+\theta_j \mid \bar y_j,\mu,\tau^2
+\sim
+\mathcal{N}(m_j,V_j),
+$$
+
+with
+
+$$
+V_j=\left(\frac{1}{\sigma_j^2}+\frac{1}{\tau^2}\right)^{-1},
+$$
+
+and
+
+$$
+m_j
+=
+V_j\left(\frac{\bar y_j}{\sigma_j^2}+\frac{\mu}{\tau^2}\right).
+$$
+
+### 3.2 Shrinkage form
+
+Rearranging,
+
+$$
+m_j
+=
+\left(\frac{\tau^2}{\tau^2+\sigma_j^2}\right)\bar y_j
+\;+\;
+\left(\frac{\sigma_j^2}{\tau^2+\sigma_j^2}\right)\mu.
+$$
+
+This is the canonical shrinkage formula:
+
+- when $\sigma_j^2$ is large, estimate is pulled strongly toward $\mu$;
+- when $\sigma_j^2$ is small, the group-specific estimate stays closer to $\bar y_j$.
+
+This is partial pooling in one equation.
+
+## 4. Full Hierarchical Factorization
+
+With hyperpriors
+
+$$
+\mu \sim \pi(\mu),\qquad \tau \sim \pi(\tau),
+$$
+
+the full posterior is
+
+$$
+p(\theta_{1:J},\mu,\tau \mid y)
+\propto
+\left[
+\prod_{j=1}^J p(y_j \mid \theta_j)
+\right]
+\left[
+\prod_{j=1}^J p(\theta_j \mid \mu,\tau)
+\right]
+\pi(\mu)\pi(\tau).
+$$
+
+The factorization makes the inferential structure explicit:
+
+- data inform group parameters;
+- group parameters inform hyperparameters;
+- hyperparameters couple groups together.
+
+## 5. Exchangeability
+
+Why is the hierarchical prior justified? Exchangeability provides the core answer.
+
+If groups are judged similar enough that their labels do not encode prior scientific differences, then a symmetric prior over $\theta_1,\dots,\theta_J$ is natural. A common latent distribution
+
+$$
+\theta_j \mid \mu,\tau \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu,\tau^2)
+$$
+
+is one explicit way to encode that exchangeability.
+
+This does not say the groups are identical. It says that before seeing their data, we do not privilege one group-specific effect over another except through the shared hyperparameters.
+
+## 6. Random Intercepts And Random Slopes
+
+The standard multilevel regression model generalizes to
+
+$$
+y_{ij} \mid \alpha_j,\beta_j,\sigma^2
+\sim
+\mathcal{N}(\alpha_j + \beta_j x_{ij},\sigma^2),
+$$
+
+with
+
+$$
+\begin{pmatrix}
+\alpha_j \\
+\beta_j
+\end{pmatrix}
+\sim
+\mathcal{N}\!\left(
+\begin{pmatrix}
+\mu_\alpha \\
+\mu_\beta
+\end{pmatrix},
+\Sigma
+\right).
+$$
+
+Now the model performs pooling across both intercepts and slopes, and the covariance matrix $\Sigma$ captures between-group dependence in intercept-slope variation.
+
+This is where multilevel modeling becomes genuinely rich: it is not just about shrinking means, but about borrowing structure across a whole parameter vector.
+
+## 7. Centered And Non-Centered Parameterizations
+
+### Centered form
+
+Write
+
+$$
+\theta_j \sim \mathcal{N}(\mu,\tau^2).
+$$
+
+### Non-centered form
+
+Write
+
+$$
+z_j \sim \mathcal{N}(0,1),\qquad \theta_j=\mu+\tau z_j.
+$$
+
+### Why the choice matters
+
+The two parameterizations define the same statistical model, but they induce different posterior geometry in coordinates used by HMC.
+
+- centered works well when group-level effects are strongly informed by data;
+- non-centered often works better when data are weak and the group-level scale is poorly identified.
+
+This is not a stylistic coding preference. It is a computational consequence of hierarchical curvature.
+
+## 8. Hyperpriors For Group-Level Scales
+
+The group-level scale $\tau$ governs how much pooling occurs. Its prior therefore matters a great deal.
+
+Reasonable choices often include:
+
+- half-normal priors;
+- half-Student-$t$ priors;
+- penalized-complexity priors;
+- domain-specific informative priors if prior group heterogeneity is known.
+
+Diffuse inverse-gamma defaults are often less interpretable and can behave badly in weakly informed problems.
+
+## 9. Posterior Prediction For New Groups
+
+Multilevel models support a crucial form of prediction:
+
+- predicting new observations in observed groups;
+- predicting observations from a new, previously unseen group.
+
+For a new group effect $\theta_{\text{new}}$,
+
+$$
+\theta_{\text{new}} \mid y
+=
+\int p(\theta_{\text{new}} \mid \mu,\tau)\, p(\mu,\tau \mid y)\, d\mu\, d\tau.
+$$
+
+This is often far more scientifically relevant than prediction for already-observed groups because it tests whether the hierarchical structure generalizes.
+
+## 10. Stan Workflow
+
+The canonical example in this repository is the non-centered eight-schools model in [stan-hierarchical-models.qmd](../software/stan-hierarchical-models.qmd).
+
+The companion R lab for shrinkage geometry is [hierarchical_partial_pooling.R](../../labs/r/hierarchical_partial_pooling.R).
+
+## 11. Diagnostics And Pitfalls
+
+### Interpreting shrinkage as bias
+
+Shrinkage is not an arbitrary distortion. It is posterior learning under a structured prior.
+
+### Using flat priors on scale without checking implications
+
+Hyperpriors on $\tau$ strongly affect pooling when the number of groups is small.
+
+### Ignoring funnel geometry
+
+Poor HMC behavior in hierarchical models is often geometric, not just computational.
+
+### Confusing observed-group and new-group prediction
+
+These are different predictive tasks and can yield very different uncertainty behavior.
+
+## 12. Exercises
+
+1. Derive the normal-normal posterior mean and variance for $\theta_j$ in the known hyperparameter model.
+2. Rewrite the posterior mean as a convex combination of $\bar y_j$ and $\mu$ and interpret the weights.
+3. Explain why exchangeability is the natural prior symmetry assumption for multilevel effects.
+4. Compare centered and non-centered parameterizations in terms of posterior geometry.
+5. Describe how the prior on $\tau$ influences partial pooling.
+
+## 13. Summary
+
+Hierarchical models are the formal Bayesian answer to grouped inference:
+
+- exchangeability motivates the prior structure;
+- posterior learning induces partial pooling;
+- shrinkage depends on both group data precision and hyperparameter uncertainty;
+- parameterization matters because geometry matters.
+
+## References
+
+Key references are @gelman2013, @gelman2006, @betancourt2017, and @hoff2009.

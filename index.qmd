@@ -97,6 +97,9 @@ The site includes several fully written exemplar chapters that demonstrate the i
 - [Advanced MCMC: HMC, NUTS, geometry, and diagnostics](chapters/computation/advanced-mcmc-hmc.qmd)
 - [Variational inference: ELBO and coordinate ascent](chapters/computation/variational-inference.qmd)
 - [Sequential and online Bayes: filtering and particle methods](chapters/computation/sequential-and-online-bayes.qmd)
+- [Bayesian linear models](chapters/models/bayesian-linear-models.qmd)
+- [Hierarchical and multilevel models](chapters/models/hierarchical-and-multilevel-models.qmd)
+- [Nonparametric Bayesian methods](chapters/models/nonparametric-bayesian-methods.qmd)
 - [Stan workflow for hierarchical models and HMC diagnostics](chapters/software/stan-hierarchical-models.qmd)
 - [JAX for gradient-based Bayesian computation](chapters/software/jax-gradient-based-bayes.qmd)
 

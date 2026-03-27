@@ -1,0 +1,168 @@
+---
+title: "Spatial and Graphical Bayesian Models: Conditional Independence, GMRFs, and Structured Priors"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- read model structure through conditional independence statements;
+- factorize a joint distribution from a directed acyclic graph;
+- explain why sparse precision matrices encode local dependence in Gaussian Markov random fields;
+- describe CAR-style spatial priors conceptually;
+- explain message passing at a high level.
+
+## 1. Structured Dependence
+
+Many Bayesian models are best understood not through formulas alone but through the graph of conditional dependencies they imply. Graphical models give a language for:
+
+- sparse factorization;
+- local Markov structure;
+- efficient computation;
+- interpretable dependence assumptions.
+
+This is especially useful in spatial models, multilevel systems, and latent-state models [@murphy2023].
+
+## 2. Directed Graphical Models
+
+If a directed acyclic graph (DAG) has nodes $X_1,\dots,X_p$, then the joint density factorizes as
+
+$$
+p(x_1,\dots,x_p)=\prod_{j=1}^p p(x_j \mid \operatorname{pa}(x_j)),
+$$
+
+where $\operatorname{pa}(x_j)$ denotes the parents of node $j$.
+
+This factorization is not only computational. It is a modeling claim about which variables depend directly on which others.
+
+## 3. Bayesian Networks
+
+A Bayesian network is a DAG plus conditional probability models at each node.
+
+### Example
+
+If
+
+$$
+X \to Z \leftarrow Y
+$$
+
+then
+
+$$
+p(x,y,z)=p(x)p(y)p(z \mid x,y).
+$$
+
+This implies $X \perp\!\!\!\perp Y$ marginally, but conditioning on $Z$ generally introduces dependence. Graphical reasoning therefore helps avoid conditioning mistakes that are easy to miss in raw algebra.
+
+## 4. Gaussian Markov Random Fields
+
+For a multivariate Gaussian vector
+
+$$
+x \sim \mathcal{N}(\mu,Q^{-1}),
+$$
+
+the precision matrix $Q$ encodes conditional independence:
+
+$$
+Q_{ij}=0
+\quad \Longleftrightarrow \quad
+x_i \perp\!\!\!\perp x_j \mid x_{-(i,j)}.
+$$
+
+This is one of the central structural facts behind Gaussian Markov random fields.
+
+### Why precision, not covariance
+
+- sparse covariance does not generally encode local Markov structure;
+- sparse precision does.
+
+This is why GMRFs are computationally attractive: sparse precision matrices can be manipulated much more efficiently in large structured models.
+
+## 5. Conditional Autoregressive Priors
+
+Spatial random effects on neighboring regions are often modeled through CAR structure. At a high level, the conditional distribution of a region effect $\phi_i$ depends on neighboring region effects:
+
+$$
+\phi_i \mid \phi_{-i}
+\sim
+\mathcal{N}\!\left(
+\frac{\sum_{j \sim i} w_{ij}\phi_j}{\sum_{j \sim i} w_{ij}},
+\frac{\tau^2}{\sum_{j \sim i} w_{ij}}
+\right).
+$$
+
+This says each region is shrunk toward a weighted average of its neighbors.
+
+### Conceptual interpretation
+
+CAR priors encode local smoothing. Nearby regions are encouraged, not forced, to look similar.
+
+### Caution
+
+Intrinsic CAR models can be improper and often require constraints or careful identifiability handling.
+
+## 6. SAR And Related Spatial Structures
+
+Spatial autoregressive ideas can also be written in simultaneous form, where dependence appears through a transformed regression or latent-error structure. The key statistical issue is the same: spatial correlation is structured by a neighborhood graph or weight matrix, not by arbitrary pairwise dependence.
+
+## 7. Message Passing Overview
+
+When a graph factorizes nicely, local computations can be propagated across the graph. In tree-like or chain-like structures, this becomes message passing:
+
+- forward-backward in HMMs;
+- belief propagation in trees;
+- junction-tree methods in decomposable graphs.
+
+The central idea is that local conditional independence allows global inference to be decomposed into repeated local updates.
+
+## 8. Spatial And Graphical Bayesian Workflow
+
+In practice, the hard part is rarely writing a symbolic factorization. It is deciding whether the graph itself is scientifically defensible:
+
+- what counts as a neighbor;
+- which edges are substantively plausible;
+- whether smoothing should be local or global;
+- whether conditional independence assumptions are too strong.
+
+Graphical structure is therefore part of model specification, not merely a computational trick.
+
+## 9. Diagnostics And Pitfalls
+
+### Confusing sparse precision with sparse covariance
+
+These encode different notions of dependence.
+
+### Using neighborhood matrices mechanically
+
+Spatial adjacency is a modeling decision, not a default truth.
+
+### Ignoring impropriety in intrinsic spatial priors
+
+Some structured priors need constraints for identifiability.
+
+### Treating the graph as purely computational
+
+Every edge or missing edge is a substantive claim.
+
+## 10. Exercises
+
+1. Factorize a joint density from a simple DAG and identify at least one conditional independence relation.
+2. Explain why zeros in a Gaussian precision matrix imply conditional independence.
+3. Describe the prior meaning of a CAR spatial effect.
+4. Compare a spatial smoothing prior with an exchangeable random-effects prior.
+5. Explain at a high level why message passing is possible in sparse graphical models.
+
+## 11. Summary
+
+Spatial and graphical Bayesian models are unified by conditional independence:
+
+- DAGs encode directed factorization;
+- GMRFs encode local dependence through sparse precision;
+- CAR priors express spatial smoothing through neighborhood structure;
+- message passing exploits graph structure for inference.
+
+## References
+
+Key references are @gelman2013 and @murphy2023.

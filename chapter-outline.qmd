@@ -34,7 +34,8 @@ Each part page is written as an expansion-ready authoring brief. For every chapt
 | 8 | Detailed outline | Part III overview |
 | 9 | Fully written sample chapter | [MCMC chapter](chapters/computation/markov-chain-monte-carlo.qmd) |
 | 10-12 | Fully written chapters | [Part III chapters](parts/part-iii-computation.qmd) |
-| 13-24 | Detailed outline | Part IV-VI overviews |
+| 13-20 | Fully written chapters | [Part IV chapters](parts/part-iv-models.qmd) |
+| 21-24 | Detailed outline | Part V-VI overviews |
 | 25 | Fully written sample chapter | [Stan workflow chapter](chapters/software/stan-hierarchical-models.qmd) |
 | 26 | Fully written sample chapter | [JAX workflow chapter](chapters/software/jax-gradient-based-bayes.qmd) |
 | 27-31 | Detailed outline | Part VII overview |

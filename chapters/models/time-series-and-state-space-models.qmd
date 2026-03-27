@@ -1,0 +1,178 @@
+---
+title: "Bayesian Time Series and State-Space Models: Dynamics, Filtering, and Forecasting"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- write dynamic linear models as Bayesian state-space factorizations;
+- derive the posterior update in an AR(1) Gaussian model conceptually;
+- explain local level, local trend, and stochastic-volatility style structure;
+- distinguish filtering, smoothing, and forecasting;
+- connect state-space modeling to Kalman and particle methods.
+
+## 1. Dynamic Bayesian Modeling
+
+Static models assume one latent parameter vector explains all observations. Time series models relax this by allowing latent states to evolve:
+
+$$
+x_t \sim p(x_t \mid x_{t-1},\theta),
+\qquad
+y_t \sim p(y_t \mid x_t,\theta).
+$$
+
+This structure captures persistence, shocks, seasonal dynamics, and regime changes.
+
+## 2. Dynamic Linear Models
+
+A general dynamic linear model writes
+
+$$
+x_t = G_t x_{t-1} + w_t,\qquad w_t \sim \mathcal{N}(0,W_t),
+$$
+
+$$
+y_t = F_t^\top x_t + v_t,\qquad v_t \sim \mathcal{N}(0,V_t).
+$$
+
+When $(G_t,F_t,W_t,V_t)$ are known, inference for the latent states is linear Gaussian and therefore tractable through Kalman filtering and smoothing.
+
+## 3. Local Level Model
+
+The simplest state-space model is
+
+$$
+x_t = x_{t-1} + w_t,\qquad w_t \sim \mathcal{N}(0,W),
+$$
+
+$$
+y_t = x_t + v_t,\qquad v_t \sim \mathcal{N}(0,V).
+$$
+
+This model expresses a slowly evolving latent mean observed with noise.
+
+### Interpretation
+
+- $W$ controls state volatility;
+- $V$ controls measurement noise;
+- the ratio $W/V$ determines how rapidly the latent signal adapts to new data.
+
+## 4. Bayesian AR(1) Thinking
+
+An AR(1) model can be written as
+
+$$
+y_t = \phi y_{t-1} + \varepsilon_t,\qquad \varepsilon_t \sim \mathcal{N}(0,\sigma^2),
+$$
+
+or more explicitly in Bayesian regression form by conditioning on lagged responses:
+
+$$
+y_{2:T} \mid \phi,\sigma^2 \sim \mathcal{N}(X\phi,\sigma^2 I),
+$$
+
+where $X=(y_1,\dots,y_{T-1})^\top$.
+
+Thus Bayesian AR models can often be analyzed using the same regression logic developed earlier, though stationarity priors on $\phi$ may need to restrict $|\phi|<1$.
+
+## 5. Forecasting
+
+Bayesian forecasting requires integrating over state and parameter uncertainty. For a one-step forecast,
+
+$$
+p(y_{t+1} \mid y_{1:t})
+=
+\int p(y_{t+1} \mid x_{t+1},\theta)\,
+p(x_{t+1},\theta \mid y_{1:t})\,
+dx_{t+1}\, d\theta.
+$$
+
+This is more honest than plug-in forecasting because it propagates uncertainty in dynamics and parameters forward in time.
+
+## 6. Smoothing
+
+Filtering targets
+
+$$
+p(x_t \mid y_{1:t}),
+$$
+
+while smoothing targets
+
+$$
+p(x_t \mid y_{1:T}).
+$$
+
+Smoothing uses future observations as well as past observations to infer the latent state at time $t$, so it is always at least as informed as filtering when applied retrospectively.
+
+## 7. Hidden Markov Models And Regime Switching
+
+When the latent state is discrete, one obtains a hidden Markov model. This is useful when the dynamics are better described by regimes than by continuous latent trajectories.
+
+Examples:
+
+- bull versus bear market states;
+- animal behavioral modes;
+- low versus high volatility regimes.
+
+The Bayesian issues then include transition probabilities, emission parameters, label switching, and state uncertainty.
+
+## 8. Stochastic Volatility
+
+A simple stochastic volatility model writes
+
+$$
+y_t \mid h_t \sim \mathcal{N}(0,\exp(h_t)),
+$$
+
+$$
+h_t = \mu + \phi(h_{t-1}-\mu)+\eta_t,\qquad \eta_t \sim \mathcal{N}(0,\sigma_h^2).
+$$
+
+This is a state-space model with nonlinear observation variance. It illustrates why particle methods and HMC-based latent-state inference become necessary beyond the Gaussian linear case.
+
+## 9. `R` Workflow
+
+The local-level particle-filter example is in [particle_filter_local_level.R](../../labs/r/particle_filter_local_level.R). The HMM recursion lab is in [hmm_forward_algorithm.R](../../labs/r/hmm_forward_algorithm.R).
+
+These labs complement the filtering chapter by showing how model structure and computation fit together in dynamic settings.
+
+## 10. Diagnostics And Pitfalls
+
+### Confusing observation noise and state noise
+
+These play distinct inferential roles and should not be conflated.
+
+### Overfitting dynamic variation
+
+Allowing very large state variance can make the latent state chase noise.
+
+### Ignoring forecast calibration
+
+Good in-sample fit does not guarantee good predictive performance.
+
+### Forgetting initial-state assumptions
+
+Short series can be sensitive to the prior or distribution assumed for $x_0$.
+
+## 11. Exercises
+
+1. Write the local-level model as a state-space factorization and identify all conditional independences.
+2. Explain why AR(1) regression can be viewed as a special case of Bayesian regression with lagged predictors.
+3. Distinguish filtering, smoothing, and forecasting both mathematically and substantively.
+4. Describe how stochastic volatility differs from a local-level Gaussian model.
+5. Explain why hidden-state models are natural for regime-switching phenomena.
+
+## 12. Summary
+
+Bayesian time-series modeling extends the regression worldview into dynamic latent structure:
+
+- states evolve;
+- observations are conditionally independent given states;
+- forecasting, filtering, and smoothing become distinct inferential tasks;
+- the computational strategy depends strongly on whether the model is linear Gaussian, discrete-state, or nonlinear.
+
+## References
+
+Key references are @gelman2013, @doucet2001, @delmoral2004, and @murphy2023.

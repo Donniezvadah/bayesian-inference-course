@@ -63,6 +63,13 @@ Recommended cloud pathways:
 | `R` | `labs/r/prior_predictive_logistic.R` | Prior predictive simulation for logistic regression |
 | `R` | `labs/r/meanfield_vi_normal_gamma.R` | Mean-field CAVI for a Normal-Gamma model |
 | `R` | `labs/r/particle_filter_local_level.R` | Bootstrap particle filter for a local-level model |
+| `R` | `labs/r/bayesian_linear_regression.R` | Closed-form Bayesian linear regression and prediction |
+| `R` | `labs/r/glm_logistic_poisson.R` | Logistic and Poisson posterior building blocks |
+| `R` | `labs/r/hierarchical_partial_pooling.R` | Partial-pooling shrinkage geometry |
+| `R` | `labs/r/mixture_label_switching.R` | Allocation updates and label switching |
+| `R` | `labs/r/gaussian_process_regression.R` | Exact Gaussian-process posterior prediction |
+| `R` | `labs/r/hmm_forward_algorithm.R` | Forward recursion for a hidden Markov model |
+| `R` | `labs/r/causal_sensitivity_grid.R` | Treatment-effect sensitivity grid |
 | `Stan` | `labs/stan/eight_schools.stan` | Canonical hierarchical model |
 | `R` | `labs/r/fit_eight_schools.R` | `cmdstanr` wrapper for the Stan lab |
 | Python/JAX | `labs/jax/jax_logistic_map_hmc.py` | Autodiff, MAP, and basic HMC-style demo |

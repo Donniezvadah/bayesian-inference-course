@@ -84,6 +84,14 @@ website:
       - section: "Part IV"
         contents:
           - parts/part-iv-models.qmd
+          - chapters/models/bayesian-linear-models.qmd
+          - chapters/models/generalized-linear-models.qmd
+          - chapters/models/hierarchical-and-multilevel-models.qmd
+          - chapters/models/mixture-models-and-latent-variable-models.qmd
+          - chapters/models/time-series-and-state-space-models.qmd
+          - chapters/models/nonparametric-bayesian-methods.qmd
+          - chapters/models/spatial-and-graphical-bayesian-models.qmd
+          - chapters/models/bayesian-causal-inference.qmd
       - section: "Part V"
         contents:
           - parts/part-v-optimization-and-diagnostics.qmd

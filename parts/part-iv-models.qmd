@@ -15,6 +15,17 @@ By the end of Part IV, learners should be able to:
 - interpret posterior structure in terms of shrinkage, dependence, and latent heterogeneity;
 - anticipate computational and identifiability issues for each model family.
 
+## Fully Written Chapters In This Repository
+
+- [Bayesian linear models](../chapters/models/bayesian-linear-models.qmd)
+- [Generalized linear models](../chapters/models/generalized-linear-models.qmd)
+- [Hierarchical and multilevel models](../chapters/models/hierarchical-and-multilevel-models.qmd)
+- [Mixture models and latent variable models](../chapters/models/mixture-models-and-latent-variable-models.qmd)
+- [Time series and state-space models](../chapters/models/time-series-and-state-space-models.qmd)
+- [Nonparametric Bayesian methods](../chapters/models/nonparametric-bayesian-methods.qmd)
+- [Spatial and graphical Bayesian models](../chapters/models/spatial-and-graphical-bayesian-models.qmd)
+- [Bayesian causal inference](../chapters/models/bayesian-causal-inference.qmd)
+
 ## Chapter 13. Bayesian Linear Models
 
 ### Core question

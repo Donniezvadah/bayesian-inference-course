@@ -1,0 +1,355 @@
+---
+title: "Bayesian Generalized Linear Models: Logistic, Count, Ordinal, and Multinomial Regression"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- write Bayesian GLMs through exponential-family likelihoods and link functions;
+- derive the log posterior, gradient, and Hessian for Bayesian logistic regression;
+- explain overdispersion and the role of negative binomial models;
+- connect ordinal and multinomial models to latent-variable or softmax formulations;
+- diagnose prior-scale and separation issues in Bayesian classification.
+
+## 1. From Linear Models To GLMs
+
+Bayesian linear regression is limited by Gaussian responses and additive homoskedastic noise. Generalized linear models retain the linear predictor
+
+$$
+\eta_i = x_i^\top \beta
+$$
+
+but relate it to the mean of the response through a link function. In Bayesian form, the key changes are:
+
+- the likelihood is no longer conjugate in most cases;
+- prior scale matters much more because nonlinear links amplify large coefficients;
+- prediction and interpretation must be expressed on both the linear predictor scale and the outcome scale [@gelman2013; @mcelreath2020].
+
+## 2. Logistic Regression
+
+Suppose
+
+$$
+y_i \mid \beta \sim \operatorname{Bernoulli}(p_i),
+\qquad
+\operatorname{logit}(p_i)=x_i^\top \beta.
+$$
+
+Then
+
+$$
+p_i=\frac{1}{1+\exp(-x_i^\top \beta)}.
+$$
+
+### 2.1 Likelihood and log posterior
+
+The likelihood is
+
+$$
+p(y \mid \beta)
+=
+\prod_{i=1}^n p_i^{y_i}(1-p_i)^{1-y_i}.
+$$
+
+The log likelihood can be written as
+
+$$
+\ell(\beta)
+=
+\sum_{i=1}^n
+\left[
+y_i x_i^\top \beta - \log(1+\exp(x_i^\top \beta))
+\right].
+$$
+
+If
+
+$$
+\beta \sim \mathcal{N}(b_0,B_0),
+$$
+
+then the log posterior, up to an additive constant, is
+
+$$
+\log \pi(\beta \mid y)
+=
+\ell(\beta)
+-\frac12(\beta-b_0)^\top B_0^{-1}(\beta-b_0).
+$$
+
+### 2.2 Gradient
+
+Let $p=(p_1,\dots,p_n)^\top$. Then
+
+$$
+\nabla \ell(\beta)=X^\top(y-p).
+$$
+
+Therefore
+
+$$
+\nabla \log \pi(\beta \mid y)
+=
+X^\top(y-p) - B_0^{-1}(\beta-b_0).
+$$
+
+### 2.3 Hessian
+
+Let
+
+$$
+W=\operatorname{diag}(p_i(1-p_i)).
+$$
+
+Then
+
+$$
+\nabla^2 \ell(\beta)=-X^\top W X,
+$$
+
+so
+
+$$
+\nabla^2 \log \pi(\beta \mid y)
+=
+-X^\top W X - B_0^{-1}.
+$$
+
+This negative definiteness is one reason logistic regression is favorable for MAP optimization and Laplace approximations.
+
+## 3. Separation And Priors
+
+Classical logistic regression can break under complete or quasi-complete separation: a linear combination of predictors perfectly separates the two outcome classes, driving the MLE to infinity.
+
+Bayesian priors regularize this automatically. But the fix is meaningful only if the prior scale is scientifically defensible.
+
+### Weakly informative default
+
+For standardized predictors, priors such as
+
+$$
+\beta_j \sim \mathcal{N}(0, 2.5^2)
+$$
+
+or Student-$t$ analogues often prevent implausibly extreme logits while allowing substantial effect sizes.
+
+The core principle is:
+
+- weak priors on a nonlinear link can still imply absurd probabilities;
+- predictor standardization is not optional if coefficient priors are to be interpretable.
+
+## 4. Probit Regression
+
+In probit regression,
+
+$$
+\Pr(y_i=1 \mid \beta)=\Phi(x_i^\top \beta),
+$$
+
+where $\Phi$ is the standard normal CDF.
+
+The probit model is often useful conceptually because it admits a latent-variable representation:
+
+$$
+z_i = x_i^\top \beta + \varepsilon_i,\qquad \varepsilon_i \sim \mathcal{N}(0,1),
+$$
+
+and
+
+$$
+y_i = \mathbf{1}(z_i>0).
+$$
+
+This latent Gaussian view generalizes naturally to ordinal models and certain Gibbs-sampling constructions.
+
+## 5. Poisson Regression
+
+For count data,
+
+$$
+y_i \mid \beta \sim \operatorname{Poisson}(\lambda_i),
+\qquad
+\log \lambda_i = x_i^\top \beta.
+$$
+
+The log likelihood is
+
+$$
+\ell(\beta)
+=
+\sum_{i=1}^n
+\left[
+y_i x_i^\top \beta - \exp(x_i^\top \beta) - \log(y_i!)
+\right].
+$$
+
+With Gaussian priors, the posterior is again nonconjugate but smooth.
+
+### Interpretation
+
+A coefficient $\beta_j$ shifts the log intensity. Thus $\exp(\beta_j)$ is the multiplicative effect on the expected count for a one-unit change in predictor $x_j$, holding other predictors fixed.
+
+## 6. Negative Binomial Regression
+
+Poisson regression assumes equality of mean and variance:
+
+$$
+\mathbb{E}[Y_i \mid x_i]=\operatorname{Var}(Y_i \mid x_i)=\lambda_i.
+$$
+
+Many real count data are overdispersed. The negative binomial model addresses this by adding a dispersion parameter.
+
+One useful Bayesian intuition comes from mixing:
+
+$$
+Y_i \mid \lambda_i \sim \operatorname{Poisson}(\lambda_i),
+\qquad
+\lambda_i \sim \operatorname{Gamma}(\cdot),
+$$
+
+which induces a negative binomial marginal distribution.
+
+This is structurally important: overdispersion can be interpreted as latent heterogeneity in the Poisson intensity.
+
+## 7. Ordinal Models
+
+Suppose $y_i \in \{1,\dots,K\}$ is ordered. A cumulative logit model writes
+
+$$
+\Pr(y_i \le k \mid x_i)
+=
+\operatorname{logit}^{-1}(c_k - x_i^\top \beta),
+\qquad
+k=1,\dots,K-1,
+$$
+
+where
+
+$$
+c_1 < c_2 < \cdots < c_{K-1}
+$$
+
+are cutpoints.
+
+### Latent-variable view
+
+Ordinal models can be understood through a continuous latent score
+
+$$
+z_i = x_i^\top \beta + \varepsilon_i,
+$$
+
+with the observed category determined by which interval between cutpoints contains $z_i$.
+
+This makes clear that:
+
+- coefficients move the latent score;
+- cutpoints partition the score axis;
+- identifiability requires a location/scale convention on $\varepsilon_i$.
+
+## 8. Multinomial Models
+
+For categories $1,\dots,K$, choose a baseline category $K$ and write
+
+$$
+\Pr(y_i = k \mid x_i)
+=
+\frac{\exp(x_i^\top \beta_k)}
+{1+\sum_{\ell=1}^{K-1}\exp(x_i^\top \beta_\ell)},
+\qquad
+k=1,\dots,K-1,
+$$
+
+and
+
+$$
+\Pr(y_i=K \mid x_i)
+=
+\frac{1}{1+\sum_{\ell=1}^{K-1}\exp(x_i^\top \beta_\ell)}.
+$$
+
+This is the softmax or multinomial logit model.
+
+### Prior structure
+
+Independent Gaussian priors on category-specific coefficient vectors are common, but hierarchical priors across categories often regularize better when $K$ is large or the categories are sparse.
+
+## 9. Hierarchical GLMs
+
+All GLMs can be embedded in multilevel structures. For example, a hierarchical logistic regression with varying intercepts takes the form
+
+$$
+y_{ij} \mid \alpha_j,\beta
+\sim
+\operatorname{Bernoulli}(p_{ij}),
+\qquad
+\operatorname{logit}(p_{ij})=\alpha_j + x_{ij}^\top \beta,
+$$
+
+with
+
+$$
+\alpha_j \sim \mathcal{N}(\mu_\alpha,\tau_\alpha^2).
+$$
+
+The resulting posterior combines nonlinearity with partial pooling. This is one of the main reasons HMC and Stan matter: the geometry is rich, the inferential stakes are high, and exact conjugacy disappears.
+
+## 10. `R` And Stan Workflow
+
+The companion regression lab is [glm_logistic_poisson.R](../../labs/r/glm_logistic_poisson.R), and the hierarchical Stan workflow connects naturally to [stan-hierarchical-models.qmd](../software/stan-hierarchical-models.qmd).
+
+```r
+log_post_logistic <- function(beta, X, y, prior_sd = 2.5) {
+  eta <- drop(X %*% beta)
+  loglik <- sum(y * eta - log1p(exp(eta)))
+  logprior <- sum(dnorm(beta, 0, prior_sd, log = TRUE))
+  loglik + logprior
+}
+```
+
+This basic log posterior is enough for:
+
+- MAP estimation;
+- Laplace approximation;
+- custom Metropolis proposals;
+- gradient-based JAX implementations.
+
+## 11. Diagnostics And Pitfalls
+
+### Predictor scaling
+
+In logistic and Poisson models, large coefficient priors can imply absurd probabilities or intensities.
+
+### Separation
+
+Do not interpret a finite Bayesian posterior under separation as a magical solution. It is a consequence of the prior, and that prior must be justified.
+
+### Overdispersion
+
+A Poisson model that systematically misses variance structure needs redesign, not just longer chains.
+
+### Outcome-scale interpretation
+
+Posterior intervals on coefficients are often less interpretable than posterior intervals on probabilities, odds ratios, rates, or category probabilities.
+
+## 12. Exercises
+
+1. Derive the gradient and Hessian of the Bayesian logistic regression log posterior.
+2. Show how overdispersion arises from a Gamma-Poisson mixture.
+3. Explain the latent-variable interpretation of an ordinal probit or cumulative logit model.
+4. Compare logistic and probit links in terms of interpretation and computation.
+5. Describe why weakly informative priors are especially important in Bayesian GLMs.
+
+## 13. Summary
+
+Bayesian GLMs extend linear modeling to binary, count, ordered, and categorical data:
+
+- the likelihood changes;
+- priors become more consequential because links are nonlinear;
+- interpretation must move between linear predictor scale and outcome scale;
+- multilevel structure and diagnostics become central quickly.
+
+## References
+
+Key references are @gelman2013, @mcelreath2020, @murphy2023, and @hoff2009.

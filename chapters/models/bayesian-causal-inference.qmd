@@ -1,0 +1,192 @@
+---
+title: "Bayesian Causal Inference: Potential Outcomes, Modeling Assumptions, and Sensitivity"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- distinguish predictive and causal questions formally;
+- define causal estimands through potential outcomes;
+- write a Bayesian model for treatment assignment and outcomes under ignorability;
+- explain why causal identification assumptions remain prior to the posterior;
+- perform basic sensitivity analysis conceptually.
+
+## 1. Causal Questions Are Not Just Prediction Questions
+
+Predicting what happens given observed covariates is not the same as estimating what would have happened under a counterfactual intervention. Bayesian analysis does not remove this distinction. It provides a coherent way to reason probabilistically once the causal estimand and identification assumptions have been stated [@rubin1984; @gelman2013].
+
+## 2. Potential Outcomes
+
+For each unit $i$, define:
+
+- $Y_i(1)$: outcome under treatment;
+- $Y_i(0)$: outcome under control.
+
+The individual treatment effect is
+
+$$
+\tau_i = Y_i(1)-Y_i(0),
+$$
+
+but only one of the two potential outcomes is observed.
+
+Common causal estimands include:
+
+$$
+\text{ATE} = \mathbb{E}[Y(1)-Y(0)],
+$$
+
+and
+
+$$
+\text{ATT} = \mathbb{E}[Y(1)-Y(0)\mid A=1].
+$$
+
+## 3. Identification Assumptions
+
+Bayesian inference begins after the causal assumptions are declared. Typical assumptions include:
+
+- consistency;
+- positivity;
+- ignorability or no unmeasured confounding:
+  $$
+  (Y(1),Y(0)) \perp\!\!\!\perp A \mid X.
+  $$
+
+Without these or comparable structural assumptions, the causal estimand is not identified from the observed data.
+
+## 4. Bayesian Outcome Model Under Ignorability
+
+Suppose treatment $A_i \in \{0,1\}$ and covariates $X_i$ are observed. A simple outcome model is
+
+$$
+Y_i \mid A_i,X_i,\beta,\sigma^2
+\sim
+\mathcal{N}(\beta_0 + \beta_A A_i + X_i^\top \beta_X,\sigma^2).
+$$
+
+Under ignorability, the posterior over $(\beta,\sigma^2)$ induces a posterior over causal estimands because both potential outcomes can be generated conditional on covariates:
+
+$$
+Y_i(1) \mid X_i,\beta,\sigma^2
+\sim
+\mathcal{N}(\beta_0+\beta_A + X_i^\top \beta_X,\sigma^2),
+$$
+
+$$
+Y_i(0) \mid X_i,\beta,\sigma^2
+\sim
+\mathcal{N}(\beta_0 + X_i^\top \beta_X,\sigma^2).
+$$
+
+Then
+
+$$
+\text{ATE} \mid \beta = \beta_A
+$$
+
+in this additive linear model.
+
+## 5. Propensity-Style Bayesian Modeling
+
+A more comprehensive Bayesian workflow may model treatment assignment jointly:
+
+$$
+A_i \mid X_i,\gamma \sim \operatorname{Bernoulli}(\operatorname{logit}^{-1}(X_i^\top \gamma)),
+$$
+
+and
+
+$$
+Y_i \mid A_i,X_i,\beta,\sigma^2 \sim p(\cdot).
+$$
+
+This does not automatically solve confounding. But it allows the analyst to propagate uncertainty through both assignment and outcome components when the identification assumptions are accepted.
+
+## 6. Mediation And Structural Extensions
+
+Bayesian mediation models, structural equation models, and dynamic causal models extend the same logic:
+
+- define the causal estimand;
+- write a generative model consistent with the causal graph;
+- encode uncertainty over parameters and latent quantities;
+- propagate it through to the causal quantity of interest.
+
+The challenge is still causal, not purely statistical: the model must correspond to a defensible causal story.
+
+## 7. Sensitivity Analysis
+
+Because unmeasured confounding is often the core threat, Bayesian causal analysis should include sensitivity parameters whenever plausible.
+
+For example, if an unmeasured confounder shifts the treatment-outcome relationship, one can introduce a sensitivity parameter $\delta$ into the outcome model and place a prior on it:
+
+$$
+Y_i \mid A_i,X_i,U_i,\beta,\delta
+\sim
+\mathcal{N}(\beta_0+\beta_A A_i + X_i^\top \beta_X + \delta U_i,\sigma^2).
+$$
+
+Even when $U_i$ is not observed directly, priors on the induced bias structure can be varied to assess robustness.
+
+This is often more honest than reporting a single causal estimate under heroic ignorability assumptions.
+
+## 8. What Bayesian Causal Inference Does And Does Not Add
+
+### What it adds
+
+- coherent uncertainty propagation;
+- explicit prior modeling of weakly identified components;
+- posterior distributions for causal estimands;
+- a natural framework for sensitivity analysis.
+
+### What it does not add
+
+- automatic identification;
+- immunity to confounding;
+- causal validity from predictive fit alone.
+
+The posterior can only be as causal as the assumptions that define the causal model.
+
+## 9. `R` Workflow
+
+The companion lab is [causal_sensitivity_grid.R](../../labs/r/causal_sensitivity_grid.R). It fits a simple treatment-effect regression and then perturbs a sensitivity parameter over a grid to show how the implied treatment effect changes under hidden bias assumptions.
+
+## 10. Diagnostics And Pitfalls
+
+### Confusing posterior certainty with causal certainty
+
+A narrow posterior under a wrong identification assumption is still wrong.
+
+### Treating propensity models as magic
+
+Modeling assignment helps only within a defensible causal framework.
+
+### Ignoring overlap
+
+Weak positivity or lack of overlap makes causal estimation unstable even in Bayesian analyses.
+
+### Omitting sensitivity analysis
+
+If unmeasured confounding is plausible, sensitivity analysis is not optional.
+
+## 11. Exercises
+
+1. Define the ATE and ATT formally using potential outcomes.
+2. Explain why ignorability is an identification assumption, not a posterior conclusion.
+3. Show how a Bayesian linear outcome model induces a posterior for the ATE.
+4. Describe a simple sensitivity parameter and how a prior on it would be used.
+5. Explain why strong predictive performance does not by itself imply causal validity.
+
+## 12. Summary
+
+Bayesian causal inference is Bayesian only after the causal question is specified:
+
+- potential outcomes define estimands;
+- causal assumptions define identifiability;
+- the Bayesian model propagates uncertainty conditional on those assumptions;
+- sensitivity analysis remains essential.
+
+## References
+
+Key references are @rubin1984, @gelman2013, and @berger1985.
