@@ -1,0 +1,373 @@
+---
+title: "Variational Inference: ELBO, Mean-Field Factorization, Coordinate Ascent, and Approximation Error"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- derive the ELBO from the posterior KL divergence;
+- explain the difference between forward and reverse KL behavior;
+- derive mean-field coordinate ascent updates in a conjugate model;
+- implement a simple CAVI procedure;
+- explain why VI is fast and scalable but can underestimate uncertainty.
+
+## 1. Variational Inference As Optimization
+
+Variational inference replaces posterior integration by an optimization problem. Instead of drawing from $p(\theta \mid y)$ directly, choose a tractable family $\mathcal{Q}$ and solve
+
+$$
+q^\star
+\in
+\arg\min_{q \in \mathcal{Q}}
+\operatorname{KL}\!\left(q(\theta)\,\|\, p(\theta \mid y)\right).
+$$
+
+This reframes inference as approximation within a restricted family [@blei2017; @kucukelbir2017].
+
+The price is approximation bias. The benefit is computational speed and scalability.
+
+## 2. ELBO Derivation
+
+Start from the posterior KL divergence:
+
+$$
+\operatorname{KL}(q(\theta)\,\|\,p(\theta \mid y))
+=
+\int q(\theta)\log\frac{q(\theta)}{p(\theta \mid y)}\, d\theta.
+$$
+
+Since
+
+$$
+p(\theta \mid y)=\frac{p(y,\theta)}{p(y)},
+$$
+
+we have
+
+$$
+\operatorname{KL}(q\,\|\,p(\theta \mid y))
+=
+\int q(\theta)\log\frac{q(\theta)p(y)}{p(y,\theta)}\, d\theta.
+$$
+
+Rearrange:
+
+$$
+\operatorname{KL}(q\,\|\,p(\theta \mid y))
+=
+\log p(y)
+- \int q(\theta)\log p(y,\theta)\, d\theta
++ \int q(\theta)\log q(\theta)\, d\theta.
+$$
+
+Define the evidence lower bound
+
+$$
+\mathcal{L}(q)
+=
+\mathbb{E}_q[\log p(y,\theta)] - \mathbb{E}_q[\log q(\theta)].
+$$
+
+Then
+
+$$
+\log p(y)
+=
+\mathcal{L}(q)
++
+\operatorname{KL}(q\,\|\,p(\theta \mid y)).
+$$
+
+Because the KL divergence is nonnegative,
+
+$$
+\mathcal{L}(q) \le \log p(y).
+$$
+
+Maximizing the ELBO is therefore equivalent to minimizing reverse KL to the posterior.
+
+## 3. Why Reverse KL Matters
+
+The choice
+
+$$
+\operatorname{KL}(q\,\|\,p)
+$$
+
+penalizes placing mass where the posterior has little mass, but it does not heavily penalize missing parts of the posterior support if doing so keeps $q$ concentrated in one high-density region.
+
+This is why mean-field VI often:
+
+- underestimates variance;
+- avoids multi-modal averaging;
+- prefers mode-seeking approximations.
+
+This is not a bug in optimization. It is a geometric consequence of the divergence being minimized.
+
+## 4. Mean-Field Factorization
+
+Suppose
+
+$$
+q(\theta)=\prod_{j=1}^m q_j(\theta_j).
+$$
+
+This mean-field restriction makes optimization tractable but breaks posterior dependence. The resulting family can be much simpler than the true posterior.
+
+### 4.1 Coordinate ascent update
+
+To derive the optimal factor $q_j$, fix all other factors and maximize the ELBO over $q_j$. The standard result is
+
+$$
+\log q_j^\star(\theta_j)
+=
+\mathbb{E}_{q_{-j}}[\log p(y,\theta)] + C,
+$$
+
+where $q_{-j}=\prod_{\ell \ne j} q_\ell(\theta_\ell)$ and $C$ is a normalization constant.
+
+### 4.2 Derivation
+
+Write the ELBO as
+
+$$
+\mathcal{L}(q_j)
+=
+\int q_j(\theta_j)
+\mathbb{E}_{q_{-j}}[\log p(y,\theta)]\, d\theta_j
+- \int q_j(\theta_j)\log q_j(\theta_j)\, d\theta_j
++ C.
+$$
+
+This is maximized by a density proportional to
+
+$$
+\exp\!\left(\mathbb{E}_{q_{-j}}[\log p(y,\theta)]\right),
+$$
+
+which yields the coordinate update above.
+
+## 5. Worked Example: Mean-Field VI For A Normal-Gamma Model
+
+Consider
+
+$$
+y_i \mid \mu,\tau \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu,\tau^{-1}),
+$$
+
+with prior
+
+$$
+\mu \mid \tau \sim \mathcal{N}\!\left(\mu_0,\ (\kappa_0 \tau)^{-1}\right),
+\qquad
+\tau \sim \operatorname{Gamma}(a_0,b_0).
+$$
+
+The exact posterior is Normal-Gamma. We deliberately impose the mean-field approximation
+
+$$
+q(\mu,\tau)=q_\mu(\mu) q_\tau(\tau)
+$$
+
+to see what VI does.
+
+### 5.1 Joint log density
+
+Ignoring constants,
+
+$$
+\log p(y,\mu,\tau)
+=
+\left(a_0 - 1 + \frac{n+1}{2}\right)\log \tau
+- b_0 \tau
+- \frac{\tau}{2}\sum_{i=1}^n (y_i-\mu)^2
+- \frac{\kappa_0\tau}{2}(\mu-\mu_0)^2.
+$$
+
+### 5.2 Update for $q_\mu$
+
+Take expectation with respect to $q_\tau$:
+
+$$
+\log q_\mu^\star(\mu)
+=
+- \frac{\mathbb{E}_{q_\tau}[\tau]}{2}
+\left[
+\sum_{i=1}^n (y_i-\mu)^2
++
+\kappa_0(\mu-\mu_0)^2
+\right]
++ C.
+$$
+
+Collect the quadratic terms in $\mu$. The result is Gaussian:
+
+$$
+q_\mu(\mu)=\mathcal{N}(m,s^2),
+$$
+
+with
+
+$$
+s^2=\frac{1}{(\kappa_0+n)\mathbb{E}_{q_\tau}[\tau]},
+$$
+
+and
+
+$$
+m=\frac{\kappa_0\mu_0 + \sum_{i=1}^n y_i}{\kappa_0+n}.
+$$
+
+Interestingly, the mean $m$ does not depend on $\mathbb{E}[\tau]$ because the shared factor cancels.
+
+### 5.3 Update for $q_\tau$
+
+Now take expectation with respect to $q_\mu$:
+
+$$
+\log q_\tau^\star(\tau)
+=
+\left(a_0 - 1 + \frac{n+1}{2}\right)\log\tau
+- \tau
+\left[
+b_0
++
+\frac12\mathbb{E}_{q_\mu}\left(\sum_{i=1}^n (y_i-\mu)^2 + \kappa_0(\mu-\mu_0)^2\right)
+\right]
++ C.
+$$
+
+Therefore
+
+$$
+q_\tau(\tau)=\operatorname{Gamma}(a,b),
+$$
+
+where
+
+$$
+a = a_0 + \frac{n+1}{2},
+$$
+
+and
+
+$$
+b
+=
+b_0
++
+\frac12\left[
+\sum_{i=1}^n \mathbb{E}_{q_\mu}(y_i-\mu)^2
++
+\kappa_0 \mathbb{E}_{q_\mu}(\mu-\mu_0)^2
+\right].
+$$
+
+Since $\mu \sim \mathcal{N}(m,s^2)$ under $q_\mu$,
+
+$$
+\mathbb{E}_{q_\mu}(y_i-\mu)^2=(y_i-m)^2+s^2,
+$$
+
+and
+
+$$
+\mathbb{E}_{q_\mu}(\mu-\mu_0)^2=(m-\mu_0)^2+s^2.
+$$
+
+These yield explicit coordinate updates.
+
+## 6. Coordinate Ascent Variational Inference
+
+The resulting CAVI algorithm is:
+
+1. initialize $a$ and $b$;
+2. compute $\mathbb{E}[\tau]=a/b$;
+3. update $m$ and $s^2$;
+4. update $a$ and $b$ from the expectations under $q_\mu$;
+5. repeat until the ELBO or parameters stabilize.
+
+This is fast because every update is closed form.
+
+## 7. ADVI, Stochastic VI, and Amortization
+
+The mean-field example above is didactic. Modern VI systems often use:
+
+### Stochastic VI
+
+Mini-batch gradients of the ELBO, useful for large data sets.
+
+### ADVI
+
+Automatic Differentiation Variational Inference transforms constrained parameters to $\mathbb{R}^d$, posits a Gaussian approximation in transformed coordinates, and optimizes the ELBO with autodiff [@kucukelbir2017].
+
+### Amortized VI
+
+Inference networks map observations directly to variational parameters, common in deep generative models.
+
+These are scalable, but the same approximation caveats remain.
+
+## 8. `R` Implementation
+
+The companion lab is [meanfield_vi_normal_gamma.R](../../labs/r/meanfield_vi_normal_gamma.R). The core update structure is:
+
+```r
+for (iter in seq_len(n_iter)) {
+  expected_tau <- a / b
+  m <- (kappa0 * mu0 + sum(y)) / (kappa0 + length(y))
+  s2 <- 1 / ((kappa0 + length(y)) * expected_tau)
+
+  quad_y <- sum((y - m)^2) + length(y) * s2
+  quad_mu <- (m - mu0)^2 + s2
+
+  a <- a0 + (length(y) + 1) / 2
+  b <- b0 + 0.5 * (quad_y + kappa0 * quad_mu)
+}
+```
+
+Comparing these variational summaries with the exact Normal-Gamma posterior shows the characteristic variance shrinkage of mean-field VI.
+
+## 9. Common Pitfalls
+
+### Treating ELBO optimization success as inference success
+
+A well-optimized approximation can still be a poor approximation.
+
+### Ignoring posterior dependence
+
+Mean-field VI factorizes away dependence structure that may be inferentially important.
+
+### Underestimating tails
+
+VI often understates uncertainty, especially in skewed or correlated posteriors.
+
+### Comparing ELBO values across unrelated models carelessly
+
+ELBO is an objective for a fixed model and variational family. It is not a universal model-comparison metric.
+
+## 10. Exercises
+
+1. Derive the ELBO identity from the posterior KL divergence in full detail.
+2. Derive the mean-field update
+   $$
+   \log q_j^\star(\theta_j)=\mathbb{E}_{q_{-j}}[\log p(y,\theta)] + C.
+   $$
+3. Implement the Normal-Gamma CAVI algorithm and compare its posterior variance approximation with the exact posterior.
+4. Explain why reverse KL tends to be mode-seeking.
+5. Describe one setting where VI is preferable to MCMC and one where it is likely inadequate.
+
+## 11. Summary
+
+Variational inference turns posterior approximation into optimization:
+
+- the ELBO is the objective;
+- mean-field factorization yields tractable coordinate updates;
+- VI is fast and scalable;
+- the approximation error is structural, not merely numerical.
+
+The correct use of VI therefore requires both computational skill and epistemic caution.
+
+## References
+
+Key references are @blei2017, @kucukelbir2017, @murphy2023, and @bishop2006.

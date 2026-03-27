@@ -1,0 +1,310 @@
+---
+title: "Advanced MCMC: Hamiltonian Monte Carlo, NUTS, Geometry, and Diagnostics"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- explain why random-walk MCMC fails in high dimensions;
+- derive Hamiltonian dynamics for posterior sampling;
+- derive and interpret the leapfrog integrator;
+- explain why a Metropolis correction is still needed in HMC;
+- describe how NUTS, mass-matrix adaptation, and warmup work at a high level;
+- interpret divergences, E-BFMI, and treedepth warnings geometrically.
+
+## 1. Why Random Walks Fail
+
+Random-walk Metropolis ignores local geometry. In a high-dimensional posterior with strong correlation or anisotropic curvature, this has three consequences:
+
+- proposals must be small to avoid rejection;
+- chains move diffusively rather than ballistically;
+- exploration time grows rapidly with dimension.
+
+Hamiltonian Monte Carlo addresses this by augmenting the parameter space with momentum variables and using gradient information to propose long, coherent trajectories through high-density regions [@neal2011; @betancourt2017].
+
+## 2. Hamiltonian Formulation
+
+Let the target posterior be
+
+$$
+\pi(q) \propto \tilde\pi(q),
+$$
+
+where $q$ denotes position, that is, the model parameters. Define the potential energy
+
+$$
+U(q) = -\log \tilde\pi(q).
+$$
+
+Introduce an auxiliary momentum variable $p$ with density
+
+$$
+p(p) = \mathcal{N}(0, M),
+$$
+
+where $M$ is the mass matrix. The kinetic energy is
+
+$$
+K(p)=\frac12 p^\top M^{-1}p.
+$$
+
+The Hamiltonian is
+
+$$
+H(q,p)=U(q)+K(p).
+$$
+
+The joint target on phase space is then
+
+$$
+\pi(q,p)\propto \exp\{-H(q,p)\}
+=
+\tilde\pi(q)\exp\{-K(p)\}.
+$$
+
+Marginalizing out $p$ recovers the posterior in $q$.
+
+## 3. Hamiltonian Dynamics
+
+The deterministic dynamics are defined by
+
+$$
+\frac{dq}{dt} = \frac{\partial H}{\partial p} = M^{-1}p,
+$$
+
+$$
+\frac{dp}{dt} = -\frac{\partial H}{\partial q} = -\nabla U(q).
+$$
+
+These equations have three crucial properties in exact arithmetic:
+
+- they preserve total energy $H(q,p)$;
+- they preserve volume in phase space;
+- they preserve the joint target density.
+
+This is why Hamiltonian flow is such a powerful proposal mechanism: it moves far while approximately staying on the same energy surface.
+
+## 4. Leapfrog Integrator
+
+Exact Hamiltonian flow is usually unavailable, so HMC uses a numerical integrator. The standard choice is leapfrog.
+
+For step size $\varepsilon$, one leapfrog step is:
+
+$$
+p\left(t+\frac{\varepsilon}{2}\right)
+=
+p(t)-\frac{\varepsilon}{2}\nabla U(q(t)),
+$$
+
+$$
+q(t+\varepsilon)
+=
+q(t)+\varepsilon M^{-1}p\left(t+\frac{\varepsilon}{2}\right),
+$$
+
+$$
+p(t+\varepsilon)
+=
+p\left(t+\frac{\varepsilon}{2}\right)
+-\frac{\varepsilon}{2}\nabla U(q(t+\varepsilon)).
+$$
+
+### 4.1 Why leapfrog
+
+Leapfrog is used because it is:
+
+- reversible;
+- volume preserving;
+- second-order accurate;
+- symplectic, so it controls long-run energy error much better than generic integrators.
+
+These structural properties matter more than pointwise numerical precision.
+
+## 5. Why A Metropolis Correction Is Needed
+
+Numerical integration is not exact, so the Hamiltonian after $L$ leapfrog steps is only approximately conserved. Therefore the proposal must be corrected with a Metropolis accept-reject step.
+
+If $(q',p')$ is the proposal produced by the integrator, then accept with probability
+
+$$
+\alpha((q,p),(q',p'))
+=
+\min\left\{1,\exp\big(-H(q',p')+H(q,p)\big)\right\}.
+$$
+
+If the integrator were exact, the Hamiltonian difference would be zero and every proposal would be accepted.
+
+This is the same logic as in Metropolis-Hastings generally: deterministic approximate dynamics are corrected into an exact Markov kernel targeting the right distribution.
+
+## 6. Geometry And The Mass Matrix
+
+The mass matrix $M$ determines how momentum maps into movement through parameter space.
+
+### If $M=I$
+
+All directions are treated equally. This is often suboptimal when the posterior has strong anisotropy.
+
+### If $M$ matches posterior scale
+
+Trajectories align better with the geometry of the target. In practice, modern HMC implementations adapt a diagonal or dense Euclidean mass matrix during warmup.
+
+The broad principle is simple:
+
+- bad parameter scaling produces bad Hamiltonian trajectories;
+- good scaling makes a Euclidean metric approximation much more effective.
+
+## 7. NUTS
+
+Standard HMC requires choosing:
+
+- a step size $\varepsilon$;
+- a number of leapfrog steps $L$.
+
+The No-U-Turn Sampler removes the need to fix $L$ manually by expanding trajectories until they start turning back on themselves [@hoffman2014].
+
+### High-level idea
+
+NUTS builds a binary tree of candidate states by simulating forward and backward in time. It stops when the trajectory makes a U-turn relative to its starting direction, which indicates that further integration is likely to retrace rather than explore.
+
+This turns path length selection into an adaptive procedure while preserving detailed balance through carefully designed multinomial or slice-style sampling over the trajectory states.
+
+## 8. Warmup And Adaptation
+
+In Stan-style HMC/NUTS implementations, warmup typically adapts:
+
+- step size;
+- mass matrix;
+- sometimes other internal statistics used for tuning.
+
+### Step size
+
+Too large:
+
+- numerical integration error grows;
+- acceptance rate falls;
+- divergences become more likely.
+
+Too small:
+
+- trajectories are accurate but expensive;
+- exploration per unit compute decreases.
+
+### Mass matrix
+
+Adaptation estimates posterior scale structure so that unit momentum draws induce more balanced movement across dimensions.
+
+Warmup is not decorative burn-in. It is the stage in which the sampler learns the geometry it needs to explore the posterior efficiently.
+
+## 9. Centered And Non-Centered Parameterizations
+
+Hierarchical models illustrate the geometric stakes sharply.
+
+Suppose
+
+$$
+\theta_j \mid \mu,\tau \sim \mathcal{N}(\mu,\tau^2).
+$$
+
+The centered parameterization samples $\theta_j$ directly. The non-centered parameterization instead writes
+
+$$
+z_j \sim \mathcal{N}(0,1), \qquad \theta_j = \mu + \tau z_j.
+$$
+
+When the data are weak and $\tau$ is near zero, the centered posterior often forms a funnel: narrow in some directions and broad in others. HMC struggles because no single step size resolves all scales simultaneously.
+
+Reparameterization does not change the model. It changes the geometry seen by the sampler.
+
+## 10. Diagnostics As Geometry Signals
+
+### Divergences
+
+Divergences indicate the numerical trajectory failed to track the true Hamiltonian flow accurately enough in some region of the posterior. In practice this usually means high curvature, poor scaling, or pathological geometry [@betancourt2017].
+
+### E-BFMI
+
+Energy Bayesian fraction of missing information measures whether momentum resampling induces adequate exploration of the marginal energy distribution. Low E-BFMI often indicates poor interaction between momentum and target geometry.
+
+### Maximum treedepth
+
+Repeated treedepth saturation suggests trajectories need to travel much farther than expected before NUTS finds a U-turn. Sometimes this reflects benign elongation; often it signals parameterization problems.
+
+### ESS and $\hat{R}$
+
+These remain important, but for HMC they should be read alongside geometry-specific diagnostics rather than by themselves.
+
+## 11. Simple Correlated Gaussian Example
+
+Consider a Gaussian target
+
+$$
+q \sim \mathcal{N}(0,\Sigma),
+\qquad
+\Sigma=
+\begin{pmatrix}
+1 & \rho \\
+\rho & 1
+\end{pmatrix}
+$$
+
+with $\rho$ close to 1. Random-walk proposals struggle because the posterior mass lies on a narrow tilted ridge. HMC succeeds because the gradient points across curvature while momentum carries the state along level sets more coherently.
+
+The companion JAX demonstration in [hmc_gaussian_demo.py](../../labs/jax/hmc_gaussian_demo.py) makes this explicit.
+
+## 12. Minimal JAX Skeleton
+
+```python
+def potential(q, sigma_inv):
+    return 0.5 * q.T @ sigma_inv @ q
+
+def kinetic(p):
+    return 0.5 * jnp.dot(p, p)
+
+def hamiltonian(q, p, sigma_inv):
+    return potential(q, sigma_inv) + kinetic(p)
+```
+
+The real substance lies in how leapfrog uses $\nabla U(q)$ to construct long-distance proposals with high acceptance.
+
+## 13. Common Pitfalls
+
+### Treating divergences as harmless warnings
+
+They are not harmless. They indicate biased exploration can occur.
+
+### Increasing `adapt_delta` indefinitely
+
+Sometimes this helps. Often it just masks deeper geometry problems.
+
+### Ignoring parameter scaling
+
+Bad scaling or poorly chosen priors can make even HMC look ineffective.
+
+### Thinking HMC solves every posterior pathology
+
+HMC is powerful, but severe multimodality, discontinuity, or discrete latent structure require different strategies.
+
+## 14. Exercises
+
+1. Derive the leapfrog integrator by composing half-step momentum updates with full-step position updates.
+2. Show that exact Hamiltonian flow preserves the joint density $\exp\{-H(q,p)\}$.
+3. Explain why a non-centered parameterization can remove funnel pathologies in weakly informed hierarchical models.
+4. For a correlated Gaussian target, describe how changing the mass matrix affects the trajectory geometry.
+5. Explain why divergences are more informative than raw acceptance rate in HMC.
+
+## 15. Summary
+
+Advanced MCMC begins where random walks stop being efficient:
+
+- Hamiltonian dynamics use gradients to propose long coherent moves;
+- leapfrog preserves the geometry needed for stable exploration;
+- Metropolis correction restores exactness;
+- NUTS automates path-length choice;
+- diagnostics must be interpreted as information about posterior geometry.
+
+This is the computational logic underlying Stan and modern probabilistic programming for continuous Bayesian models.
+
+## References
+
+Key references are @neal2011, @hoffman2014, @betancourt2017, @carpenter2017, and @vehtari2021.

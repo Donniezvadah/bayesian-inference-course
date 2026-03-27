@@ -15,6 +15,14 @@ By the end of Part III, learners should be able to:
 - tune and diagnose Metropolis-Hastings and HMC-type samplers;
 - compare MCMC, variational, and sequential methods critically.
 
+## Fully Written Chapters In This Repository
+
+- [Numerical integration and approximation](../chapters/computation/numerical-integration-and-approximation.qmd)
+- [Markov chain Monte Carlo](../chapters/computation/markov-chain-monte-carlo.qmd)
+- [Advanced MCMC: HMC and NUTS](../chapters/computation/advanced-mcmc-hmc.qmd)
+- [Variational inference](../chapters/computation/variational-inference.qmd)
+- [Sequential and online Bayes](../chapters/computation/sequential-and-online-bayes.qmd)
+
 ## Chapter 7. Numerical Integration and Approximation
 
 ### Core question

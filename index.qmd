@@ -92,7 +92,11 @@ This repeated structure is intentional. Bayesian statistics becomes much easier 
 The site includes several fully written exemplar chapters that demonstrate the intended level of mathematical and computational detail for the rest of the course:
 
 - [Bayes' theorem, sequential updating, and posterior prediction](chapters/foundations/bayes-theorem-and-updating.qmd)
+- [Numerical integration and approximation](chapters/computation/numerical-integration-and-approximation.qmd)
 - [Markov chain Monte Carlo: derivation, tuning, and diagnostics](chapters/computation/markov-chain-monte-carlo.qmd)
+- [Advanced MCMC: HMC, NUTS, geometry, and diagnostics](chapters/computation/advanced-mcmc-hmc.qmd)
+- [Variational inference: ELBO and coordinate ascent](chapters/computation/variational-inference.qmd)
+- [Sequential and online Bayes: filtering and particle methods](chapters/computation/sequential-and-online-bayes.qmd)
 - [Stan workflow for hierarchical models and HMC diagnostics](chapters/software/stan-hierarchical-models.qmd)
 - [JAX for gradient-based Bayesian computation](chapters/software/jax-gradient-based-bayes.qmd)
 

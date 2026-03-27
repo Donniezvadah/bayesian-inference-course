@@ -1,0 +1,431 @@
+---
+title: "Numerical Integration and Approximation: Quadrature, Laplace, Importance Sampling, and Evidence Estimation"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- state precisely which posterior quantity is being approximated;
+- distinguish deterministic quadrature from stochastic integration;
+- derive the Laplace approximation from a second-order Taylor expansion;
+- derive importance sampling and self-normalized importance sampling estimators;
+- compute and interpret importance-weight effective sample size;
+- explain when bridge sampling and thermodynamic integration are appropriate.
+
+## 1. The Approximation Problem
+
+In Bayesian analysis, the central object is almost never the posterior density by itself. The practical target is usually one of the following:
+
+$$
+\mathbb{E}[h(\theta)\mid y]
+=
+\int h(\theta)\, p(\theta \mid y)\, d\theta,
+$$
+
+$$
+p(\tilde y \mid y)
+=
+\int p(\tilde y \mid \theta)p(\theta \mid y)\, d\theta,
+$$
+
+or
+
+$$
+p(y)
+=
+\int p(y \mid \theta)\pi(\theta)\, d\theta.
+$$
+
+These are all integration problems. Numerical Bayesian computation begins the moment those integrals cease to be analytic.
+
+The first methodological question is therefore not “which algorithm should I run?” It is:
+
+> What integral do I need, under what regularity assumptions, and what type of approximation error can I tolerate?
+
+## 2. Quadrature
+
+When the parameter dimension is one or two and the integrand is smooth, deterministic quadrature is often the cleanest approach.
+
+Suppose the posterior density on an interval is proportional to $\tilde\pi(\theta)$. Then
+
+$$
+\mathbb{E}[h(\theta)\mid y]
+=
+\frac{\int h(\theta)\tilde\pi(\theta)\, d\theta}
+{\int \tilde\pi(\theta)\, d\theta}.
+$$
+
+If both numerator and denominator can be evaluated on a grid or through numerical integration routines, the approximation is often more reliable than simulation for low-dimensional problems.
+
+### Advantages
+
+- deterministic and often highly accurate;
+- useful for benchmarking;
+- transparent numerical error behavior.
+
+### Limitations
+
+- cost grows exponentially in dimension;
+- difficult on constrained, irregular, or highly correlated parameter spaces.
+
+This curse of dimensionality is one of the reasons Bayesian computation moved from quadrature to Monte Carlo.
+
+## 3. Laplace Approximation
+
+Laplace approximation replaces a posterior by a Gaussian density near its mode.
+
+### 3.1 Setup
+
+Let
+
+$$
+\ell(\theta)=\log \tilde\pi(\theta)
+$$
+
+be the unnormalized log posterior, and let $\hat\theta$ be a posterior mode:
+
+$$
+\hat\theta \in \arg\max_\theta \ell(\theta).
+$$
+
+Assume $\ell$ is twice continuously differentiable near $\hat\theta$ and that the Hessian is negative definite at the mode. Define
+
+$$
+H(\hat\theta)
+=
+-\nabla^2 \ell(\hat\theta),
+$$
+
+so that $H(\hat\theta)$ is positive definite.
+
+### 3.2 Derivation
+
+Take a second-order Taylor expansion around the mode:
+
+$$
+\ell(\theta)
+=
+\ell(\hat\theta)
++
+(\theta-\hat\theta)^\top \nabla \ell(\hat\theta)
+- \frac12(\theta-\hat\theta)^\top H(\hat\theta)(\theta-\hat\theta)
++ r(\theta).
+$$
+
+At the mode, $\nabla \ell(\hat\theta)=0$, so
+
+$$
+\ell(\theta)
+\approx
+\ell(\hat\theta)
+- \frac12(\theta-\hat\theta)^\top H(\hat\theta)(\theta-\hat\theta).
+$$
+
+Exponentiating,
+
+$$
+\tilde\pi(\theta)
+\approx
+\tilde\pi(\hat\theta)
+\exp\!\left\{
+- \frac12(\theta-\hat\theta)^\top H(\hat\theta)(\theta-\hat\theta)
+\right\}.
+$$
+
+Therefore
+
+$$
+\int \tilde\pi(\theta)\, d\theta
+\approx
+\tilde\pi(\hat\theta)(2\pi)^{d/2}|H(\hat\theta)|^{-1/2}.
+$$
+
+This is the Laplace approximation to the normalizing constant. It induces the Gaussian posterior approximation
+
+$$
+p(\theta \mid y)
+\approx
+\mathcal{N}\!\left(\hat\theta,\ H(\hat\theta)^{-1}\right).
+$$
+
+### 3.3 Approximation of posterior expectations
+
+If $h(\theta)$ is smooth, then
+
+$$
+\mathbb{E}[h(\theta)\mid y]
+\approx
+\mathbb{E}_{\mathcal{N}(\hat\theta,H^{-1})}[h(\theta)].
+$$
+
+At the crudest level, this yields
+
+$$
+\mathbb{E}[h(\theta)\mid y] \approx h(\hat\theta),
+$$
+
+but using the Gaussian approximation itself is usually better.
+
+### 3.4 When Laplace works well
+
+- posterior is approximately unimodal;
+- posterior is not strongly skewed;
+- curvature near the mode is informative about the bulk mass.
+
+### 3.5 When Laplace fails
+
+- substantial skewness;
+- multiple modes;
+- weak identification or boundary mass;
+- heavy tails;
+- hierarchical funnel geometry.
+
+Laplace is a local approximation. It can be excellent or disastrous depending on whether local quadratic geometry reflects global posterior mass.
+
+## 4. Importance Sampling
+
+Importance sampling rewrites posterior expectations in terms of a proposal distribution $g(\theta)$.
+
+Suppose $\tilde\pi(\theta)$ is the unnormalized posterior and $g(\theta)$ is a proposal density with support covering the posterior support. Then
+
+$$
+\mathbb{E}[h(\theta)\mid y]
+=
+\frac{\int h(\theta)\tilde\pi(\theta)\, d\theta}
+{\int \tilde\pi(\theta)\, d\theta}
+=
+\frac{\int h(\theta) w(\theta) g(\theta)\, d\theta}
+{\int w(\theta) g(\theta)\, d\theta},
+$$
+
+where
+
+$$
+w(\theta)=\frac{\tilde\pi(\theta)}{g(\theta)}.
+$$
+
+If $\theta^{(1)},\dots,\theta^{(N)} \sim g$, then the self-normalized importance sampling estimator is
+
+$$
+\hat I_N
+=
+\frac{\sum_{i=1}^N w_i h(\theta^{(i)})}
+{\sum_{i=1}^N w_i},
+\qquad
+w_i = \frac{\tilde\pi(\theta^{(i)})}{g(\theta^{(i)})}.
+$$
+
+### 4.1 Unnormalized and normalized estimators
+
+If the normalizing constant $Z=\int \tilde\pi(\theta)\, d\theta$ is known, then
+
+$$
+\mathbb{E}[h(\theta)\mid y]
+=
+\frac{1}{Z}\mathbb{E}_g[w(\theta)h(\theta)],
+$$
+
+and the simple Monte Carlo estimator
+
+$$
+\frac{1}{NZ}\sum_{i=1}^N w_i h(\theta^{(i)})
+$$
+
+is unbiased.
+
+When $Z$ is unknown, self-normalization is required. The estimator then loses exact unbiasedness but remains consistent under standard conditions.
+
+### 4.2 Variance behavior
+
+The practical performance of importance sampling is driven almost entirely by the variability of the weights.
+
+If $g$ undercovers posterior tails, a few samples can carry enormous weight, causing variance blow-up. In extreme cases, the variance is infinite even though the estimator remains formally defined.
+
+### 4.3 Effective sample size
+
+A common diagnostic is
+
+$$
+\operatorname{ESS}_{\text{IS}}
+=
+\frac{\left(\sum_{i=1}^N w_i\right)^2}
+{\sum_{i=1}^N w_i^2}.
+$$
+
+This is not an exact sample size in a probabilistic sense, but it is a useful measure of weight degeneracy:
+
+- if all weights are equal, ESS = $N$;
+- if one weight dominates, ESS approaches 1.
+
+## 5. Worked Example: Gamma Posterior, Exact vs Laplace vs Importance Sampling
+
+Consider the Gamma-Poisson model
+
+$$
+Y_i \mid \lambda \sim \operatorname{Poisson}(\lambda), \qquad
+\lambda \sim \operatorname{Gamma}(\alpha,\beta).
+$$
+
+After observing data with $s=\sum_i y_i$, the posterior is
+
+$$
+\lambda \mid y
+\sim
+\operatorname{Gamma}(\alpha+s,\ \beta+n).
+$$
+
+This is an ideal approximation benchmark because the exact posterior is known.
+
+### 5.1 Exact posterior mode
+
+If $\alpha+s > 1$, the posterior mode is
+
+$$
+\hat\lambda
+=
+\frac{\alpha+s-1}{\beta+n}.
+$$
+
+### 5.2 Hessian at the mode
+
+The unnormalized log posterior is
+
+$$
+\ell(\lambda)
+=
+(\alpha+s-1)\log\lambda - (\beta+n)\lambda + C.
+$$
+
+Then
+
+$$
+\ell'(\lambda)
+=
+\frac{\alpha+s-1}{\lambda} - (\beta+n),
+$$
+
+and
+
+$$
+\ell''(\lambda)
+=
+-\frac{\alpha+s-1}{\lambda^2}.
+$$
+
+So the Laplace precision is
+
+$$
+H(\hat\lambda)
+=
+\frac{\alpha+s-1}{\hat\lambda^2}.
+$$
+
+The approximate Gaussian posterior is therefore
+
+$$
+\lambda \mid y \approx \mathcal{N}\!\left(\hat\lambda,\ H(\hat\lambda)^{-1}\right),
+$$
+
+with the obvious caveat that the true support is positive while the Gaussian approximation is not.
+
+## 6. Bridge Sampling And Thermodynamic Integration
+
+### 6.1 Bridge sampling
+
+Bridge sampling is aimed primarily at estimating ratios of normalizing constants, especially marginal likelihoods. It is often more stable than naive importance sampling because it uses information from both the posterior and an auxiliary reference density to “bridge” the two distributions.
+
+The operational idea is:
+
+- sample from the posterior;
+- sample from a proposal or reference density;
+- estimate the normalizing constant ratio with a bridge identity.
+
+This is useful when model comparison by marginal likelihood is unavoidable.
+
+### 6.2 Thermodynamic integration
+
+Thermodynamic integration introduces a tempered family
+
+$$
+\pi_t(\theta) \propto \tilde\pi(\theta)^t g(\theta)^{1-t},
+\qquad 0 \le t \le 1,
+$$
+
+and integrates expectations over $t$ to recover log normalizing constant differences. It is elegant and general, but it is computationally heavy because one must approximate expectations at multiple temperatures.
+
+These methods belong later in a workflow than quadrature, Laplace, or standard importance sampling. They are specialized tools for difficult evidence estimation problems.
+
+## 7. `R` Implementation
+
+The companion lab is [laplace_importance_sampling.R](../../labs/r/laplace_importance_sampling.R). The key structure is:
+
+```r
+log_post_lambda <- function(lambda, y, alpha, beta) {
+  ifelse(
+    lambda > 0,
+    (alpha + sum(y) - 1) * log(lambda) - (beta + length(y)) * lambda,
+    -Inf
+  )
+}
+
+importance_sampling_mean <- function(n_draws, proposal_mean, proposal_sd, y, alpha, beta) {
+  draws <- rnorm(n_draws, mean = proposal_mean, sd = proposal_sd)
+  draws <- draws[draws > 0]
+  log_w <- log_post_lambda(draws, y, alpha, beta) -
+    dnorm(draws, mean = proposal_mean, sd = proposal_sd, log = TRUE)
+  w <- exp(log_w - max(log_w))
+  list(
+    estimate = sum(w * draws) / sum(w),
+    ess = (sum(w)^2) / sum(w^2)
+  )
+}
+```
+
+The point is not merely to get a number. The point is to compare:
+
+- exact posterior mean;
+- Laplace approximation;
+- quadrature;
+- importance sampling with ESS diagnostics.
+
+## 8. Common Pitfalls
+
+### Using Laplace on skewed posteriors without checking the approximation
+
+Local Gaussian structure is not enough when the posterior mass is asymmetric or boundary-constrained.
+
+### Choosing a convenient but badly mismatched importance proposal
+
+The proposal must cover the posterior tails. Otherwise the weights become unstable.
+
+### Treating evidence estimation as routine
+
+Marginal likelihood estimation is difficult. It should not be undertaken casually.
+
+### Reporting an estimate without the approximation mechanism
+
+A Bayesian estimate without its computational provenance is incomplete. One should always be able to answer: which integral, approximated how, with what diagnostics?
+
+## 9. Exercises
+
+1. Derive the Laplace approximation to the normalizing constant in one dimension from first principles.
+2. For the Gamma posterior example, compare the exact posterior mean with the posterior mode and explain why the difference reflects skewness.
+3. Show that the self-normalized importance sampling estimator is consistent under standard regularity assumptions.
+4. Derive the importance-weight ESS formula and interpret its extreme cases.
+5. Explain why bridge sampling is often preferable to naive importance sampling for marginal likelihood estimation.
+
+## 10. Summary
+
+Numerical Bayesian approximation begins with integration, not with sampling for its own sake:
+
+- quadrature is excellent in low dimensions;
+- Laplace is a local Gaussian approximation around a mode;
+- importance sampling is powerful when the proposal is well matched;
+- bridge sampling and thermodynamic integration are specialized tools for evidence estimation.
+
+These methods provide the conceptual bridge from exact conjugate inference to the simulation-based algorithms developed in later computational chapters.
+
+## References
+
+Key references include @robert2004, @mackay2003, @gelman2013, and @murphy2023.

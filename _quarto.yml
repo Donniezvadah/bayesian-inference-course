@@ -76,7 +76,11 @@ website:
       - section: "Part III"
         contents:
           - parts/part-iii-computation.qmd
+          - chapters/computation/numerical-integration-and-approximation.qmd
           - chapters/computation/markov-chain-monte-carlo.qmd
+          - chapters/computation/advanced-mcmc-hmc.qmd
+          - chapters/computation/variational-inference.qmd
+          - chapters/computation/sequential-and-online-bayes.qmd
       - section: "Part IV"
         contents:
           - parts/part-iv-models.qmd

@@ -1,0 +1,358 @@
+---
+title: "Sequential and Online Bayesian Computation: Filtering, Particle Methods, and Hidden-State Models"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- derive recursive Bayesian filtering equations;
+- derive the Kalman filter for a linear Gaussian state-space model;
+- explain bootstrap particle filtering and weight degeneracy;
+- compute particle ESS and resampling steps;
+- write the forward recursion for a hidden Markov model.
+
+## 1. Why Sequential Bayes
+
+In many problems data do not arrive as a single static batch. Instead they arrive over time, and the latent state of the system also evolves over time:
+
+- tracking and navigation;
+- signal processing;
+- finance and macroeconomics;
+- ecological movement;
+- longitudinal behavior;
+- online decision systems.
+
+Bayesian filtering addresses these problems by updating the posterior for the latent state as each new observation arrives [@doucet2001; @delmoral2004].
+
+## 2. Recursive Filtering Identity
+
+Let $x_t$ be the latent state at time $t$ and $y_t$ the observation. Under a state-space factorization,
+
+$$
+p(x_{0:T}, y_{1:T})
+=
+p(x_0)\prod_{t=1}^T p(x_t \mid x_{t-1}) p(y_t \mid x_t).
+$$
+
+The filtering target is
+
+$$
+p(x_t \mid y_{1:t}).
+$$
+
+### 2.1 Prediction step
+
+Given the filtering distribution at time $t-1$,
+
+$$
+p(x_{t-1} \mid y_{1:t-1}),
+$$
+
+the one-step predictive distribution is
+
+$$
+p(x_t \mid y_{1:t-1})
+=
+\int p(x_t \mid x_{t-1}) p(x_{t-1} \mid y_{1:t-1})\, dx_{t-1}.
+$$
+
+### 2.2 Update step
+
+After observing $y_t$,
+
+$$
+p(x_t \mid y_{1:t})
+=
+\frac{p(y_t \mid x_t)p(x_t \mid y_{1:t-1})}
+{p(y_t \mid y_{1:t-1})},
+$$
+
+where
+
+$$
+p(y_t \mid y_{1:t-1})
+=
+\int p(y_t \mid x_t)p(x_t \mid y_{1:t-1})\, dx_t.
+$$
+
+These two equations are the core recursion of Bayesian filtering.
+
+## 3. Linear Gaussian State-Space Models And The Kalman Filter
+
+Consider the local-level model
+
+$$
+x_t = x_{t-1} + w_t, \qquad w_t \sim \mathcal{N}(0,W),
+$$
+
+$$
+y_t = x_t + v_t, \qquad v_t \sim \mathcal{N}(0,V).
+$$
+
+Assume the filtering distribution at time $t-1$ is Gaussian:
+
+$$
+x_{t-1} \mid y_{1:t-1} \sim \mathcal{N}(m_{t-1}, C_{t-1}).
+$$
+
+### 3.1 Prediction
+
+Because the transition is linear Gaussian,
+
+$$
+x_t \mid y_{1:t-1}
+\sim
+\mathcal{N}(a_t, R_t),
+$$
+
+where
+
+$$
+a_t = m_{t-1},
+\qquad
+R_t = C_{t-1} + W.
+$$
+
+### 3.2 Forecast
+
+The predictive distribution for $y_t$ is
+
+$$
+y_t \mid y_{1:t-1}
+\sim
+\mathcal{N}(f_t, Q_t),
+$$
+
+with
+
+$$
+f_t = a_t,
+\qquad
+Q_t = R_t + V.
+$$
+
+### 3.3 Update
+
+Using Gaussian conditioning,
+
+$$
+x_t \mid y_{1:t}
+\sim
+\mathcal{N}(m_t, C_t),
+$$
+
+where
+
+$$
+A_t = \frac{R_t}{Q_t},
+$$
+
+$$
+m_t = a_t + A_t(y_t-f_t),
+$$
+
+$$
+C_t = R_t - A_t Q_t A_t = (1-A_t)R_t.
+$$
+
+### 3.4 Interpretation
+
+The Kalman gain $A_t$ weights the forecast error:
+
+- if observation noise $V$ is small, observations are trusted more;
+- if state uncertainty $R_t$ is small, the prior state prediction dominates.
+
+The filter is therefore a sequential precision-weighted average, exactly analogous in spirit to conjugate Bayesian updating.
+
+## 4. Particle Filtering
+
+Linear Gaussian models are special. In nonlinear or non-Gaussian state-space models, the filtering recursion is generally intractable. Particle filtering approximates it with weighted samples.
+
+Let $\{x_t^{(i)}, w_t^{(i)}\}_{i=1}^N$ approximate $p(x_t \mid y_{1:t})$.
+
+### 4.1 Generic sequential importance sampling
+
+Suppose particles are propagated from a proposal
+
+$$
+q(x_t \mid x_{0:t-1}, y_{1:t}).
+$$
+
+Then the incremental weight update is
+
+$$
+w_t^{(i)}
+\propto
+w_{t-1}^{(i)}
+\frac{
+  p(y_t \mid x_t^{(i)})
+  p(x_t^{(i)} \mid x_{t-1}^{(i)})
+}{
+  q(x_t^{(i)} \mid x_{0:t-1}^{(i)}, y_{1:t})
+}.
+$$
+
+### 4.2 Bootstrap particle filter
+
+If the proposal is the transition density itself,
+
+$$
+q(x_t \mid x_{t-1}, y_t)=p(x_t \mid x_{t-1}),
+$$
+
+then the transition terms cancel and
+
+$$
+w_t^{(i)} \propto w_{t-1}^{(i)} p(y_t \mid x_t^{(i)}).
+$$
+
+This is the bootstrap particle filter.
+
+## 5. Weight Degeneracy And ESS
+
+Particle filters suffer from weight degeneracy: after enough time steps, a few particles can carry most of the weight.
+
+The standard diagnostic is
+
+$$
+\operatorname{ESS}_t
+=
+\frac{1}{\sum_{i=1}^N (\bar w_t^{(i)})^2},
+$$
+
+where $\bar w_t^{(i)}$ are normalized weights.
+
+If ESS falls below a threshold, resampling is usually triggered.
+
+### Resampling
+
+Resampling replaces weighted particles by an approximately equally weighted sample from the empirical particle distribution. This reduces weight degeneracy but increases path degeneracy, since many trajectories may share common ancestors.
+
+## 6. Hidden Markov Models And The Forward Algorithm
+
+For a finite-state HMM with latent state $s_t \in \{1,\dots,K\}$,
+
+$$
+p(s_t \mid s_{t-1}) = \Gamma_{s_{t-1}, s_t},
+\qquad
+p(y_t \mid s_t) = f_{s_t}(y_t).
+$$
+
+Define the forward variable
+
+$$
+\alpha_t(j)=p(y_{1:t}, s_t=j).
+$$
+
+The recursion is
+
+$$
+\alpha_1(j)=p(s_1=j)f_j(y_1),
+$$
+
+and for $t \ge 2$,
+
+$$
+\alpha_t(j)
+=
+f_j(y_t)\sum_{i=1}^K \alpha_{t-1}(i)\Gamma_{ij}.
+$$
+
+The filtered state probabilities are then
+
+$$
+p(s_t=j \mid y_{1:t})
+=
+\frac{\alpha_t(j)}{\sum_{\ell=1}^K \alpha_t(\ell)}.
+$$
+
+This is the discrete-state analogue of Bayesian filtering.
+
+## 7. Online Bayesian Learning
+
+Sequential Bayes also supports online parameter learning in approximate form:
+
+- filtering latent states while fixing parameters;
+- augmenting the state to include parameters;
+- using particle learning or particle MCMC;
+- applying streaming variational approximations.
+
+The common principle remains:
+
+$$
+p(\theta \mid y_{1:t})
+\propto
+p(y_t \mid \theta, y_{1:t-1}) p(\theta \mid y_{1:t-1}).
+$$
+
+What changes is the computational mechanism used to approximate the recursion.
+
+## 8. `R` Implementation
+
+The companion lab is [particle_filter_local_level.R](../../labs/r/particle_filter_local_level.R). It implements a bootstrap particle filter for a local-level model.
+
+```r
+weights <- dnorm(y_t, mean = particles, sd = sqrt(V))
+weights <- weights / sum(weights)
+ess <- 1 / sum(weights^2)
+
+if (ess < resample_threshold) {
+  ancestors <- sample.int(N, size = N, replace = TRUE, prob = weights)
+  particles <- particles[ancestors]
+  weights <- rep(1 / N, N)
+}
+```
+
+This is the correct level of abstraction for teaching:
+
+- explicit transition sampling;
+- explicit likelihood weighting;
+- explicit ESS calculation;
+- explicit resampling.
+
+## 9. Common Pitfalls
+
+### Confusing prediction, filtering, and smoothing
+
+These are different posterior targets.
+
+### Ignoring particle degeneracy
+
+A particle filter without ESS monitoring is incomplete.
+
+### Forgetting numerical scaling in HMM recursions
+
+Forward probabilities can underflow quickly. Normalization or log-scale calculations are essential in long sequences.
+
+### Using sequential methods without identifying the target
+
+At each step one must ask whether the algorithm approximates:
+
+- $p(x_t \mid y_{1:t})$,
+- $p(x_t \mid y_{1:T})$,
+- $p(\theta \mid y_{1:t})$,
+- or a joint posterior over states and parameters.
+
+## 10. Exercises
+
+1. Derive the recursive filtering identity from the state-space factorization.
+2. Derive the Kalman filter update equations for the scalar local-level model.
+3. Derive the bootstrap particle filter weight update from the generic sequential importance sampling formula.
+4. Explain the trade-off between weight degeneracy and path degeneracy.
+5. Write the forward recursion for a 3-state HMM and explain how normalization should be handled numerically.
+
+## 11. Summary
+
+Sequential Bayesian computation unifies several important ideas:
+
+- recursive Bayes through prediction and update;
+- exact filtering in linear Gaussian models via the Kalman filter;
+- approximate filtering in nonlinear or non-Gaussian models via particle methods;
+- dynamic latent-state inference through HMM recursions.
+
+This material is foundational for time series, online inference, and state-space modeling later in the course.
+
+## References
+
+Key references are @doucet2001, @delmoral2004, @gelman2013, and @murphy2023.
