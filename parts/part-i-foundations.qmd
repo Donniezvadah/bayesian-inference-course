@@ -2,6 +2,12 @@
 title: "Part I. Foundations of Probability and Bayesian Thinking"
 ---
 
+::: {.part-hero}
+## Part I
+
+This part establishes the mathematical language used everywhere else in the course: probability spaces, expectations, likelihoods, Bayes' theorem, exchangeability, and sequential learning.
+:::
+
 ## Part Overview
 
 Part I establishes the language in which the rest of the course is written. The purpose is not to turn the site into a full measure-theory text, but to make the probabilistic objects used throughout Bayesian statistics precise: sample spaces, conditional distributions, random variables, likelihoods, priors, posteriors, and predictive distributions.
@@ -21,6 +27,14 @@ By the end of Part I, learners should be able to:
 - [Probability foundations](../chapters/foundations/probability-foundations.qmd)
 - [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
 - [Bayes' theorem, sequential updating, and posterior prediction](../chapters/foundations/bayes-theorem-and-updating.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Probability foundations](../chapters/foundations/probability-foundations.qmd)
+2. [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
+3. [Bayes' theorem, sequential updating, and posterior prediction](../chapters/foundations/bayes-theorem-and-updating.qmd)
 
 ## Chapter 1. Probability Foundations
 

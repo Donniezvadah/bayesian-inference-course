@@ -17,32 +17,92 @@ The course cites sources for four distinct purposes:
 
 The bibliography below remains the formal citation record. This section is the practical reading guide: each item links to a publisher page, official documentation page, DOI landing page, or open-access version where possible.
 
-### Core Texts
+## Annotated Reading Guide By Course Part
+
+### Part I. Foundations
+
+- [Foundations of the Theory of Probability](https://store.doverpublications.com/products/9780486601595)  
+  Formal probability foundations and the language behind measurable probability models.
+- [Probability: Theory and Examples](https://bookstore.ams.org/amstext-49/)  
+  A strong reference for conditioning, convergence, and rigorous probability arguments.
+- [Bayesian Theory](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316870)  
+  Foundational Bayesian reasoning, decision structure, and posterior logic.
+
+### Part II. Core Bayesian Inference
+
+- [Bayesian Data Analysis](https://www.routledge.com/Bayesian-Data-Analysis-Third-Edition/Gelman-Carlin-Stern-Dunson-Vehtari-Rubin/p/book/9781439840955)  
+  The main all-purpose reference for posterior inference, priors, prediction, and applied Bayesian workflow.
+- [Statistical Decision Theory and Bayesian Analysis](https://link.springer.com/book/10.1007/978-1-4757-4286-2)  
+  Canonical text for loss, utility, Bayes rules, and decision-theoretic structure.
+- [Prior Distributions for Variance Parameters in Hierarchical Models](https://doi.org/10.1214/06-BA117A)  
+  Influential discussion of weakly informative prior design.
+
+### Part III. Computation
+
+- [Monte Carlo Statistical Methods](https://link.springer.com/book/10.1007/978-1-4757-4145-2)  
+  Core reference for Monte Carlo, importance sampling, MCMC, and asymptotic simulation logic.
+- [The No-U-Turn Sampler](https://jmlr.org/papers/v15/hoffman14a.html)  
+  Canonical NUTS paper, central for modern Stan computation.
+- [A Conceptual Introduction to Hamiltonian Monte Carlo](https://arxiv.org/abs/1701.02434)  
+  Best geometry-first explanation of HMC pathologies and behavior.
+- [Variational Inference: A Review for Statisticians](https://doi.org/10.1080/01621459.2017.1285773)  
+  Clear overview of ELBOs, KL geometry, and variational approximations.
+
+### Part IV. Models
+
+- [Gaussian Processes for Machine Learning](https://gaussianprocess.org/gpml/)  
+  Standard reference for kernel-based Bayesian function modeling.
+- [A Bayesian Analysis of Some Nonparametric Problems](https://doi.org/10.1214/aos/1176342360)  
+  Foundational Dirichlet process paper.
+- [Probabilistic Machine Learning: Advanced Topics](https://mitpress.mit.edu/9780262048439/probabilistic-machine-learning)  
+  Broad modern reference connecting hierarchical models, latent variables, graphical models, and advanced Bayesian machine learning.
+
+### Part V. Optimization, Tuning, and Diagnostics
+
+- [Practical Bayesian Model Evaluation Using Leave-One-Out Cross-Validation and WAIC](https://doi.org/10.1007/s11222-016-9696-4)  
+  Standard predictive model evaluation reference.
+- [Rank-Normalization, Folding, and Localization: An Improved R-hat](https://doi.org/10.1214/20-BA1221)  
+  Modern convergence diagnostic reference.
+- [Visualization in Bayesian Workflow](https://doi.org/10.1111/rssa.12378)  
+  Strong workflow paper connecting computation diagnostics and model criticism.
+
+### Part VI. Software Workflows
+
+- [R Project](https://www.r-project.org/)  
+  Core language environment for the `R` side of the course.
+- [Stan](https://mc-stan.org/)  
+  Official Stan ecosystem site.
+- [CmdStanR](https://mc-stan.org/cmdstanr/)  
+  Official `R` interface used in the course.
+- [posterior](https://mc-stan.org/posterior/)  
+  Posterior-draw manipulation and summary tools.
+- [bayesplot](https://mc-stan.org/bayesplot/)  
+  Diagnostic and posterior visualization package.
+- [loo](https://mc-stan.org/loo/)  
+  Official package for PSIS-LOO and related diagnostics.
+- [JAX](https://github.com/google/jax)  
+  Autodiff and array programming system used for custom Bayesian computation.
+- [NumPyro](https://num.pyro.ai/en/stable/)  
+  Useful adjacent probabilistic programming system in the JAX ecosystem.
+- [Quarto](https://quarto.org/)  
+  Publishing system used to build this course.
+
+### Part VII. Advanced Topics
+
+- [The Bayesian Choice](https://link.springer.com/book/10.1007/0-387-71599-1)  
+  Strong reference for Bayesian evidence, Bayes factors, and model comparison logic.
+- [Using Stacking to Average Bayesian Predictive Distributions](https://doi.org/10.1214/17-BA1091)  
+  Canonical stacking reference.
+- [Projective Inference in High-Dimensional Problems](https://doi.org/10.1214/20-EJS1711)  
+  Projection predictive model selection reference.
+- [Bayesian Experimental Design: A Review](https://doi.org/10.1214/ss/1177009939)  
+  Classic overview of Bayesian design criteria and methods.
+
+## Core Texts
 
 - [Bayesian Data Analysis](https://www.routledge.com/Bayesian-Data-Analysis-Third-Edition/Gelman-Carlin-Stern-Dunson-Vehtari-Rubin/p/book/9781439840955)
 - [Monte Carlo Statistical Methods](https://link.springer.com/book/10.1007/978-1-4757-4145-2)
 - [Probabilistic Machine Learning: Advanced Topics](https://mitpress.mit.edu/9780262048439/probabilistic-machine-learning)
-
-### Core Method Papers
-
-- [The No-U-Turn Sampler](https://jmlr.org/papers/v15/hoffman14a.html)
-- [A Conceptual Introduction to Hamiltonian Monte Carlo](https://arxiv.org/abs/1701.02434)
-- [Variational Inference: A Review for Statisticians](https://doi.org/10.1080/01621459.2017.1285773)
-- [Practical Bayesian Model Evaluation Using Leave-One-Out Cross-Validation and WAIC](https://doi.org/10.1007/s11222-016-9696-4)
-- [Rank-Normalization, Folding, and Localization: An Improved R-hat](https://doi.org/10.1214/20-BA1221)
-- [Visualization in Bayesian Workflow](https://doi.org/10.1111/rssa.12378)
-
-### Software And Documentation
-
-- [R Project](https://www.r-project.org/)
-- [Stan](https://mc-stan.org/)
-- [CmdStanR](https://mc-stan.org/cmdstanr/)
-- [posterior](https://mc-stan.org/posterior/)
-- [bayesplot](https://mc-stan.org/bayesplot/)
-- [loo](https://mc-stan.org/loo/)
-- [JAX](https://github.com/google/jax)
-- [NumPyro](https://num.pyro.ai/en/stable/)
-- [Quarto](https://quarto.org/)
 
 ## Canonical Textbooks
 

@@ -2,6 +2,12 @@
 title: "Part VII. Advanced Topics"
 ---
 
+::: {.part-hero}
+## Part VII
+
+This part covers the mature edges of Bayesian workflow: model uncertainty, robustification, design under uncertainty, communication, and capstone-level synthesis.
+:::
+
 ## Part Overview
 
 Part VII extends the core workflow into the topics that distinguish mature Bayesian practice from elementary posterior calculation: model uncertainty, robustness, experimental design, communication, and open-ended projects.
@@ -22,6 +28,16 @@ By the end of Part VII, learners should be able to:
 - [Bayesian experimental design](../chapters/advanced/bayesian-experimental-design.qmd)
 - [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
 - [Capstone projects](../chapters/advanced/capstone-projects.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Model selection and averaging](../chapters/advanced/model-selection-and-averaging.qmd)
+2. [Robust Bayesian methods](../chapters/advanced/robust-bayesian-methods.qmd)
+3. [Bayesian experimental design](../chapters/advanced/bayesian-experimental-design.qmd)
+4. [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
+5. [Capstone projects](../chapters/advanced/capstone-projects.qmd)
 
 ## Chapter 27. Model Selection and Averaging
 

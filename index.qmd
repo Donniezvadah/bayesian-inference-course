@@ -15,6 +15,18 @@ The organizing principle is that Bayesian statistics is not merely a formula for
 [Teaching philosophy](teaching-philosophy.qmd) · [Instructor & Credits](instructor-and-credits.qmd) · [Schedule](syllabus.qmd) · [Tools and Setup](appendix/software-setup.qmd) · [Evaluation](evaluation.qmd)
 :::
 
+::: {.instructor-hero}
+![Donald Zvada](assets/images/IMG_3176.HEIC.png){.instructor-photo}
+
+::: {.instructor-summary}
+## Instructor
+
+Donald Zvada is a PhD student in Statistics at Trinity College Dublin. The course is designed from the perspective of statistical theory, computational workflow, and applied modeling practice.
+
+[Read the full instructor profile](instructor-and-credits.qmd)
+:::
+:::
+
 ## Goals Of This Course
 
 This course has four simultaneous goals:

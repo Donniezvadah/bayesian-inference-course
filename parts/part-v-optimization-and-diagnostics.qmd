@@ -2,6 +2,12 @@
 title: "Part V. Optimization, Tuning, and Diagnostics"
 ---
 
+::: {.part-hero}
+## Part V
+
+This part makes Bayesian workflow operational: optimization, tuning, convergence assessment, model criticism, and predictive diagnostics.
+:::
+
 ## Part Overview
 
 Part V makes the course operational. Bayesian methods are only as credible as their optimization, tuning, diagnostics, and model criticism practices.
@@ -20,6 +26,14 @@ By the end of Part V, learners should be able to:
 - [Optimization techniques in Bayesian statistics](../chapters/practice/optimization-techniques-in-bayesian-statistics.qmd)
 - [Tuning and calibration](../chapters/practice/tuning-and-calibration.qmd)
 - [Diagnostics and model criticism](../chapters/practice/diagnostics-and-model-criticism.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Optimization techniques in Bayesian statistics](../chapters/practice/optimization-techniques-in-bayesian-statistics.qmd)
+2. [Tuning and calibration](../chapters/practice/tuning-and-calibration.qmd)
+3. [Diagnostics and model criticism](../chapters/practice/diagnostics-and-model-criticism.qmd)
 
 ## Chapter 21. Optimization Techniques in Bayesian Statistics
 

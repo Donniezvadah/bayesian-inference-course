@@ -2,6 +2,16 @@
 title: "Instructor & Credits"
 ---
 
+::: {.instructor-hero}
+![Donald Zvada](assets/images/IMG_3176.HEIC.png){.instructor-photo}
+
+::: {.instructor-summary}
+## Donald Zvada
+
+PhD student in Statistics at Trinity College Dublin working on Bayesian and statistical methodology for longitudinal dietary patterns, health outcomes, and computational modeling.
+:::
+:::
+
 ## About The Instructor
 
 Donald Zvada is a PhD student in Statistics at [Trinity College Dublin](https://www.tcd.ie/), where he is developing novel statistical methods for the analysis of longitudinal dietary patterns and their association with health outcomes. His work sits at the intersection of statistical modeling, machine learning, longitudinal data analysis, and decision-oriented data science.
@@ -47,6 +57,7 @@ Donald Zvada is a PhD student in Statistics at [Trinity College Dublin](https://
 
 - Email: [zvadad@tcd.ie](mailto:zvadad@tcd.ie)
 - GitHub: [github.com/Donniezvadah](https://github.com/Donniezvadah)
+- LinkedIn: [donald-zvada](https://www.linkedin.com/in/donald-zvada/)
 
 ## Course Credits
 

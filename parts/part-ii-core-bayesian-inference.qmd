@@ -2,6 +2,12 @@
 title: "Part II. Core Bayesian Inference"
 ---
 
+::: {.part-hero}
+## Part II
+
+This part turns the posterior identity into an inferential toolkit: exact conjugate analysis, decision theory, prior design, and sensitivity-aware Bayesian reasoning.
+:::
+
 ## Part Overview
 
 Part II moves from the basic posterior identity to the standard inferential toolkit: conjugate models, decision theory, and prior design. This is where Bayesian analysis becomes concrete and operational.
@@ -20,6 +26,14 @@ By the end of Part II, learners should be able to:
 - [Conjugate analysis](../chapters/core/conjugate-analysis.qmd)
 - [Loss functions and decision theory](../chapters/core/loss-functions-and-decision-theory.qmd)
 - [Prior design](../chapters/core/prior-design.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Conjugate analysis](../chapters/core/conjugate-analysis.qmd)
+2. [Loss functions and decision theory](../chapters/core/loss-functions-and-decision-theory.qmd)
+3. [Prior design](../chapters/core/prior-design.qmd)
 
 ## Chapter 4. Conjugate Analysis
 

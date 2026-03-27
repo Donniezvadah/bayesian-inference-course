@@ -83,6 +83,46 @@ pre.sourceCode {
   margin-bottom: 1.5rem;
 }
 
+.part-hero {
+  padding: 1.1rem 1.2rem;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(245, 248, 252, 0.96), rgba(255, 255, 255, 0.96));
+  border: 1px solid rgba(21, 36, 53, 0.08);
+  margin: 0.35rem 0 1.35rem 0;
+}
+
+.part-hero h2,
+.part-hero p:last-child {
+  margin-bottom: 0;
+}
+
+.instructor-hero {
+  display: grid;
+  grid-template-columns: minmax(180px, 220px) 1fr;
+  gap: 1.25rem;
+  align-items: center;
+  margin: 1.25rem 0 1.75rem 0;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(21, 36, 53, 0.08);
+}
+
+.instructor-photo {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;
+}
+
+.instructor-summary h2,
+.instructor-summary p:last-child {
+  margin-bottom: 0;
+}
+
 .hero h1,
 .hero h2,
 .hero h3 {
@@ -167,6 +207,12 @@ a {
 
 .table th {
   font-weight: 600;
+}
+
+@media (max-width: 780px) {
+  .instructor-hero {
+    grid-template-columns: 1fr;
+  }
 }
 
 .smallcaps {

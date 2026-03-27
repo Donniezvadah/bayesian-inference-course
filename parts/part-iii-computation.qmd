@@ -2,6 +2,12 @@
 title: "Part III. Computational Bayesian Methods"
 ---
 
+::: {.part-hero}
+## Part III
+
+This part develops the numerical machinery of Bayesian inference: integration, Monte Carlo error, MCMC, HMC, variational methods, and sequential updating.
+:::
+
 ## Part Overview
 
 Part III covers the numerical machinery that turns formal posterior distributions into usable approximations. The emphasis is on both mathematical justification and practical workflow.
@@ -23,6 +29,17 @@ By the end of Part III, learners should be able to:
 - [Advanced MCMC: HMC and NUTS](../chapters/computation/advanced-mcmc-hmc.qmd)
 - [Variational inference](../chapters/computation/variational-inference.qmd)
 - [Sequential and online Bayes](../chapters/computation/sequential-and-online-bayes.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Numerical integration and approximation](../chapters/computation/numerical-integration-and-approximation.qmd)
+2. [Monte Carlo methods](../chapters/computation/monte-carlo-methods.qmd)
+3. [Markov chain Monte Carlo](../chapters/computation/markov-chain-monte-carlo.qmd)
+4. [Advanced MCMC: HMC and NUTS](../chapters/computation/advanced-mcmc-hmc.qmd)
+5. [Variational inference](../chapters/computation/variational-inference.qmd)
+6. [Sequential and online Bayes](../chapters/computation/sequential-and-online-bayes.qmd)
 
 ## Chapter 7. Numerical Integration and Approximation
 

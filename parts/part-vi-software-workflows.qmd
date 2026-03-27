@@ -2,6 +2,12 @@
 title: "Part VI. Software Workflows in R, Stan, and JAX"
 ---
 
+::: {.part-hero}
+## Part VI
+
+This part translates the theory and computation into concrete workflows in `R`, `Stan`, and `JAX`, with emphasis on reproducibility, diagnostics, and implementation discipline.
+:::
+
 ## Part Overview
 
 Part VI translates the earlier theory into real computational workflow. The emphasis is not on software for its own sake, but on the disciplined use of tools to make Bayesian reasoning reproducible and diagnostically sound.
@@ -19,6 +25,14 @@ By the end of Part VI, learners should be able to:
 - [Bayesian workflow in R](../chapters/software/bayesian-workflow-in-r.qmd)
 - [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
 - [JAX for gradient-based Bayesian computation](../chapters/software/jax-gradient-based-bayes.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Bayesian workflow in R](../chapters/software/bayesian-workflow-in-r.qmd)
+2. [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
+3. [JAX for gradient-based Bayesian computation](../chapters/software/jax-gradient-based-bayes.qmd)
 
 ## Chapter 24. Bayesian Workflow in `R`
 

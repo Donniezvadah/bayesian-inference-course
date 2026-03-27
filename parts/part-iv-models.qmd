@@ -2,6 +2,12 @@
 title: "Part IV. Bayesian Models"
 ---
 
+::: {.part-hero}
+## Part IV
+
+This part is the modeling core of the course: regression, multilevel structure, latent variables, time dependence, nonparametrics, spatial structure, and causal perspectives.
+:::
+
 ## Part Overview
 
 Part IV is the modeling core of the course. The goal is not to present disconnected model families, but to show how Bayesian modeling principles recur across regression, multilevel structure, latent variables, temporal dependence, nonparametrics, and causal reasoning.
@@ -25,6 +31,19 @@ By the end of Part IV, learners should be able to:
 - [Nonparametric Bayesian methods](../chapters/models/nonparametric-bayesian-methods.qmd)
 - [Spatial and graphical Bayesian models](../chapters/models/spatial-and-graphical-bayesian-models.qmd)
 - [Bayesian causal inference](../chapters/models/bayesian-causal-inference.qmd)
+
+## Reading Path
+
+Recommended order:
+
+1. [Bayesian linear models](../chapters/models/bayesian-linear-models.qmd)
+2. [Generalized linear models](../chapters/models/generalized-linear-models.qmd)
+3. [Hierarchical and multilevel models](../chapters/models/hierarchical-and-multilevel-models.qmd)
+4. [Mixture models and latent variable models](../chapters/models/mixture-models-and-latent-variable-models.qmd)
+5. [Time series and state-space models](../chapters/models/time-series-and-state-space-models.qmd)
+6. [Nonparametric Bayesian methods](../chapters/models/nonparametric-bayesian-methods.qmd)
+7. [Spatial and graphical Bayesian models](../chapters/models/spatial-and-graphical-bayesian-models.qmd)
+8. [Bayesian causal inference](../chapters/models/bayesian-causal-inference.qmd)
 
 ## Chapter 13. Bayesian Linear Models
 
