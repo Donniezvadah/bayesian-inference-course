@@ -200,6 +200,12 @@ The course is intentionally layered.
 - [Projects and capstones](projects.qmd)
 - [References and citation strategy](references.qmd)
 
+## License And Attribution
+
+- Course content: [CC BY-NC-SA 4.0](LICENSE-CONTENT.md)
+- Code examples: [MIT](LICENSE-CODE)
+- Site structure inspiration: [Claire David's Introduction to Machine Learning](https://clairedavid.github.io/intro_to_ml/intro.html)
+
 ## Guiding Notation
 
 Throughout the course:

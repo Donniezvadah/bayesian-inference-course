@@ -63,6 +63,8 @@ Donald Zvada is a PhD student in Statistics at [Trinity College Dublin](https://
 
 This course website is authored in Quarto and draws on the Bayesian statistics, computation, and workflow literature listed throughout the site. The structure of the site is intentionally course-like rather than blog-like: modular navigation, part overviews, executable labs, and a dedicated references workflow are all deliberate design choices.
 
+The site organization and front-matter course framing were inspired in part by Claire David's course website, [Introduction to Machine Learning](https://clairedavid.github.io/intro_to_ml/intro.html). The Bayesian curriculum, technical content, derivations, examples, and software workflow in this repository were written specifically for this course project.
+
 ## Software Credits
 
 The course relies especially on:
@@ -79,3 +81,8 @@ The course relies especially on:
 ## Notes On Source Material
 
 Biographical details on this page were adapted from the CV provided for this project.
+
+## License
+
+- Course content: [CC BY-NC-SA 4.0](LICENSE-CONTENT.md)
+- Code examples: [MIT](LICENSE-CODE)
