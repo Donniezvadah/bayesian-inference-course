@@ -11,6 +11,9 @@ project:
 website:
   title: "Bayesian Inference and Bayesian Statistics"
   description: "A mathematically rigorous long-form course in Bayesian statistics, computation, modeling, and workflow."
+  site-url: "https://donniezvadah.github.io/bayesian-inference-course/"
+  repo-url: "https://github.com/Donniezvadah/bayesian-inference-course"
+  repo-actions: [issue]
   page-navigation: true
   search:
     location: sidebar
