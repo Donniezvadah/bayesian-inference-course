@@ -1,0 +1,159 @@
+---
+title: "Part VI. Software Workflows in R, Stan, and JAX"
+---
+
+## Part Overview
+
+Part VI translates the earlier theory into real computational workflow. The emphasis is not on software for its own sake, but on the disciplined use of tools to make Bayesian reasoning reproducible and diagnostically sound.
+
+## Part Learning Goals
+
+By the end of Part VI, learners should be able to:
+
+- implement Bayesian analyses end-to-end in `R`;
+- write and diagnose Stan programs for nontrivial posterior inference;
+- use JAX for autodiff-based objectives, gradients, Hessians, and custom gradient-based Bayesian algorithms.
+
+## Chapter 24. Bayesian Workflow in `R`
+
+### Core question
+
+How can `R` serve as the central orchestration language for Bayesian simulation, summarization, visualization, and model criticism?
+
+### Section blueprint
+
+- Base `R` implementations of conjugate analysis.
+- Custom Metropolis and Gibbs samplers.
+- Posterior summaries and intervals.
+- Posterior predictive simulation.
+- Diagnostics using `posterior`, `bayesplot`, and `loo`.
+- Interfacing with `cmdstanr`.
+
+### Derivations and coding targets
+
+- Conjugate posterior functions as reusable `R` functions.
+- Hand-coded random-walk Metropolis for a simple target.
+- ESS and Monte Carlo standard error calculations from draws.
+- Plotting workflow for prior and posterior predictive checks.
+
+### Computational lab
+
+- [Conjugate lab source](../labs/r/beta_binomial.R)
+- [Metropolis lab source](../labs/r/mh_sampler.R)
+
+### Common pitfalls
+
+- Mixing data manipulation, model code, and diagnostics in one opaque script.
+- Reporting posterior summaries without retaining raw draws.
+- Forgetting reproducible seeds or session information.
+
+### Exercises
+
+- Write an `R` function for Gamma-Poisson updating.
+- Compute posterior predictive intervals from posterior draws.
+- Reproduce a `bayesplot`-style PPC using only base `R`.
+
+### Core references
+
+- @r2025
+- @posterior2024
+- @bayesplot2024
+- @loo2024
+
+## Chapter 25. Bayesian Workflow in Stan
+
+### Core question
+
+How should a serious Bayesian analyst write, fit, diagnose, and revise Stan models?
+
+### Section blueprint
+
+- Stan language structure: data, parameters, transformed parameters, model, generated quantities.
+- Priors and parameter constraints.
+- HMC/NUTS computation through Stan.
+- Posterior predictive simulation.
+- Hierarchical models and reparameterization.
+- Diagnostics: divergences, $\hat{R}$, ESS, E-BFMI, treedepth.
+- Practical tuning: `adapt_delta`, `max_treedepth`, initialization.
+
+### Derivations and coding targets
+
+- Translate a generative model into Stan blocks cleanly.
+- Compare centered and non-centered hierarchical parameterizations.
+- Use generated quantities for predictive simulation and pointwise log likelihood.
+- Read Stan diagnostics as geometry signals.
+
+### Computational lab
+
+- [Stan model source](../labs/stan/eight_schools.stan)
+- [R wrapper source](../labs/r/fit_eight_schools.R)
+
+### Common pitfalls
+
+- Placing deterministic transformations in the wrong Stan block.
+- Using weak priors that create poor geometry.
+- Treating tuning controls as substitutes for model redesign.
+
+### Exercises
+
+- Write a Stan program for Bayesian logistic regression with posterior predictive quantities.
+- Convert a centered hierarchical normal model into a non-centered form.
+- Explain what each Stan block contributes to the computation.
+
+### Core references
+
+- @carpenter2017
+- @hoffman2014
+- @betancourt2017
+
+### Full sample chapter
+
+- [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
+
+## Chapter 26. Bayesian Workflow in JAX
+
+### Core question
+
+How can automatic differentiation and vectorized array programming be used to build custom Bayesian computation transparently?
+
+### Section blueprint
+
+- Why JAX belongs in a Bayesian course.
+- Autodiff, `grad`, `hessian`, `vmap`, and `jit`.
+- Writing log posterior functions.
+- MAP optimization and Laplace approximation.
+- Basic HMC-style mechanics in pure JAX.
+- Interoperability with broader probabilistic ecosystems.
+
+### Derivations and coding targets
+
+- Log posterior and gradient for Bayesian logistic regression.
+- Hessian-based curvature analysis around the MAP.
+- Basic leapfrog implementation.
+- Clear separation of model, gradient, optimizer, and sampler code.
+
+### Computational lab
+
+- [JAX lab source](../labs/jax/jax_logistic_map_hmc.py)
+
+### Common pitfalls
+
+- Using JAX without understanding which functions are pure and differentiable.
+- Treating optimization convergence as posterior convergence.
+- Writing numerically unstable log-likelihood code.
+
+### Exercises
+
+- Implement a log posterior in JAX and verify gradients numerically.
+- Compare gradient ascent and Newton updates for the same target.
+- Use the Hessian at the MAP to build a Laplace approximation.
+
+### Core references
+
+- @jax2018
+- @numpyro2020
+- @murphy2023
+
+### Full sample chapter
+
+- [JAX for gradient-based Bayesian computation](../chapters/software/jax-gradient-based-bayes.qmd)

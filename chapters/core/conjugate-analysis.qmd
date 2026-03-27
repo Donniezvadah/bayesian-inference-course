@@ -1,0 +1,604 @@
+---
+title: "Conjugate Analysis: Exact Posteriors, Predictive Distributions, and Marginal Likelihoods"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- define conjugacy formally and recognize it in standard models;
+- derive posterior, posterior predictive, and marginal likelihood formulas for core conjugate families;
+- interpret pseudo-count, precision, and concentration parameters;
+- use conjugate models as exact benchmarks for approximation methods;
+- explain why conjugacy is pedagogically powerful but not universally appropriate.
+
+## 1. Why Conjugacy Still Matters
+
+Conjugate analysis occupies a peculiar place in Bayesian statistics. In serious applied work, many models are not conjugate, and modern posterior computation is driven by HMC, variational methods, and sequential simulation. Yet conjugacy remains essential for three reasons.
+
+1. It gives exact posterior algebra, which clarifies the structure of Bayesian updating.
+2. It provides gold-standard examples against which numerical methods can be checked.
+3. It reveals how priors regularize inference through interpretable hyperparameters such as pseudo-counts, precisions, and prior sample sizes [@gelman2013; @hoff2009].
+
+Conjugacy is therefore not an obsolete trick. It is the cleanest laboratory in which to learn posterior logic.
+
+## 2. Formal Definition
+
+:::{.definition}
+A family of priors $\{\pi(\theta; \eta): \eta \in \mathcal{H}\}$ is **conjugate** for a likelihood family $\{p(y \mid \theta)\}$ if the posterior belongs to the same prior family for every admissible observation:
+
+$$
+\pi(\theta \mid y) = \pi(\theta; \eta^\star(y,\eta)).
+$$
+:::
+
+The hyperparameters change from $\eta$ to an updated value $\eta^\star$, but the functional family is preserved.
+
+### Structural intuition
+
+Conjugacy often appears when the prior is chosen to match the algebraic kernel of the likelihood. In exponential-family models, this matching can be expressed systematically. If
+
+$$
+p(y \mid \theta)
+=
+h(y)\exp\!\left\{\theta^\top T(y) - A(\theta)\right\},
+$$
+
+then a conjugate prior often has the form
+
+$$
+\pi(\theta \mid \chi,\nu)
+\propto
+\exp\!\left\{\theta^\top \chi - \nu A(\theta)\right\}.
+$$
+
+After observing data $y_{1:n}$, the hyperparameters update as
+
+$$
+\chi^\star = \chi + \sum_{i=1}^n T(y_i),
+\qquad
+\nu^\star = \nu + n.
+$$
+
+That algebraic preservation is the essence of conjugacy.
+
+## 3. Beta-Binomial Model
+
+Suppose
+
+$$
+Y \mid \theta \sim \operatorname{Binomial}(n,\theta),
+\qquad
+\theta \sim \operatorname{Beta}(\alpha,\beta),
+$$
+
+with $0 < \theta < 1$.
+
+### 3.1 Posterior derivation
+
+The likelihood is
+
+$$
+p(y \mid \theta)
+=
+\binom{n}{y}\theta^y(1-\theta)^{n-y}.
+$$
+
+The prior density is
+
+$$
+\pi(\theta)
+=
+\frac{1}{B(\alpha,\beta)}
+\theta^{\alpha-1}(1-\theta)^{\beta-1}.
+$$
+
+Multiplying prior and likelihood gives
+
+$$
+\pi(\theta \mid y)
+\propto
+\theta^y(1-\theta)^{n-y}
+\theta^{\alpha-1}(1-\theta)^{\beta-1}
+=
+\theta^{\alpha+y-1}(1-\theta)^{\beta+n-y-1}.
+$$
+
+Therefore
+
+$$
+\theta \mid y \sim \operatorname{Beta}(\alpha+y,\beta+n-y).
+$$
+
+### 3.2 Posterior moments
+
+The posterior mean is
+
+$$
+\mathbb{E}[\theta \mid y]
+=
+\frac{\alpha+y}{\alpha+\beta+n},
+$$
+
+which can be rewritten as
+
+$$
+\mathbb{E}[\theta \mid y]
+=
+\frac{\alpha+\beta}{\alpha+\beta+n}\cdot \frac{\alpha}{\alpha+\beta}
+\;+\;
+\frac{n}{\alpha+\beta+n}\cdot \frac{y}{n}.
+$$
+
+This expression shows the posterior mean as a weighted average of the prior mean and the sample proportion.
+
+### 3.3 Posterior predictive distribution
+
+Let $\tilde{Y}$ denote the number of successes in $m$ future Bernoulli trials. Then
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\int \Pr(\tilde{Y}=k \mid \theta)\, \pi(\theta \mid y)\, d\theta.
+$$
+
+Substituting the Binomial likelihood and Beta posterior,
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\binom{m}{k}\int_0^1
+\theta^k(1-\theta)^{m-k}
+\frac{\theta^{\alpha+y-1}(1-\theta)^{\beta+n-y-1}}
+{B(\alpha+y,\beta+n-y)}\, d\theta.
+$$
+
+Collect terms:
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\binom{m}{k}
+\frac{B(\alpha+y+k,\ \beta+n-y+m-k)}
+{B(\alpha+y,\ \beta+n-y)}.
+$$
+
+Thus the predictive count is Beta-Binomial.
+
+### 3.4 Marginal likelihood
+
+The evidence is
+
+$$
+p(y)
+=
+\int p(y \mid \theta)\pi(\theta)\, d\theta
+=
+\binom{n}{y}\frac{B(\alpha+y,\beta+n-y)}{B(\alpha,\beta)}.
+$$
+
+This formula is exact and makes prior sensitivity visible.
+
+## 4. Gamma-Poisson And Gamma-Exponential Models
+
+### 4.1 Gamma-Poisson
+
+Suppose
+
+$$
+Y_i \mid \lambda \overset{\text{i.i.d.}}{\sim} \operatorname{Poisson}(\lambda),
+\qquad
+\lambda \sim \operatorname{Gamma}(\alpha,\beta),
+$$
+
+where the Gamma density is parameterized by shape $\alpha$ and rate $\beta$:
+
+$$
+\pi(\lambda)
+=
+\frac{\beta^\alpha}{\Gamma(\alpha)}\lambda^{\alpha-1}e^{-\beta\lambda}.
+$$
+
+For observed counts $y_{1:n}$, the likelihood is
+
+$$
+p(y_{1:n} \mid \lambda)
+\propto
+\lambda^{\sum_i y_i} e^{-n\lambda}.
+$$
+
+Multiplying by the prior gives
+
+$$
+\pi(\lambda \mid y_{1:n})
+\propto
+\lambda^{\alpha+\sum_i y_i - 1}
+e^{-(\beta+n)\lambda}.
+$$
+
+Therefore
+
+$$
+\lambda \mid y_{1:n}
+\sim
+\operatorname{Gamma}\!\left(\alpha + \sum_{i=1}^n y_i,\ \beta+n\right).
+$$
+
+### 4.2 Predictive distribution
+
+For one future count $\tilde{Y}$,
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\int_0^\infty
+\frac{e^{-\lambda}\lambda^k}{k!}
+\frac{(\beta+n)^{\alpha+s}}{\Gamma(\alpha+s)}
+\lambda^{\alpha+s-1}e^{-(\beta+n)\lambda}\, d\lambda,
+$$
+
+where $s=\sum_i y_i$.
+
+Collecting terms,
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\frac{(\beta+n)^{\alpha+s}}{k!\,\Gamma(\alpha+s)}
+\int_0^\infty
+\lambda^{k+\alpha+s-1}e^{-(\beta+n+1)\lambda}\, d\lambda.
+$$
+
+The integral is a Gamma integral, so
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\frac{\Gamma(k+\alpha+s)}{k!\,\Gamma(\alpha+s)}
+\left(\frac{\beta+n}{\beta+n+1}\right)^{\alpha+s}
+\left(\frac{1}{\beta+n+1}\right)^k,
+$$
+
+which is a negative binomial form.
+
+### 4.3 Gamma-Exponential
+
+If
+
+$$
+Y_i \mid \lambda \overset{\text{i.i.d.}}{\sim} \operatorname{Exponential}(\lambda),
+$$
+
+with density $\lambda e^{-\lambda y_i}$ for $y_i > 0$, then
+
+$$
+p(y_{1:n} \mid \lambda)
+\propto
+\lambda^n \exp\!\left\{-\lambda \sum_i y_i\right\}.
+$$
+
+Under the same Gamma prior,
+
+$$
+\lambda \mid y_{1:n}
+\sim
+\operatorname{Gamma}\!\left(\alpha+n,\ \beta+\sum_{i=1}^n y_i\right).
+$$
+
+Again the hyperparameters update additively.
+
+## 5. Normal-Normal Model
+
+Suppose
+
+$$
+Y_i \mid \mu \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu,\sigma^2),
+\qquad
+\mu \sim \mathcal{N}(\mu_0,\tau_0^2),
+$$
+
+with $\sigma^2$ known.
+
+### 5.1 Posterior derivation by completing the square
+
+The likelihood kernel is
+
+$$
+p(y_{1:n} \mid \mu)
+\propto
+\exp\!\left\{
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mu)^2
+\right\}.
+$$
+
+The prior kernel is
+
+$$
+\pi(\mu)
+\propto
+\exp\!\left\{
+-\frac{1}{2\tau_0^2}(\mu-\mu_0)^2
+\right\}.
+$$
+
+Combine exponents:
+
+$$
+\log \pi(\mu \mid y)
+=
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mu)^2
+-\frac{1}{2\tau_0^2}(\mu-\mu_0)^2
++ C.
+$$
+
+Expand the terms involving $\mu$:
+
+$$
+\log \pi(\mu \mid y)
+=
+-\frac{1}{2}
+\left(
+\frac{n}{\sigma^2} + \frac{1}{\tau_0^2}
+\right)\mu^2
++
+\left(
+\frac{n\bar y}{\sigma^2} + \frac{\mu_0}{\tau_0^2}
+\right)\mu
++ C.
+$$
+
+Define the posterior precision
+
+$$
+\frac{1}{\tau_n^2}
+=
+\frac{n}{\sigma^2} + \frac{1}{\tau_0^2},
+$$
+
+and posterior mean
+
+$$
+\mu_n
+=
+\tau_n^2
+\left(
+\frac{n\bar y}{\sigma^2} + \frac{\mu_0}{\tau_0^2}
+\right).
+$$
+
+Completing the square yields
+
+$$
+\mu \mid y \sim \mathcal{N}(\mu_n,\tau_n^2).
+$$
+
+### 5.2 Interpretation
+
+The posterior mean is a precision-weighted average:
+
+$$
+\mu_n
+=
+\frac{\frac{n}{\sigma^2}}{\frac{n}{\sigma^2}+\frac{1}{\tau_0^2}}\bar y
+\;+\;
+\frac{\frac{1}{\tau_0^2}}{\frac{n}{\sigma^2}+\frac{1}{\tau_0^2}}\mu_0.
+$$
+
+Higher prior precision means more shrinkage toward $\mu_0$.
+
+### 5.3 Posterior predictive
+
+For a future observation $\tilde Y$,
+
+$$
+\tilde Y \mid y
+=
+\int \mathcal{N}(\tilde y \mid \mu,\sigma^2)
+\mathcal{N}(\mu \mid \mu_n,\tau_n^2)\, d\mu
+=
+\mathcal{N}(\mu_n,\sigma^2+\tau_n^2).
+$$
+
+The predictive variance is the sum of observation noise and parameter uncertainty.
+
+## 6. Normal-Inverse-Gamma Model
+
+Now suppose both $\mu$ and $\sigma^2$ are unknown. A standard conjugate prior is
+
+$$
+\mu \mid \sigma^2 \sim \mathcal{N}\!\left(\mu_0,\frac{\sigma^2}{\kappa_0}\right),
+\qquad
+\sigma^2 \sim \operatorname{InvGamma}\!\left(\frac{\nu_0}{2}, \frac{\nu_0 s_0^2}{2}\right).
+$$
+
+With sample mean $\bar y$ and centered sum of squares
+
+$$
+S = \sum_{i=1}^n (y_i-\bar y)^2,
+$$
+
+the posterior hyperparameters are
+
+$$
+\kappa_n = \kappa_0 + n,
+\qquad
+\mu_n = \frac{\kappa_0\mu_0+n\bar y}{\kappa_0+n},
+$$
+
+$$
+\nu_n = \nu_0+n,
+$$
+
+and
+
+$$
+\nu_n s_n^2
+=
+\nu_0 s_0^2 + S + \frac{\kappa_0 n}{\kappa_0+n}(\bar y-\mu_0)^2.
+$$
+
+Then
+
+$$
+\mu \mid \sigma^2, y \sim \mathcal{N}\!\left(\mu_n,\frac{\sigma^2}{\kappa_n}\right),
+\qquad
+\sigma^2 \mid y \sim \operatorname{InvGamma}\!\left(\frac{\nu_n}{2},\frac{\nu_n s_n^2}{2}\right).
+$$
+
+### 6.1 Student-$t$ predictive
+
+Integrating out $(\mu,\sigma^2)$ yields a Student-$t$ posterior predictive:
+
+$$
+\tilde Y \mid y
+\sim
+t_{\nu_n}
+\left(
+\mu_n,\;
+s_n \sqrt{1+\frac{1}{\kappa_n}}
+\right),
+$$
+
+up to parameterization conventions for the $t$ scale. The key point is that uncertainty in $\sigma^2$ thickens the predictive tails relative to the known-variance Gaussian case.
+
+## 7. Dirichlet-Multinomial Model
+
+Let
+
+$$
+Y = (Y_1,\dots,Y_K) \mid \theta
+\sim
+\operatorname{Multinomial}(n,\theta_1,\dots,\theta_K),
+$$
+
+and
+
+$$
+\theta \sim \operatorname{Dirichlet}(\alpha_1,\dots,\alpha_K).
+$$
+
+The likelihood kernel is
+
+$$
+p(y \mid \theta)
+\propto
+\prod_{k=1}^K \theta_k^{y_k},
+$$
+
+and the prior kernel is
+
+$$
+\pi(\theta)
+\propto
+\prod_{k=1}^K \theta_k^{\alpha_k-1}.
+$$
+
+Therefore
+
+$$
+\pi(\theta \mid y)
+\propto
+\prod_{k=1}^K \theta_k^{\alpha_k+y_k-1},
+$$
+
+so
+
+$$
+\theta \mid y
+\sim
+\operatorname{Dirichlet}(\alpha_1+y_1,\dots,\alpha_K+y_K).
+$$
+
+The posterior predictive probability of category $k$ on one future draw is
+
+$$
+\Pr(\tilde Y = k \mid y)
+=
+\mathbb{E}[\theta_k \mid y]
+=
+\frac{\alpha_k+y_k}{\alpha_0+n},
+$$
+
+where $\alpha_0=\sum_{k=1}^K \alpha_k$.
+
+As in the Beta-Binomial case, prior counts and observed counts add directly.
+
+## 8. Matrix-Normal And Inverse-Wishart Discussion
+
+Conjugacy extends to multivariate Gaussian models with matrix-normal priors on coefficient matrices and inverse-Wishart priors on covariance matrices. Historically this was convenient because exact Gibbs updates became available.
+
+The caution is that inverse-Wishart priors often induce coupled and unintuitive marginal behavior on variances and correlations. Modern practice frequently prefers:
+
+- separate priors on scales and correlations;
+- LKJ priors on correlation matrices in Stan;
+- hierarchical priors on standard deviations rather than a single inverse-Wishart block [@gelman2013].
+
+Conjugacy is therefore still mathematically useful here, but not always the most defensible modeling choice.
+
+## 9. `R` Implementation
+
+The companion script is [conjugate_families.R](../../labs/r/conjugate_families.R). The core update functions are:
+
+```r
+beta_binomial_update <- function(y, n, alpha, beta) {
+  c(alpha_post = alpha + y, beta_post = beta + n - y)
+}
+
+gamma_poisson_update <- function(y, alpha, beta) {
+  c(shape_post = alpha + sum(y), rate_post = beta + length(y))
+}
+
+normal_normal_update <- function(y, sigma2, mu0, tau02) {
+  n <- length(y)
+  tau_n2 <- 1 / (n / sigma2 + 1 / tau02)
+  mu_n <- tau_n2 * (n * mean(y) / sigma2 + mu0 / tau02)
+  c(mu_post = mu_n, tau2_post = tau_n2)
+}
+
+dirichlet_multinomial_update <- function(y, alpha) {
+  alpha + y
+}
+```
+
+These exact formulas make excellent unit tests for approximate algorithms developed later in the course.
+
+## 10. Benefits And Limitations
+
+### Benefits
+
+- exact posterior calculations;
+- clear interpretation of prior hyperparameters;
+- computational cheapness;
+- useful pedagogical benchmarks.
+
+### Limitations
+
+- conjugate priors may be scientifically implausible;
+- they can impose unrealistic dependence structures;
+- exact tractability may tempt analysts to choose convenient priors rather than meaningful ones;
+- modern models often require richer prior structure than conjugacy permits.
+
+Conjugacy is best treated as a tool, not a doctrine.
+
+## 11. Exercises
+
+1. Derive the posterior predictive distribution for the Gamma-Exponential model.
+2. Starting from the Normal-Normal model, derive the posterior mean by completing the square in full detail.
+3. Show that the Dirichlet-Multinomial model reduces to Beta-Binomial when $K=2$.
+4. Compare the Beta-Binomial posterior means induced by Beta$(1,1)$, Beta$(5,5)$, and Beta$(20,20)$ priors for the same data.
+5. Explain why inverse-Wishart conjugacy can be computationally attractive but statistically awkward.
+
+## 12. Summary
+
+Conjugate analysis shows Bayesian updating in its most transparent form:
+
+- hyperparameters update additively;
+- posterior prediction is obtained by integrating over the exact posterior;
+- marginal likelihoods are available in closed form;
+- prior information enters through interpretable quantities such as pseudo-counts and precisions.
+
+These examples are not only foundational. They remain indispensable benchmarks for model checking, computation, and pedagogy.
+
+## References
+
+Key references are @bernardo1994, @hoff2009, @gelman2013, @robert2007, and @mackay2003.

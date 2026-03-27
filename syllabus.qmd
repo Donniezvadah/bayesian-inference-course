@@ -1,0 +1,152 @@
+---
+title: "Detailed Syllabus and Recommended Pacing"
+---
+
+## Course Modes
+
+This curriculum supports three teaching modes:
+
+- a 14-week semester course;
+- a 28-week self-study sequence;
+- a modular graduate seminar or reading course.
+
+The chapter dependencies are strong enough that the intended order matters. Probability and likelihood precede priors and posteriors; priors and posteriors precede computational methods; computational methods precede realistic modeling and diagnostics.
+
+## Semester Syllabus
+
+| Week | Topics | Core mathematical focus | Computational focus | Suggested deliverable |
+|---|---|---|---|---|
+| 1 | Probability spaces, random variables, conditioning | Conditional expectation, tower property | Simulation in `R` | Short derivation set |
+| 2 | Likelihood theory and asymptotics | Score, Fisher information, MLE | Likelihood surfaces in `R` | Problem set 1 |
+| 3 | Bayes' theorem, exchangeability, updating | Posterior factorization, predictive distribution | Conjugate computation in `R` | Problem set 2 |
+| 4 | Conjugate models and marginal likelihoods | Beta-Binomial, Gamma-Poisson, Normal-Normal | Posterior predictive simulation | Lab 1 |
+| 5 | Decision theory and prior design | Posterior risk, Bayes estimators, Jeffreys priors | Prior predictive checking | Problem set 3 |
+| 6 | Numerical integration and Monte Carlo | Laplace, importance sampling | Variance reduction in `R` | Lab 2 |
+| 7 | MCMC foundations | Detailed balance, ergodicity, MH ratio | Implement MH and Gibbs | Problem set 4 |
+| 8 | HMC, NUTS, reparameterization | Hamiltonian dynamics, leapfrog | Stan diagnostics | Lab 3 |
+| 9 | Variational inference and SMC | ELBO, particle approximations | ADVI and sequential update demos | Short memo |
+| 10 | Bayesian linear and generalized linear models | Posterior regression structure | `cmdstanr` regression workflow | Problem set 5 |
+| 11 | Hierarchical models and mixtures | Partial pooling, label switching | Non-centered parameterization | Lab 4 |
+| 12 | Time series, nonparametrics, spatial and causal models | Filtering, GP covariance, DP intuition | Specialized model workflow | Reading response |
+| 13 | Optimization, tuning, and diagnostics | MAP, SBC, PPC, LOO | R-hat, ESS, divergences, E-BFMI | Problem set 6 |
+| 14 | R, Stan, JAX workflow integration; advanced topics and projects | Model averaging, robustness, communication | Reproducible final pipeline | Final project |
+
+## Recommended Reading Spine
+
+The course can be taught with a primary and secondary reading strategy.
+
+### Primary references
+
+- @gelman2013 for practical Bayesian workflow and multilevel modeling.
+- @hoff2009 for a clean mathematical introduction.
+- @bernardo1994 for formal foundations and decision theory.
+- @robert2004 and @brooks2011 for computational methods.
+
+### Secondary references
+
+- @mcelreath2020 for intuition and pedagogy.
+- @betancourt2017 for HMC geometry.
+- @blei2017 and @kucukelbir2017 for variational inference.
+- @rasmussen2006 for Gaussian processes.
+- @murphy2023 for modern probabilistic machine learning connections.
+
+## Self-Study Sequence
+
+The self-study track is slower and more deliberate. A reasonable pacing plan is:
+
+| Block | Weeks | Chapters | Goal |
+|---|---:|---|---|
+| A | 1-5 | 1-3 | Solidify probability, likelihood, and posterior logic |
+| B | 6-10 | 4-6 | Become fluent in conjugacy, loss, and priors |
+| C | 11-18 | 7-12 | Build computational maturity |
+| D | 19-24 | 13-20 | Work through model families |
+| E | 25-28 | 21-31 | Diagnostics, workflow, advanced topics, project |
+
+For self-study, the minimum viable sequence is:
+
+1. Read the theory chapter or part overview.
+2. Reproduce one worked derivation on paper.
+3. Run or retype one code example.
+4. Complete two exercises: one analytic and one computational.
+5. Write a one-paragraph reflection on diagnostics or modeling assumptions.
+
+## Learning Outcomes By Assessment Type
+
+### Derivation sets
+
+Students should prove, derive, or verify:
+
+- conjugate posterior forms;
+- marginal likelihood calculations;
+- the Metropolis-Hastings acceptance ratio;
+- HMC equations and the leapfrog map;
+- the ELBO decomposition;
+- Kalman filtering recursions in linear Gaussian state-space models.
+
+### Computational labs
+
+Students should implement:
+
+- conjugate updating and predictive simulation;
+- importance sampling and ESS calculations;
+- random-walk Metropolis and Gibbs samplers;
+- Stan models with posterior predictive checks;
+- JAX gradient and Hessian calculations for MAP and Laplace approximations.
+
+### Project work
+
+Students should demonstrate:
+
+- principled prior design;
+- justified model structure;
+- convergence diagnostics;
+- posterior and prior predictive checks;
+- sensitivity analysis;
+- clearly written uncertainty communication.
+
+## Prerequisites Checklist
+
+Use the following checklist before starting the full course.
+
+| Skill | Required level | Where to review if weak |
+|---|---|---|
+| Single-variable calculus | Comfortable | Appendix and standard calculus text |
+| Multivariable differentiation | Comfortable | Optimization chapters and JAX chapter |
+| Linear algebra | Comfortable | Regression and HMC chapters |
+| Probability | Intermediate | [Measure-probability review](appendix/measure-probability-review.qmd) |
+| Programming | Basic `R` or Python | [Software setup](appendix/software-setup.qmd) |
+
+## Suggested Weekly Rhythm
+
+For an instructor-led course, each week should ideally include:
+
+1. One lecture focused on mathematical structure and derivations.
+2. One lecture or lab focused on computation and diagnostics.
+3. A small problem set mixing analytic derivations, simulation, and interpretation.
+
+## What To Emphasize Pedagogically
+
+Across the full syllabus, several misconceptions recur. The course should repeatedly correct them.
+
+- A posterior distribution is not a likelihood with axes relabeled.
+- A credible interval and a confidence interval solve different inferential problems.
+- Good convergence diagnostics do not certify a good model.
+- Fast optimization is not a substitute for posterior uncertainty quantification.
+- Posterior predictive fit does not imply causal validity.
+- Bayes factors are highly prior-sensitive and should not be used reflexively.
+
+## Suggested Milestones
+
+By the midpoint of the course, students should already be able to:
+
+- derive and implement at least three conjugate models;
+- explain and code a random-walk Metropolis sampler;
+- interpret acceptance rates, autocorrelation, ESS, and $\hat{R}$;
+- run a simple Stan model and diagnose obvious pathologies.
+
+By the end of the course, students should be able to:
+
+- fit and criticize multilevel and generalized linear Bayesian models;
+- explain why centered and non-centered parameterizations behave differently;
+- use predictive criteria and posterior checks to compare models;
+- integrate `R`, `Stan`, and `JAX` into a coherent reproducible workflow.

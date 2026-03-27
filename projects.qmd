@@ -1,0 +1,170 @@
+---
+title: "Capstone Projects"
+---
+
+## Capstone Philosophy
+
+A Bayesian capstone should not be judged only by whether a model runs. A strong project must show:
+
+- a coherent scientific question;
+- defensible prior design;
+- a justified computational strategy;
+- substantive diagnostics;
+- predictive or decision-relevant conclusions;
+- reproducible code and narrative.
+
+## Standard Deliverables
+
+Every project should include:
+
+1. A two-to-four page proposal.
+2. A reproducible code repository or Quarto report.
+3. Prior predictive checks before final fitting.
+4. Posterior diagnostics and model criticism.
+5. Sensitivity analysis.
+6. A final report with uncertainty-aware conclusions.
+
+## Project 1: Hierarchical Bayesian Regression On Grouped Data
+
+**Question.** How much variation exists within and between groups, and when does partial pooling improve predictive performance?
+
+**Suggested data.** Education, health, ecological, or sports data with natural grouping.
+
+**Core model.**
+
+- varying intercepts;
+- varying slopes;
+- alternative hyperpriors for group-level scales.
+
+**Required analysis.**
+
+- compare complete pooling, no pooling, and partial pooling;
+- interpret shrinkage;
+- study centered versus non-centered parameterizations;
+- evaluate predictive performance with PSIS-LOO.
+
+## Project 2: Bayesian Hidden Markov Model For Longitudinal Behavior
+
+**Question.** Can latent behavioral states explain irregular longitudinal observations?
+
+**Suggested data.** Animal movement, user engagement, wearable activity, or panel response data.
+
+**Core model.**
+
+- hidden state transition matrix;
+- emission model appropriate to the measurement scale;
+- forward-backward recursions or Stan-compatible marginalization where feasible.
+
+**Required analysis.**
+
+- derive state-update logic;
+- fit the model and interpret transition probabilities;
+- diagnose label-switching or weak identifiability;
+- compare with simpler non-HMM alternatives.
+
+## Project 3: Dirichlet-Multinomial Model For Compositional Counts
+
+**Question.** How do prior concentration and overdispersion affect inference for compositional count data?
+
+**Suggested data.** Microbiome, topic counts, vote shares, or ecological composition.
+
+**Core model.**
+
+- multinomial likelihood;
+- Dirichlet prior or hierarchical extension;
+- optional covariate-dependent composition model.
+
+**Required analysis.**
+
+- derive posterior and posterior predictive forms where conjugacy applies;
+- study prior concentration sensitivity;
+- compare multinomial versus Dirichlet-multinomial fit.
+
+## Project 4: Bayesian Logistic Regression With Prior Sensitivity
+
+**Question.** How sensitive are posterior effect estimates and decisions to prior choices in binary outcome modeling?
+
+**Suggested data.** Clinical outcomes, approval decisions, churn, or admissions data.
+
+**Core model.**
+
+- logistic regression with weakly informative Gaussian or Student-$t$ priors;
+- optional hierarchical extension.
+
+**Required analysis.**
+
+- compare at least three prior families or scales;
+- evaluate calibration and predictive metrics;
+- discuss separation and regularization.
+
+## Project 5: Gaussian Process Regression
+
+**Question.** How do kernel assumptions shape posterior uncertainty and predictive smoothness?
+
+**Suggested data.** Time-indexed or spatially indexed smooth response data.
+
+**Core model.**
+
+- GP prior with squared exponential, Mat{\'e}rn, or periodic kernels;
+- hyperpriors on length-scale and marginal variance.
+
+**Required analysis.**
+
+- derive the conditional posterior predictive mean and covariance;
+- study kernel sensitivity;
+- diagnose extrapolation failure and computational scaling.
+
+## Project 6: Mixture Model And Label Switching Study
+
+**Question.** What inferential pathologies emerge in finite mixtures, and how can they be handled?
+
+**Suggested data.** Height mixtures, gene expression, image features, or income subpopulations.
+
+**Core model.**
+
+- finite Gaussian mixture or latent class model;
+- symmetric versus asymmetric priors on components.
+
+**Required analysis.**
+
+- document label switching explicitly;
+- compare identifiable summaries and relabeling strategies;
+- discuss posterior multimodality and prior influence.
+
+## Project 7: HMC Diagnostics Case Study
+
+**Question.** What do HMC pathologies reveal about model geometry?
+
+**Suggested data.** Any hierarchical or weakly identified model with a known funnel or curvature issue.
+
+**Core model.**
+
+- centered and non-centered versions;
+- progressively tuned `adapt_delta` and `max_treedepth`.
+
+**Required analysis.**
+
+- compare divergences, ESS, $\hat{R}$, and E-BFMI;
+- interpret geometry rather than merely increasing tuning parameters;
+- propose model redesigns and justify them.
+
+## Evaluation Rubric
+
+| Criterion | Weight | What earns a high score |
+|---|---:|---|
+| Scientific framing | 15 | Clear question, relevant data, explicit assumptions |
+| Prior design | 15 | Thoughtful and justified prior specification |
+| Computation | 20 | Stable implementation and well-explained algorithms |
+| Diagnostics | 20 | Deep use of PPC, chain diagnostics, and sensitivity |
+| Interpretation | 20 | Careful uncertainty communication and substantive insight |
+| Reproducibility | 10 | Organized code, documented environment, clear report |
+
+## Recommended Project Workflow
+
+1. Formulate the substantive question before choosing the model.
+2. Write the generative story and parameterization.
+3. Conduct prior predictive simulation.
+4. Fit the simplest defensible model first.
+5. Diagnose computation before interpreting coefficients.
+6. Compare plausible alternatives.
+7. Write conclusions that respect remaining uncertainty and model limitations.

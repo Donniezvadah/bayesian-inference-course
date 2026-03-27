@@ -1,0 +1,177 @@
+---
+title: "Part I. Foundations of Probability and Bayesian Thinking"
+---
+
+## Part Overview
+
+Part I establishes the language in which the rest of the course is written. The purpose is not to turn the site into a full measure-theory text, but to make the probabilistic objects used throughout Bayesian statistics precise: sample spaces, conditional distributions, random variables, likelihoods, priors, posteriors, and predictive distributions.
+
+## Part Learning Goals
+
+By the end of Part I, learners should be able to:
+
+- distinguish probability, likelihood, and posterior statements;
+- write probability models with explicit conditioning structure;
+- derive posterior distributions from first principles;
+- explain exchangeability as a Bayesian structural assumption;
+- connect sequential updating to recursive learning.
+
+## Chapter 1. Probability Foundations
+
+### Core question
+
+What probabilistic language is required to express Bayesian models rigorously and usefully?
+
+### Section blueprint
+
+- Sample spaces, events, $\sigma$-algebras, and probability measures.
+- Random variables as measurable functions.
+- Distributions, densities, and cumulative distribution functions.
+- Expectation, variance, covariance, and conditional expectation.
+- Independence, conditional independence, and factorization.
+- Laws of large numbers and the central limit theorem.
+- Transformations of variables and Jacobians.
+- Common discrete and continuous distributions.
+
+### Derivations that must appear
+
+- Law of the unconscious statistician.
+- Tower property of conditional expectation.
+- Variance decomposition:
+  $$
+  \operatorname{Var}(X)=\mathbb{E}\!\left[\operatorname{Var}(X\mid Y)\right]+\operatorname{Var}\!\left(\mathbb{E}[X\mid Y]\right).
+  $$
+- Change-of-variables formula in one and several dimensions.
+- LLN and CLT illustrations with Bernoulli and Gaussian examples.
+
+### Computational lab
+
+- Simulate LLN and CLT behavior in `R`.
+- Empirically compare independent and merely uncorrelated variables.
+- Visualize transformed distributions and Jacobian effects.
+
+### Common pitfalls
+
+- Treating densities as probabilities.
+- Confusing independence with zero covariance.
+- Ignoring support transformations when writing priors on constrained parameters.
+- Using conditional expectation as a pointwise substitution rather than a random variable.
+
+### Exercises
+
+- Prove the tower property in a finite discrete setting.
+- Derive the expectation and variance of a transformed random variable.
+- Simulate the CLT for skewed distributions and compare finite-sample behavior.
+
+### Core references
+
+- @kolmogorov1956
+- @durrett2019
+- @casella2002
+
+## Chapter 2. Likelihood Theory
+
+### Core question
+
+How does the likelihood summarize information in the sampling model, and how does it differ conceptually from probability and posterior inference?
+
+### Section blueprint
+
+- Definition of the likelihood function.
+- Sufficiency and identifiability.
+- Score function and Fisher information.
+- Maximum likelihood estimation and invariance.
+- Profile likelihood and nuisance parameters.
+- Likelihood asymptotics and asymptotic normality.
+- Comparison between likelihood-based and posterior-based uncertainty.
+
+### Derivations that must appear
+
+- Score and observed information for Bernoulli, Poisson, and Gaussian examples.
+- MLE derivations for normal mean/variance and Poisson rate.
+- Second-order Taylor expansion leading to asymptotic normality.
+- Connection between curvature of the log-likelihood and information.
+
+### Computational lab
+
+- Plot a likelihood surface and log-likelihood curvature in `R`.
+- Compare profile likelihood intervals with Bayesian credible intervals in a one-parameter model.
+- Explore identifiability failures in a simple mixture model.
+
+### Common pitfalls
+
+- Treating the likelihood as a probability distribution over $\theta$.
+- Forgetting that different models can imply the same likelihood shape locally.
+- Overinterpreting asymptotic normality in weakly identified or small-sample settings.
+
+### Exercises
+
+- Derive Fisher information for a Binomial model.
+- Show why reparameterization preserves MLEs but changes curvature.
+- Compare posterior mode and MLE under weakly informative priors.
+
+### Core references
+
+- @casella2002
+- @vandervaart1998
+- @berger1985
+
+## Chapter 3. Bayes' Theorem and the Bayesian Paradigm
+
+### Core question
+
+How do prior information, sampling assumptions, and observed data combine into posterior and predictive inference?
+
+### Section blueprint
+
+- Discrete and continuous forms of Bayes' theorem.
+- Prior, likelihood, posterior, and evidence.
+- Posterior predictive distribution.
+- Sequential updating.
+- Exchangeability and de Finetti intuition.
+- Subjective, objective, and pragmatic Bayesian positions.
+- Bayes factors and the role of marginal likelihood.
+
+### Derivations that must appear
+
+- Posterior factorization from the product rule.
+- Sequential identity
+  $$
+  p(\theta \mid y_{1:t}) \propto p(y_t \mid \theta)\, p(\theta \mid y_{1:t-1}).
+  $$
+- Posterior predictive integral
+  $$
+  p(\tilde y \mid y)=\int p(\tilde y\mid \theta)p(\theta\mid y)\, d\theta.
+  $$
+- Beta-Binomial worked example as the first full posterior derivation.
+
+### Computational lab
+
+- Conjugate updating in `R`.
+- Grid approximation for a one-parameter posterior.
+- Sequential updating with one observation at a time.
+
+### Common pitfalls
+
+- Confusing evidence with posterior probability of a model.
+- Using improper priors in settings where Bayes factors are required.
+- Treating exchangeability as literal independence.
+
+### Exercises
+
+- Derive posterior and predictive forms for a Bernoulli-Beta model.
+- Compare two priors with the same likelihood and explain the posterior differences.
+- Show algebraically that batch updating and sequential updating agree.
+
+### Core references
+
+- @bernardo1994
+- @jaynes2003
+- @gelman2013
+- @definetti1974
+
+### Full sample chapter
+
+The fully written version of this chapter is available here:
+
+- [Bayes' theorem, sequential updating, and posterior prediction](../chapters/foundations/bayes-theorem-and-updating.qmd)

@@ -1,0 +1,136 @@
+---
+title: "Exercises and Problem Set Design"
+---
+
+## Exercise Philosophy
+
+The exercise system is designed to train five distinct skills:
+
+1. symbolic derivation;
+2. probabilistic interpretation;
+3. computational implementation;
+4. diagnostic reasoning;
+5. scientific communication.
+
+Every substantial problem set should include at least one exercise from each category. A Bayesian curriculum becomes shallow when it tests only calculation or only coding.
+
+## Exercise Types
+
+### Derivation exercises
+
+Typical prompts:
+
+- derive a posterior distribution from a prior-likelihood pair;
+- compute a posterior predictive distribution;
+- derive a Gibbs full conditional;
+- show detailed balance for a transition kernel;
+- derive the ELBO from a KL minimization objective.
+
+### Interpretation exercises
+
+Typical prompts:
+
+- explain why a credible interval and confidence interval need not coincide;
+- interpret the role of exchangeability in hierarchical models;
+- explain what divergences in Stan imply geometrically;
+- compare Bayes factors with PSIS-LOO for a fixed modeling problem.
+
+### Computational exercises
+
+Typical prompts:
+
+- simulate from a prior predictive distribution;
+- implement random-walk Metropolis for a one-parameter posterior;
+- fit a hierarchical model in Stan and compare centered versus non-centered parameterizations;
+- compute MAP and Laplace approximations in JAX using automatic differentiation.
+
+### Diagnostic exercises
+
+Typical prompts:
+
+- inspect trace plots, ESS, and $\hat{R}$ for multiple chains;
+- construct posterior predictive discrepancy measures;
+- perform simulation-based calibration for a simple model;
+- assess prior sensitivity for a logistic regression coefficient.
+
+### Communication exercises
+
+Typical prompts:
+
+- write a short posterior summary for a scientific collaborator;
+- explain model assumptions to a domain expert;
+- produce a one-page model criticism memo;
+- justify a prior on scientific rather than computational grounds.
+
+## Suggested Problem Set Sequence
+
+| Set | Coverage | Main skills |
+|---|---|---|
+| 1 | Probability and likelihood | Conditioning, expectation, Fisher information |
+| 2 | Bayes theorem and conjugacy | Posterior derivation, predictive inference |
+| 3 | Decision theory and priors | Posterior risk, prior predictive design |
+| 4 | Numerical integration and Monte Carlo | Approximation and variance assessment |
+| 5 | MCMC and diagnostics | Algorithm derivation, tuning, convergence |
+| 6 | Regression and multilevel models | Shrinkage, prior design, predictive interpretation |
+| 7 | Model criticism and comparison | PPC, LOO, SBC, sensitivity |
+| 8 | Advanced topics or project prep | Specialized modeling and communication |
+
+## Representative Exercises
+
+### Conjugate analysis
+
+1. Let $y \mid \theta \sim \operatorname{Binomial}(n, \theta)$ and $\theta \sim \operatorname{Beta}(\alpha, \beta)$. Derive:
+   - the posterior density;
+   - the posterior mean and variance;
+   - the posterior predictive probability of one future success;
+   - the marginal likelihood of the observed count.
+2. Show how the posterior mean can be written as a weighted average of the prior mean and the sample proportion.
+3. Interpret the pseudo-count meaning of $\alpha$ and $\beta$.
+
+### MCMC
+
+1. Derive the Metropolis-Hastings acceptance ratio for a proposal density $q(\theta' \mid \theta)$.
+2. Show that if $q(\theta' \mid \theta)=q(\theta \mid \theta')$, then the acceptance ratio simplifies to the ratio of unnormalized target densities.
+3. Implement a random-walk Metropolis sampler for a known normal posterior and compare Monte Carlo error across proposal scales.
+
+### HMC and Stan
+
+1. Write the joint density for the eight-schools model under both centered and non-centered parameterizations.
+2. Explain why small $\tau$ creates funnel geometry.
+3. Fit both versions in Stan and compare divergences, ESS, and $\hat{R}$.
+
+### JAX
+
+1. Write a function for the log posterior of Bayesian logistic regression with a Gaussian prior.
+2. Use automatic differentiation to compute the gradient and Hessian.
+3. Implement Newton updates for the MAP estimate and compare with simple gradient ascent.
+4. Approximate the posterior by a Laplace approximation and compare that approximation with a small custom HMC run.
+
+## Solution Sketch Policy
+
+For a university offering, I recommend publishing:
+
+- full solution sketches for odd-numbered conceptual exercises;
+- computational hints rather than full code for algorithmic exercises;
+- full worked solutions only after submission deadlines.
+
+## Rubric Dimensions
+
+Each exercise can be graded on four axes:
+
+| Axis | Question |
+|---|---|
+| Correctness | Is the mathematics or computation right? |
+| Clarity | Are assumptions, notation, and steps explicit? |
+| Diagnostics | Does the solution assess model or algorithm quality? |
+| Interpretation | Does the student explain what the result means? |
+
+## Further Development
+
+As the course expands, each part page should eventually contain a full exercise bank with:
+
+- warm-up drills;
+- exam-style derivations;
+- lab exercises;
+- reading-response questions;
+- challenge extensions for project preparation.

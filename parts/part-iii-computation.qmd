@@ -1,0 +1,302 @@
+---
+title: "Part III. Computational Bayesian Methods"
+---
+
+## Part Overview
+
+Part III covers the numerical machinery that turns formal posterior distributions into usable approximations. The emphasis is on both mathematical justification and practical workflow.
+
+## Part Learning Goals
+
+By the end of Part III, learners should be able to:
+
+- explain what posterior quantity is being approximated and by which numerical mechanism;
+- implement basic Monte Carlo and MCMC procedures;
+- tune and diagnose Metropolis-Hastings and HMC-type samplers;
+- compare MCMC, variational, and sequential methods critically.
+
+## Chapter 7. Numerical Integration and Approximation
+
+### Core question
+
+What can be done before MCMC, and when are deterministic or semi-deterministic approximations sufficient?
+
+### Section blueprint
+
+- Quadrature in low dimensions.
+- Laplace approximation.
+- Importance sampling.
+- Bridge sampling.
+- Thermodynamic integration overview.
+- Variational ideas preview.
+
+### Derivations that must appear
+
+- Laplace approximation from second-order Taylor expansion of the log posterior.
+- Importance sampling identity and variance formula.
+- Self-normalized importance sampling.
+- Bridge sampling intuition through ratio-of-normalizing-constants arguments.
+
+### Computational lab
+
+- Compare exact integration, Laplace approximation, and importance sampling on a one-dimensional posterior.
+- Use bridge sampling software or pseudocode to estimate a marginal likelihood.
+
+### Common pitfalls
+
+- Applying Laplace approximation to multi-modal or heavily skewed posteriors.
+- Ignoring weight degeneracy in importance sampling.
+- Using marginal likelihood approximations as black boxes.
+
+### Exercises
+
+- Derive the Laplace approximation for a scalar posterior around its mode.
+- Show how importance weights behave under tail mismatch.
+
+### Core references
+
+- @robert2004
+- @mackay2003
+- @gelman2013
+
+## Chapter 8. Monte Carlo Methods
+
+### Core question
+
+How does simple sampling approximate posterior expectations, and how should Monte Carlo error be quantified?
+
+### Section blueprint
+
+- Monte Carlo integration.
+- Law of large numbers in simulation.
+- Monte Carlo standard error.
+- Variance reduction: antithetic variables, control variates, stratification.
+- Effective sample size ideas in independent sampling.
+
+### Derivations that must appear
+
+- Unbiasedness of Monte Carlo estimators.
+- Monte Carlo CLT and variance formula.
+- Control variate optimal coefficient.
+- ESS interpretation under weighted samples.
+
+### Computational lab
+
+- Estimate posterior means by direct simulation in a conjugate model.
+- Compare variance reduction methods empirically.
+- Plot Monte Carlo error decay on log-log axes.
+
+### Common pitfalls
+
+- Reporting Monte Carlo estimates without uncertainty.
+- Confusing independent-sample ESS with MCMC ESS.
+- Using a control variate with poorly estimated correlation.
+
+### Exercises
+
+- Derive the variance of a Monte Carlo estimator.
+- Construct an antithetic estimator for a monotone function of a uniform random variable.
+- Estimate ESS for an importance-sampling run.
+
+### Core references
+
+- @robert2004
+- @casella2002
+
+## Chapter 9. Markov Chain Monte Carlo
+
+### Core question
+
+How can a Markov chain be designed to have the posterior as its invariant distribution?
+
+### Section blueprint
+
+- Markov chain preliminaries.
+- Detailed balance and reversibility.
+- Metropolis and Metropolis-Hastings algorithms.
+- Gibbs sampling.
+- Blocked and collapsed Gibbs sampling.
+- Adaptive MCMC overview.
+- Mixing, autocorrelation, ESS, and convergence.
+
+### Derivations that must appear
+
+- Detailed balance proof for Metropolis-Hastings.
+- Acceptance ratio derivation.
+- Gibbs sampling as exact conditional replacement.
+- Autocorrelation-based ESS formula and interpretation.
+
+### Computational lab
+
+- Random-walk Metropolis in `R`.
+- Gibbs sampler for a conjugate normal model.
+- Tuning proposal scale and comparing acceptance rates.
+
+### Common pitfalls
+
+- Equating acceptance rate with overall sampler quality.
+- Using a single chain and overtrusting visual convergence.
+- Ignoring high autocorrelation when reporting Monte Carlo precision.
+
+### Exercises
+
+- Derive the MH ratio for an independence sampler.
+- Show that Gibbs sampling satisfies detailed balance.
+- Compare random-walk proposals with different scales on the same target.
+
+### Core references
+
+- @metropolis1953
+- @hastings1970
+- @geman1984
+- @andrieu2003
+- @brooks2011
+
+### Full sample chapter
+
+- [Markov chain Monte Carlo: derivation, tuning, and diagnostics](../chapters/computation/markov-chain-monte-carlo.qmd)
+
+## Chapter 10. Advanced MCMC
+
+### Core question
+
+How do gradient-informed samplers exploit geometry to explore high-dimensional posteriors more efficiently than random walks?
+
+### Section blueprint
+
+- Hamiltonian Monte Carlo.
+- Hamiltonian dynamics and potential energy.
+- Leapfrog integration.
+- No-U-Turn Sampler.
+- Step size and mass matrix adaptation.
+- Warmup and adaptation schedules.
+- Centered versus non-centered parameterization.
+- Slice sampling and elliptical slice sampling.
+- Riemannian manifold ideas overview.
+- Reversible jump MCMC overview.
+
+### Derivations that must appear
+
+- Hamiltonian equations for position and momentum.
+- Leapfrog update map and symplectic intuition.
+- Metropolis correction for discretization error.
+- Why reparameterization changes geometry but not the posterior.
+
+### Computational lab
+
+- Visualize HMC trajectories on a correlated Gaussian target.
+- Compare centered and non-centered eight-schools parameterizations in Stan.
+- Diagnose divergences and E-BFMI.
+
+### Common pitfalls
+
+- Increasing `adapt_delta` without addressing geometric pathologies.
+- Misinterpreting divergences as merely numerical annoyances.
+- Forgetting that tuning improves exploration only when the model geometry is sensible.
+
+### Exercises
+
+- Derive leapfrog updates for a separable Hamiltonian.
+- Explain why HMC avoids random-walk behavior in smooth targets.
+- Analyze a funnel-shaped posterior and propose a reparameterization.
+
+### Core references
+
+- @neal2011
+- @hoffman2014
+- @betancourt2017
+
+## Chapter 11. Variational Inference
+
+### Core question
+
+How can posterior inference be reframed as an optimization problem over tractable approximating distributions?
+
+### Section blueprint
+
+- KL divergence and variational families.
+- ELBO.
+- Mean-field approximation.
+- Coordinate ascent VI.
+- Stochastic VI.
+- ADVI.
+- Amortized VI overview.
+- Comparison with MCMC.
+
+### Derivations that must appear
+
+- ELBO derivation from $\log p(y)$.
+- Mean-field coordinate updates in a conjugate setting.
+- Gradient estimators and stochastic optimization overview.
+- Forward versus reverse KL geometry discussion.
+
+### Computational lab
+
+- Derive a simple coordinate ascent VI procedure in a conjugate model.
+- Compare ADVI-style approximations with MCMC on a skewed posterior.
+
+### Common pitfalls
+
+- Assuming VI error is negligible because optimization converged.
+- Underestimating posterior variance due to mean-field assumptions.
+- Using ELBO values to compare arbitrary models without care.
+
+### Exercises
+
+- Derive the ELBO identity.
+- Show how a mean-field factorization removes posterior dependence.
+- Compare reverse-KL behavior with a multi-modal target conceptually.
+
+### Core references
+
+- @blei2017
+- @kucukelbir2017
+
+## Chapter 12. Sequential and Online Bayesian Computation
+
+### Core question
+
+How can posterior inference be updated over time when data arrive sequentially or latent states evolve dynamically?
+
+### Section blueprint
+
+- Sequential importance sampling and resampling.
+- Particle filters.
+- Sequential Monte Carlo.
+- Particle MCMC overview.
+- Online updating and streaming Bayes.
+- State-space models.
+- Hidden Markov models.
+- Dynamic linear models.
+
+### Derivations that must appear
+
+- Recursive Bayesian filtering identity.
+- Particle weight updates and normalization.
+- Effective sample size for particle systems.
+- Kalman filter equations in the linear Gaussian case.
+- Forward algorithm for hidden Markov models.
+
+### Computational lab
+
+- Implement a bootstrap particle filter for a simple state-space model.
+- Compare Kalman filtering with simulation in a local-level model.
+- Track weight degeneracy over time.
+
+### Common pitfalls
+
+- Ignoring particle degeneracy.
+- Using sequential methods without checking numerical stability.
+- Confusing filtering, smoothing, and prediction targets.
+
+### Exercises
+
+- Derive the recursive filtering equation.
+- Implement multinomial resampling and study its variability.
+- Write the forward recursion for a finite-state HMM.
+
+### Core references
+
+- @doucet2001
+- @delmoral2004
+- @gelman2013

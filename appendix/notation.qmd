@@ -1,0 +1,50 @@
+---
+title: "Notation and Assumptions"
+---
+
+## Core Symbols
+
+| Symbol | Meaning |
+|---|---|
+| $y, y_{1:n}$ | observed data |
+| $\tilde{y}$ | future or replicated data |
+| $\theta$ | parameter vector |
+| $\phi$ | hyperparameter or nuisance parameter |
+| $\pi(\theta)$ | prior density or mass function |
+| $p(y \mid \theta)$ | likelihood |
+| $p(\theta \mid y)$ | posterior |
+| $p(\tilde{y} \mid y)$ | posterior predictive distribution |
+| $\ell(\theta; y)$ | log-likelihood |
+| $U(\theta)$ | score or potential energy, depending on context |
+| $\mathcal{L}(q)$ | evidence lower bound (ELBO) |
+| $\hat{R}$ | rank-normalized convergence diagnostic |
+| ESS | effective sample size |
+
+## Probability Conventions
+
+- Densities and probability mass functions are both written with $p(\cdot)$ unless distinction is essential.
+- Priors are often written as $\pi(\theta)$ to distinguish them visually from sampling densities.
+- Expectations under a distribution $p$ are written $\mathbb{E}_p[\cdot]$ when ambiguity is possible.
+- Conditional independence is denoted by $\perp\!\!\!\perp$.
+
+## Modeling Conventions
+
+- Scalar parameters use lower-case Greek letters.
+- Vectors use bold Roman letters when clarity matters, for example $\mathbf{x}_i$.
+- Matrices use upper-case Roman letters, for example $X$.
+- Hierarchical indices follow the pattern $y_{ij}$ for unit $i$ in group $j$.
+
+## Computational Conventions
+
+- Unnormalized log posteriors are used frequently because MCMC and optimization often need only ratios or gradients.
+- All MCMC examples assume the target density is known up to proportionality.
+- Diagnostics are interpreted jointly rather than in isolation.
+
+## Standing Assumptions
+
+Unless otherwise stated:
+
+- parameter spaces are measurable;
+- posterior normalizing constants exist when posteriors are claimed proper;
+- gradients and Hessians are assumed to exist where optimization or HMC derivations need them;
+- independence claims are always model assumptions, not universal truths.

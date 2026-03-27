@@ -1,0 +1,138 @@
+/*-- scss:defaults --*/
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap");
+
+$body-bg: #f7f5ef;
+$body-color: #18212b;
+$link-color: #0c5c74;
+$navbar-bg: rgba(247, 245, 239, 0.92);
+$primary: #0c5c74;
+$secondary: #54687a;
+$success: #116149;
+$warning: #8b5a00;
+
+/*-- scss:rules --*/
+body {
+  font-family: "Source Serif 4", Georgia, serif;
+  line-height: 1.75;
+}
+
+.navbar,
+.sidebar,
+.quarto-title-block .quarto-title-banner {
+  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+}
+
+.navbar {
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(24, 33, 43, 0.08);
+}
+
+.sidebar nav[role="doc-toc"] a,
+.sidebar .sidebar-item-text {
+  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+  letter-spacing: -0.02em;
+  color: #10202f;
+}
+
+h1.title {
+  font-size: 2.65rem;
+}
+
+code,
+pre {
+  font-family: "IBM Plex Mono", Menlo, monospace;
+}
+
+pre.sourceCode {
+  border: 1px solid rgba(16, 32, 47, 0.08);
+  border-radius: 10px;
+  background: #fbfaf6;
+}
+
+.callout {
+  border-radius: 12px;
+  border-left-width: 0.45rem;
+}
+
+.callout.callout-style-simple {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.hero {
+  padding: 2.2rem 2rem 1.6rem 2rem;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(12, 92, 116, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(236, 241, 245, 0.88));
+  border: 1px solid rgba(16, 32, 47, 0.08);
+  box-shadow: 0 18px 40px rgba(16, 32, 47, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.hero h1,
+.hero h2,
+.hero h3 {
+  margin-top: 0;
+}
+
+.hero p:last-child {
+  margin-bottom: 0;
+}
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0 1.75rem 0;
+}
+
+.course-card {
+  padding: 1rem 1rem 0.9rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(16, 32, 47, 0.08);
+}
+
+.course-card h3,
+.course-card h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.formula-box {
+  margin: 1.25rem 0;
+  padding: 1rem 1.15rem;
+  border-left: 0.35rem solid #0c5c74;
+  background: rgba(12, 92, 116, 0.06);
+  border-radius: 10px;
+}
+
+.syllabus-table table,
+table {
+  font-size: 0.96rem;
+}
+
+.quarto-listing-default .listing-title,
+.quarto-listing-default .listing-subtitle {
+  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+}
+
+.theorem, .lemma, .proposition, .definition, .corollary {
+  border-left: 0.35rem solid #0c5c74;
+  padding: 0.85rem 1rem;
+  margin: 1rem 0;
+  background: rgba(12, 92, 116, 0.05);
+  border-radius: 8px;
+}
+
+.page-columns .column-margin .aside {
+  font-size: 0.84rem;
+}
+
+.smallcaps {
+  font-variant: small-caps;
+}

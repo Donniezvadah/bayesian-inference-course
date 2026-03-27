@@ -1,0 +1,69 @@
+---
+title: "Software Setup"
+---
+
+## Core Tools
+
+The course assumes access to:
+
+- [Quarto](https://quarto.org/) for rendering documents and websites;
+- `R` for simulation, plotting, diagnostics, and `cmdstanr` workflows;
+- Python 3.11 or newer for `JAX`;
+- `CmdStan` if you want to run the Stan labs locally.
+
+## Local Setup
+
+### Quarto
+
+Install Quarto, then render the site with:
+
+```bash
+quarto render
+```
+
+### `R`
+
+Install the required `R` packages with:
+
+```bash
+Rscript install.R
+```
+
+If you also want `CmdStan`, run:
+
+```bash
+INSTALL_CMDSTAN=true Rscript install.R
+```
+
+### Python / `JAX`
+
+Install Python dependencies with:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+## Cloud Setup
+
+Recommended cloud pathways:
+
+- Posit Cloud for `R` and `Stan`;
+- Binder for lightweight JAX examples;
+- Codespaces for the full repository-backed experience.
+
+## Lab File Locations
+
+| Language | Path | Purpose |
+|---|---|---|
+| `R` | `labs/r/beta_binomial.R` | Conjugate updating and posterior prediction |
+| `R` | `labs/r/mh_sampler.R` | Random-walk Metropolis implementation |
+| `Stan` | `labs/stan/eight_schools.stan` | Canonical hierarchical model |
+| `R` | `labs/r/fit_eight_schools.R` | `cmdstanr` wrapper for the Stan lab |
+| Python/JAX | `labs/jax/jax_logistic_map_hmc.py` | Autodiff, MAP, and basic HMC-style demo |
+
+## Reproducibility Advice
+
+- Fix random seeds in all stochastic examples.
+- Record package versions for each course release.
+- Keep model files and wrapper scripts in separate language-specific folders.
+- Prefer explicit data preparation code over hidden preprocessing.

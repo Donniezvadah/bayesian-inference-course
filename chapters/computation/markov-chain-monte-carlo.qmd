@@ -1,0 +1,376 @@
+---
+title: "Markov Chain Monte Carlo: Derivation, Tuning, and Diagnostics"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- explain why MCMC is needed for posterior integration;
+- derive the Metropolis-Hastings acceptance probability;
+- describe Gibbs sampling as exact conditional updating;
+- tune a random-walk proposal intelligently rather than heuristically;
+- interpret autocorrelation, ESS, trace plots, and $\hat{R}$.
+
+## 1. The Computational Problem
+
+In Bayesian inference, the target quantity is often an expectation under the posterior:
+
+$$
+\mathbb{E}[h(\theta) \mid y] = \int h(\theta)\, p(\theta \mid y)\, d\theta.
+$$
+
+Outside conjugate or low-dimensional settings, this integral is unavailable in closed form. MCMC solves the problem by constructing a Markov chain whose stationary distribution is the posterior [@robert2004; @brooks2011].
+
+If $\theta^{(1)}, \dots, \theta^{(S)}$ are approximately distributed from $p(\theta \mid y)$, then
+
+$$
+\mathbb{E}[h(\theta) \mid y]
+\approx
+\frac{1}{S}\sum_{s=1}^S h(\theta^{(s)}).
+$$
+
+The subtlety is that the draws are not independent. Dependence affects Monte Carlo error, which is why diagnostics are central rather than optional.
+
+## 2. Markov Chains And Invariance
+
+A Markov chain with transition kernel $K(\theta, d\theta')$ is a stochastic process in which
+
+$$
+\Pr(\theta_{t+1} \in A \mid \theta_t, \theta_{t-1}, \dots)
+=
+\Pr(\theta_{t+1} \in A \mid \theta_t).
+$$
+
+We want a chain whose invariant distribution is the posterior $\pi(\theta)=p(\theta \mid y)$, meaning
+
+$$
+\int \pi(\theta) K(\theta, d\theta')\, d\theta = \pi(\theta').
+$$
+
+One sufficient condition is **detailed balance**.
+
+:::{.proposition #prp-detailed-balance}
+If
+
+$$
+\pi(\theta) K(\theta, d\theta') = \pi(\theta') K(\theta', d\theta)
+$$
+
+for all states, then $\pi$ is invariant for the Markov chain.
+:::
+
+### Proof sketch
+
+Integrating both sides over $\theta$ gives
+
+$$
+\int \pi(\theta) K(\theta, d\theta')\, d\theta
+=
+\int \pi(\theta') K(\theta', d\theta)\, d\theta
+=
+\pi(\theta'),
+$$
+
+because the kernel integrates to one in its second argument.
+
+Detailed balance is stronger than necessary, but it provides an elegant route to MCMC design.
+
+## 3. Metropolis And Metropolis-Hastings
+
+Suppose the posterior is known up to a normalizing constant:
+
+$$
+\pi(\theta) \propto \tilde{\pi}(\theta).
+$$
+
+Given the current state $\theta$, propose $\theta' \sim q(\theta' \mid \theta)$ and accept it with probability
+
+$$
+\alpha(\theta, \theta') = \min\left\{1,
+\frac{\tilde{\pi}(\theta') q(\theta \mid \theta')}
+{\tilde{\pi}(\theta) q(\theta' \mid \theta)}
+\right\}.
+$$
+
+If the proposal is rejected, stay at $\theta$.
+
+### Derivation Of The Acceptance Ratio
+
+The transition kernel has two components:
+
+- a move from $\theta$ to $\theta'$ with density $q(\theta' \mid \theta)\alpha(\theta,\theta')$;
+- a point mass at $\theta$ representing rejection.
+
+For $\theta \neq \theta'$, detailed balance requires
+
+$$
+\pi(\theta) q(\theta' \mid \theta)\alpha(\theta,\theta')
+=
+\pi(\theta') q(\theta \mid \theta')\alpha(\theta',\theta).
+$$
+
+Let
+
+$$
+r(\theta,\theta')
+=
+\frac{\pi(\theta') q(\theta \mid \theta')}
+{\pi(\theta) q(\theta' \mid \theta)}.
+$$
+
+Choose
+
+$$
+\alpha(\theta,\theta')=\min\{1,r(\theta,\theta')\}.
+$$
+
+Then:
+
+- if $r \le 1$, the left-hand side becomes $\pi(\theta) q(\theta' \mid \theta)r = \pi(\theta') q(\theta \mid \theta')$ and the reverse acceptance is $1$;
+- if $r > 1$, the left-hand side is $\pi(\theta) q(\theta' \mid \theta)$ and the right-hand side is $\pi(\theta') q(\theta \mid \theta') (1/r)$.
+
+Thus detailed balance holds in both cases [@hastings1970].
+
+### Symmetric proposals
+
+If
+
+$$
+q(\theta' \mid \theta)=q(\theta \mid \theta'),
+$$
+
+then the proposal terms cancel and
+
+$$
+\alpha(\theta,\theta')
+=
+\min\left\{1, \frac{\tilde{\pi}(\theta')}{\tilde{\pi}(\theta)}\right\}.
+$$
+
+This is the usual random-walk Metropolis rule.
+
+## 4. Gibbs Sampling
+
+Gibbs sampling updates components from their exact full conditional distributions. If $\theta=(\theta_1,\dots,\theta_p)$, a one-at-a-time Gibbs sweep draws
+
+$$
+\theta_1^{(t+1)} \sim p(\theta_1 \mid \theta_2^{(t)},\dots,\theta_p^{(t)}, y),
+$$
+
+then
+
+$$
+\theta_2^{(t+1)} \sim p(\theta_2 \mid \theta_1^{(t+1)},\theta_3^{(t)},\dots,\theta_p^{(t)}, y),
+$$
+
+and so on.
+
+Because each step draws from the correct conditional, Gibbs sampling inherits the posterior as its invariant distribution [@geman1984].
+
+Gibbs is powerful when full conditionals are standard. It is limited when they are not.
+
+## 5. Example: Random-Walk Metropolis For A Normal Posterior
+
+Consider a simple model with known variance:
+
+$$
+y_i \mid \theta \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\theta, \sigma^2),
+\qquad
+\theta \sim \mathcal{N}(\mu_0, \tau_0^2).
+$$
+
+The posterior is Gaussian:
+
+$$
+\theta \mid y \sim \mathcal{N}(\mu_n, \tau_n^2),
+$$
+
+where
+
+$$
+\tau_n^2 = \left(\frac{n}{\sigma^2}+\frac{1}{\tau_0^2}\right)^{-1},
+\qquad
+\mu_n = \tau_n^2 \left(\frac{n\bar{y}}{\sigma^2}+\frac{\mu_0}{\tau_0^2}\right).
+$$
+
+This model is useful pedagogically because we know the exact answer and can therefore diagnose MCMC performance honestly.
+
+### Unnormalized log posterior
+
+Ignoring additive constants,
+
+$$
+\log \tilde{\pi}(\theta)
+=
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\theta)^2
+-\frac{1}{2\tau_0^2}(\theta-\mu_0)^2.
+$$
+
+### `R` implementation
+
+The following code implements a random-walk Metropolis sampler. A reusable script is also available at [mh_sampler.R](../../labs/r/mh_sampler.R).
+
+```r
+log_post_theta <- function(theta, y, sigma, mu0, tau0) {
+  loglik <- sum(dnorm(y, mean = theta, sd = sigma, log = TRUE))
+  logprior <- dnorm(theta, mean = mu0, sd = tau0, log = TRUE)
+  loglik + logprior
+}
+
+rw_metropolis <- function(init, n_iter, proposal_sd, y, sigma, mu0, tau0) {
+  draws <- numeric(n_iter)
+  draws[1] <- init
+  accept <- 0L
+
+  for (t in 2:n_iter) {
+    proposal <- rnorm(1, mean = draws[t - 1], sd = proposal_sd)
+    log_alpha <- log_post_theta(proposal, y, sigma, mu0, tau0) -
+      log_post_theta(draws[t - 1], y, sigma, mu0, tau0)
+
+    if (log(runif(1)) < log_alpha) {
+      draws[t] <- proposal
+      accept <- accept + 1L
+    } else {
+      draws[t] <- draws[t - 1]
+    }
+  }
+
+  list(draws = draws, accept_rate = accept / (n_iter - 1))
+}
+
+set.seed(42)
+y <- rnorm(40, mean = 1.5, sd = 2)
+fit <- rw_metropolis(
+  init = 0,
+  n_iter = 10000,
+  proposal_sd = 0.35,
+  y = y,
+  sigma = 2,
+  mu0 = 0,
+  tau0 = 5
+)
+
+fit$accept_rate
+```
+
+## 6. Tuning Proposal Scale
+
+Random-walk Metropolis reveals a basic MCMC trade-off:
+
+- if the proposal scale is too small, acceptance is high but exploration is slow;
+- if the proposal scale is too large, proposals often land in low-density regions and are rejected.
+
+Good MCMC is not about maximizing acceptance rate. It is about maximizing effective exploration per unit computation.
+
+In one dimension, an acceptance rate around $0.4$ to $0.5$ is often reasonable for random walks; in higher dimensions, lower optimal rates can occur. These are rules of thumb, not universal laws.
+
+## 7. Autocorrelation And Effective Sample Size
+
+Because MCMC draws are dependent, the Monte Carlo error of the sample mean depends on autocorrelation. If $\rho_k$ denotes lag-$k$ autocorrelation, then asymptotically
+
+$$
+\operatorname{Var}\!\left(\frac{1}{S}\sum_{s=1}^S h(\theta^{(s)})\right)
+\approx
+\frac{\sigma_h^2}{S}\left(1 + 2\sum_{k=1}^{\infty}\rho_k\right).
+$$
+
+This motivates the effective sample size
+
+$$
+\operatorname{ESS}
+=
+\frac{S}{1 + 2\sum_{k=1}^{\infty}\rho_k}.
+$$
+
+If autocorrelation is high, ESS can be much smaller than the nominal number of iterations.
+
+## 8. Diagnostics That Actually Matter
+
+### Trace plots
+
+Useful for detecting:
+
+- nonstationarity;
+- sticking;
+- multimodality or poor mixing;
+- obvious chain-to-chain disagreement.
+
+Not sufficient for certifying convergence.
+
+### Acceptance rate
+
+Useful for diagnosing an obviously bad proposal scale. Not sufficient for certifying efficiency or correctness.
+
+### $\hat{R}$
+
+Multiple chains should mix well both within and across chains. Modern rank-normalized $\hat{R}$ near 1 is a necessary but not sufficient condition for trustworthy inference [@vehtari2021].
+
+### ESS
+
+ESS is a measure of Monte Carlo information, not a measure of model adequacy.
+
+### Domain-specific diagnostics
+
+For HMC, divergences and E-BFMI matter. For importance sampling, tail weights matter. Diagnostics must match the algorithm.
+
+## 9. Common Failure Modes
+
+### Poor scaling
+
+If parameters are on very different scales, a simple random-walk proposal can mix terribly.
+
+### Multi-modality
+
+A chain can appear stable while exploring only one mode.
+
+### Strong posterior correlation
+
+Random-walk proposals become inefficient on narrow, tilted ridges. This is a preview of why HMC is valuable.
+
+### False reassurance from long runs
+
+A very long chain with high autocorrelation can still carry little effective information.
+
+## 10. Gibbs Sampling Example Sketch
+
+Suppose
+
+$$
+y_i \mid \mu,\tau \sim \mathcal{N}(\mu,\tau^{-1}),
+\qquad
+\mu \mid \tau \sim \mathcal{N}(\mu_0,(\kappa_0\tau)^{-1}),
+\qquad
+\tau \sim \operatorname{Gamma}(a_0,b_0).
+$$
+
+Then the full conditionals are:
+
+- $\mu \mid \tau, y$ is normal;
+- $\tau \mid \mu, y$ is gamma.
+
+This produces a two-step Gibbs sampler. The point is not the algebra alone, but the structural insight: conjugacy turns conditionals into direct samplers, which is why Gibbs flourished historically.
+
+## 11. Exercises
+
+1. Derive the Metropolis-Hastings acceptance ratio from detailed balance.
+2. Show that Gibbs sampling leaves the posterior invariant.
+3. Simulate a random-walk Metropolis chain for the normal posterior above with three proposal scales. Compare acceptance rate, ESS, and empirical autocorrelation.
+4. Construct an independence sampler for a unimodal target and compare it with a random walk.
+5. Explain why thinning is usually a poor substitute for running an efficient sampler.
+
+## 12. Summary
+
+MCMC works by designing a Markov chain whose invariant distribution is the posterior. The most important ideas in this chapter are:
+
+- invariance through detailed balance;
+- Metropolis-Hastings as accept-reject correction of a proposal mechanism;
+- Gibbs sampling as exact conditional replacement;
+- Monte Carlo error under dependence;
+- diagnostics as essential components of inference rather than optional afterthoughts.
+
+The next computational step is to move beyond random walks and exploit posterior geometry, which is the subject of advanced MCMC and Stan workflow.
+
+## References
+
+Foundational references include @metropolis1953, @hastings1970, @geman1984, @andrieu2003, @robert2004, @brooks2011, and @vehtari2021.

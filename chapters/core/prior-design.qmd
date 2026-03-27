@@ -1,0 +1,339 @@
+---
+title: "Prior Design: Information, Regularization, Predictive Checks, and Sensitivity"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- distinguish informative, weakly informative, reference-style, and improper priors;
+- derive Jeffreys priors in standard examples;
+- explain posterior propriety and why improper priors require care;
+- connect priors to regularization and shrinkage;
+- perform prior predictive checks and sensitivity analysis systematically.
+
+## 1. Priors Are Model Components, Not Decorative Add-Ons
+
+A prior does at least four jobs in Bayesian analysis.
+
+1. It encodes substantive information before observing current data.
+2. It regularizes weakly identified models.
+3. It shapes geometry and therefore computation.
+4. It affects predictive implications even before data are observed.
+
+Because priors do all four jobs simultaneously, prior design is one of the most important stages of Bayesian workflow [@gelman2013; @simpson2017].
+
+## 2. A Taxonomy Of Priors
+
+### Informative priors
+
+These are priors whose scale and location reflect real scientific knowledge, previous experiments, engineering tolerances, or mechanistic constraints.
+
+### Weakly informative priors
+
+These are priors chosen to rule out absurd values while remaining broad over scientifically plausible regimes. They are often the practical default in modern Bayesian modeling.
+
+### Noninformative or objective priors
+
+These aim to minimize prior influence relative to some criterion, but they are never truly neutral in a global sense because parameterization matters.
+
+### Improper priors
+
+These are functions that do not integrate to one. They can still yield proper posteriors, but only if posterior normalizability is checked.
+
+### Shrinkage and sparsity priors
+
+These priors actively regularize parameters toward zero or toward shared structure, often to stabilize high-dimensional models or multilevel effects.
+
+## 3. Posterior Propriety
+
+If a prior is improper, the posterior may or may not be proper. This is not a technical footnote. A posterior that does not integrate to one is not a valid posterior.
+
+### Example: location model with flat prior
+
+Suppose
+
+$$
+Y_i \mid \mu \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu,\sigma^2),
+$$
+
+and use the improper prior $\pi(\mu)\propto 1$. Then
+
+$$
+\pi(\mu \mid y)
+\propto
+\exp\!\left\{-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mu)^2\right\}.
+$$
+
+This kernel is integrable in $\mu$, so the posterior is proper for $n \ge 1$.
+
+### Counterpoint
+
+In more complicated hierarchical or sparse-data models, improper priors can produce improper posteriors. One must verify propriety rather than assume it.
+
+## 4. Jeffreys Priors
+
+Jeffreys proposed a general rule based on Fisher information:
+
+$$
+\pi_J(\theta) \propto \sqrt{I(\theta)},
+$$
+
+where
+
+$$
+I(\theta)
+=
+\mathbb{E}_\theta\left[
+-\frac{\partial^2}{\partial \theta^2}\log p(Y \mid \theta)
+\right].
+$$
+
+The attraction of this rule is invariance under smooth one-to-one reparameterization.
+
+### 4.1 Bernoulli example
+
+Let
+
+$$
+Y \sim \operatorname{Bernoulli}(\theta), \qquad 0 < \theta < 1.
+$$
+
+The log likelihood is
+
+$$
+\ell(\theta;y)=y\log\theta + (1-y)\log(1-\theta).
+$$
+
+Differentiate twice:
+
+$$
+\frac{\partial^2}{\partial \theta^2}\ell(\theta;y)
+=
+-\frac{y}{\theta^2}
+-\frac{1-y}{(1-\theta)^2}.
+$$
+
+Taking expectation under the model, where $\mathbb{E}[Y]=\theta$,
+
+$$
+I(\theta)
+=
+\frac{\theta}{\theta^2}
++
+\frac{1-\theta}{(1-\theta)^2}
+=
+\frac{1}{\theta(1-\theta)}.
+$$
+
+Therefore
+
+$$
+\pi_J(\theta)
+\propto
+\theta^{-1/2}(1-\theta)^{-1/2},
+$$
+
+which is the Beta$(1/2,1/2)$ prior.
+
+### 4.2 Normal scale example
+
+Suppose
+
+$$
+Y \sim \mathcal{N}(0,\sigma^2), \qquad \sigma > 0.
+$$
+
+The log density is
+
+$$
+\ell(\sigma;y)
+=
+-\log \sigma - \frac{y^2}{2\sigma^2} + C.
+$$
+
+Differentiating twice and taking expectations yields
+
+$$
+I(\sigma) \propto \frac{1}{\sigma^2}.
+$$
+
+Hence
+
+$$
+\pi_J(\sigma)\propto \frac{1}{\sigma}.
+$$
+
+This is the classic scale prior. It is improper and must be handled carefully.
+
+## 5. Weakly Informative Priors And Regularization
+
+In many modern models, especially regression and hierarchical models, weakly informative priors are more useful than formally objective priors.
+
+### Regression coefficients
+
+If predictors are standardized, priors like
+
+$$
+\beta_j \sim \mathcal{N}(0, 2.5^2)
+$$
+
+or Student-$t$ analogues often regularize logistic or linear regression sensibly by discouraging implausibly large effects without forcing coefficients too tightly toward zero [@gelman2013].
+
+### Scale parameters
+
+For hierarchical standard deviations, half-normal or half-Student-$t$ priors are often preferable to inverse-gamma defaults because their implications are easier to reason about and calibrate.
+
+### MAP interpretation
+
+Gaussian priors imply ridge-like penalties in MAP estimation:
+
+$$
+\log p(\beta \mid y)
+=
+\log p(y \mid \beta) - \frac{1}{2\tau^2}\sum_j \beta_j^2 + C.
+$$
+
+Maximizing the posterior is therefore equivalent to penalized likelihood with an $\ell_2$ penalty.
+
+Likewise, Laplace priors correspond to lasso-like $\ell_1$ penalties.
+
+## 6. Hierarchical, Shrinkage, And Sparsity Priors
+
+Priors can also express structure across parameters.
+
+### Hierarchical priors
+
+For group effects $\alpha_j$,
+
+$$
+\alpha_j \mid \tau \sim \mathcal{N}(0,\tau^2),
+\qquad
+\tau \sim \pi(\tau).
+$$
+
+This induces partial pooling and learns the amount of shrinkage from the data.
+
+### Global-local shrinkage
+
+Priors such as the horseshoe place both global and local scale parameters on coefficients. Their purpose is to shrink many coefficients strongly while allowing a few to remain large [@piironen2017].
+
+### Penalized-complexity priors
+
+PC priors formalize shrinkage toward a simpler base model using a complexity penalty built from Kullback-Leibler distance ideas [@simpson2017].
+
+The broader point is that prior design is often about structural regularization rather than only individual parameters.
+
+## 7. Prior Predictive Checking
+
+A prior should be checked before fitting the model. The relevant distribution is
+
+$$
+p(y)
+=
+\int p(y \mid \theta)\pi(\theta)\, d\theta.
+$$
+
+This is the **prior predictive distribution**. If it implies absurd data routinely, the prior-model combination needs revision.
+
+### Example: logistic regression
+
+Suppose
+
+$$
+\Pr(Y_i=1 \mid x_i,\beta_0,\beta_1)
+=
+\operatorname{logit}^{-1}(\beta_0 + \beta_1 x_i).
+$$
+
+If $\beta_1 \sim \mathcal{N}(0,10^2)$ and $x_i$ is not standardized, the prior may imply near-deterministic probabilities over a wide range of $x$. That may be scientifically indefensible even before any data are used.
+
+### `R` implementation
+
+The companion lab is [prior_predictive_logistic.R](../../labs/r/prior_predictive_logistic.R).
+
+```r
+set.seed(2026)
+x <- seq(-2, 2, length.out = 100)
+beta0 <- rnorm(200, 0, 1.5)
+beta1 <- rnorm(200, 0, 1.0)
+
+prob_draws <- sapply(seq_along(beta0), function(i) {
+  plogis(beta0[i] + beta1[i] * x)
+})
+
+matplot(x, prob_draws, type = "l", lty = 1, col = rgb(0, 0, 0, 0.05),
+        xlab = "x", ylab = "Prior predictive success probability")
+```
+
+The point is not the plot itself. The point is to ask whether the implied curves are plausible before seeing outcomes.
+
+## 8. Prior Sensitivity Analysis
+
+A principled workflow compares scientifically plausible prior choices and asks whether posterior conclusions change materially.
+
+### Suggested sensitivity sequence
+
+1. Identify the parameters where prior choice is substantively meaningful.
+2. Specify several plausible prior families or scales.
+3. Check prior predictive implications for each.
+4. Refit the model under each prior.
+5. Compare posterior summaries, predictive quantities, and decisions.
+
+Sensitivity analysis should focus on inferentially important outputs, not only raw parameter means.
+
+## 9. Stan Prior Predictive Workflow
+
+Stan supports prior predictive simulation naturally by generating data from the prior without conditioning on observed outcomes. A simple pattern is:
+
+```stan
+generated quantities {
+  array[N] int y_rep;
+  for (n in 1:N) {
+    real eta = beta0 + beta1 * x[n];
+    y_rep[n] = bernoulli_rng(inv_logit(eta));
+  }
+}
+```
+
+When using Stan purely for prior predictive checks, one can omit the likelihood contribution or use `fixed_param` mode for direct simulation. This makes prior design visible in the same software stack later used for posterior fitting.
+
+## 10. Common Pitfalls
+
+### Calling a prior “noninformative”
+
+There is no universally noninformative prior. Information depends on parameterization, model structure, and the inferential target.
+
+### Choosing priors for computational convenience alone
+
+A prior that samples nicely but implies implausible data is not a good prior.
+
+### Skipping prior predictive checks
+
+This is one of the most common failures in practice. Weak posterior pathologies often begin as obvious prior predictive absurdities.
+
+### Using improper priors in model comparison
+
+Bayes factors and marginal likelihoods are usually not meaningful with improper priors.
+
+## 11. Exercises
+
+1. Derive the Jeffreys prior for a Poisson rate parameter.
+2. Show that a Gaussian prior on regression coefficients induces ridge regularization in the MAP objective.
+3. Simulate prior predictive curves for logistic regression under two different prior scales and compare the implied probability behavior.
+4. Give an example of an improper prior that yields a proper posterior, and one situation where impropriety is risky.
+5. Explain why prior sensitivity should be assessed on decisions or predictions, not only on coefficient summaries.
+
+## 12. Summary
+
+Good prior design is a combination of mathematical care and scientific judgment:
+
+- improper priors require propriety checks;
+- Jeffreys priors provide one principled objective construction;
+- weakly informative priors often give better practical regularization;
+- hierarchical and shrinkage priors encode structure rather than only vague uncertainty;
+- prior predictive checking and sensitivity analysis are mandatory parts of Bayesian workflow.
+
+## References
+
+Key references are @jeffreys1961, @gelman2013, @gelman2006, @simpson2017, @piironen2017, and @bernardo1994.

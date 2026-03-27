@@ -1,0 +1,140 @@
+---
+title: "Deployment and Online Execution"
+---
+
+## Goal
+
+The website should be easy to host, easy to read, and as executable as possible without making the public site brittle. The recommended architecture separates **static presentation** from **interactive compute backends**.
+
+## Recommended Architecture
+
+::: {.callout-important}
+## Recommended Production Setup
+
+Use a **Quarto website hosted on GitHub Pages** for the main course, then attach execution backends by language:
+
+- **`R` and `Stan`**: Posit Cloud or GitHub Codespaces
+- **`JAX` / Python**: Binder or GitHub Codespaces
+
+This is the most robust practical design because Quarto Pages hosting is reliable and inexpensive, while `Stan` and `JAX` require compute environments that are not realistically supported in-browser in a static site.
+:::
+
+## Why Not Run Everything Directly In The Browser?
+
+### `Stan`
+
+Compiling and running realistic `Stan` models in-browser is not a good target for a public static course website. Compilation cost, security constraints, and browser resource limits make this impractical for serious use.
+
+### `JAX`
+
+`JAX` depends on XLA-backed transformations and is not a natural fit for `Pyodide` or browser-only notebooks. Small toy examples may be possible with pure Python replacements, but that would undermine the pedagogical goal of teaching actual JAX.
+
+### `R`
+
+Simple `R` code can be displayed in Quarto and copied easily, but public multi-user execution requires a hosted backend. Posit Cloud is the most straightforward option for teaching.
+
+## Execution Targets Compared
+
+| Option | Best for | Strengths | Limitations | Recommendation |
+|---|---|---|---|---|
+| GitHub Pages + Quarto | Course website | Stable, versioned, citation-friendly, low maintenance | Static only | **Use as primary host** |
+| Posit Cloud | `R` and `Stan` labs | Excellent for teaching, minimal local setup | Not ideal for heavy long-running models | **Use for course labs** |
+| Binder | Python/JAX notebooks | Zero-install access from repository | Cold starts, ephemeral sessions, limited resources | Good for lightweight JAX demos |
+| GitHub Codespaces | Full stack | Closest to a real dev environment | Quota and startup cost | Best fallback for full reproducibility |
+| JupyterLite / Pyodide | Tiny Python demos | Runs in browser | Poor fit for real JAX, no Stan | Use only for trivial non-JAX demos |
+
+## Files Needed For A Reproducible Repository
+
+This repository already includes the core files for a practical deployment:
+
+```text
+_quarto.yml
+.github/workflows/publish.yml
+bibliography/references.bib
+requirements.txt
+environment.yml
+install.R
+labs/
+```
+
+If full Codespaces support is desired later, add:
+
+```text
+.devcontainer/devcontainer.json
+.devcontainer/postCreate.sh
+```
+
+## GitHub Pages Workflow
+
+The included GitHub Actions workflow in `.github/workflows/publish.yml` renders the site and deploys `_site/` to GitHub Pages on pushes to `main`.
+
+### Steps
+
+1. Push the repository to GitHub.
+2. Enable GitHub Pages in the repository settings.
+3. Use the GitHub Actions workflow for deployment.
+4. Set the repository URL in `_quarto.yml` when the final repo name is known.
+
+## Recommended Lab Strategy By Language
+
+### `R` labs
+
+Use Posit Cloud projects linked from the website. Each lab should have:
+
+- an `.R` or `.qmd` source file in `labs/r/`;
+- a small data file if needed;
+- package installation instructions through `install.R`.
+
+### `Stan` labs
+
+Teach Stan through `cmdstanr`. Host these either:
+
+- in Posit Cloud projects with preinstalled `CmdStan`; or
+- in Codespaces/devcontainers if compilation time is acceptable.
+
+For reproducibility, keep:
+
+- the `.stan` model file in `labs/stan/`;
+- a corresponding `R` wrapper in `labs/r/`.
+
+### `JAX` labs
+
+Use Binder for lightweight examples and Codespaces for the full course environment. Keep:
+
+- executable Python scripts or notebooks in `labs/jax/`;
+- package dependencies in `requirements.txt` and `environment.yml`.
+
+## Best Practical Hosting Pattern
+
+For a serious university course, the best operational compromise is:
+
+1. Static Quarto site on GitHub Pages for lectures, formulas, references, and navigation.
+2. Posit Cloud workspace containing the `R` and `Stan` labs.
+3. Binder or Codespaces badge for JAX/Python labs.
+4. A single source repository so prose, code, references, and environment files evolve together.
+
+This keeps the reading experience fast and stable while still offering authentic execution environments.
+
+## Reproducibility Checklist
+
+Every lab should have:
+
+- a single source file or notebook;
+- explicit package requirements;
+- deterministic seeds where appropriate;
+- comments explaining how to run it;
+- expected outputs or diagnostic targets.
+
+## Limitations To State Clearly To Learners
+
+- Browser-based execution is limited for heavy Bayesian computation.
+- `Stan` compilation can be slow on teaching platforms.
+- Binder sessions are ephemeral and not suitable for long-running models.
+- JAX examples on CPU are sufficient for pedagogy, but not for large-scale production inference.
+
+## Recommended Next Deployment Steps
+
+1. Create the GitHub repository and set its public URL.
+2. Add badges or links from the homepage to Posit Cloud and Binder/Codespaces.
+3. If the course will be taught live, provision cloud projects before students arrive.
+4. Freeze the environment files per semester or per release.

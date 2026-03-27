@@ -1,0 +1,65 @@
+---
+title: "Measure-Probability Review"
+---
+
+## Why This Appendix Exists
+
+Bayesian statistics can be taught at many mathematical levels. This course aims to be mathematically mature without becoming unreadable. That means the main chapters use rigorous probability language when it matters, and this appendix reviews the minimum formalism needed to support that choice.
+
+## Probability Space
+
+A probability space is a triple $(\Omega, \mathcal{F}, \mathbb{P})$ where:
+
+- $\Omega$ is the sample space;
+- $\mathcal{F}$ is a $\sigma$-algebra of measurable events;
+- $\mathbb{P}$ is a probability measure on $\mathcal{F}$.
+
+The countable additivity of $\mathbb{P}$ is what allows expectation, conditioning, and limit theorems to behave coherently.
+
+## Random Variables And Measurability
+
+A random variable $X$ is a measurable map from $(\Omega, \mathcal{F})$ into a measurable state space. In practice, this formality matters because probability statements about $X$ are induced from the measure $\mathbb{P}$ through measurability.
+
+## Expectation
+
+Expectation is integration with respect to the induced distribution:
+
+$$
+\mathbb{E}[X] = \int_{\Omega} X(\omega)\, d\mathbb{P}(\omega),
+$$
+
+provided the integral exists.
+
+## Conditional Expectation
+
+Conditional expectation $\mathbb{E}[X \mid \mathcal{G}]$ is the $\mathcal{G}$-measurable random variable satisfying
+
+$$
+\int_G \mathbb{E}[X \mid \mathcal{G}]\, d\mathbb{P}
+=
+\int_G X\, d\mathbb{P}
+\quad \text{for all } G \in \mathcal{G}.
+$$
+
+This is the formal object underlying the tower property, Rao-Blackwellization, and many Bayesian updating arguments.
+
+## Bayes' Rule In Density Form
+
+When prior and likelihood admit densities with respect to dominating measures, the posterior density is
+
+$$
+p(\theta \mid y) = \frac{p(y \mid \theta)\pi(\theta)}{\int p(y \mid \vartheta)\pi(\vartheta)\, d\vartheta},
+$$
+
+provided the denominator is finite and positive.
+
+## Exchangeability
+
+A sequence $(Y_1, Y_2, \dots)$ is exchangeable if its joint law is invariant under finite permutations. In Bayesian statistics, exchangeability is often more fundamental than independence because it motivates latent-variable representations and partial pooling.
+
+## Suggested Review References
+
+- @kolmogorov1956
+- @durrett2019
+- @casella2002
+- @bernardo1994

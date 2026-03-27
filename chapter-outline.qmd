@@ -1,0 +1,125 @@
+---
+title: "Chapter-By-Chapter Expansion Map"
+---
+
+## How To Read This Map
+
+The detailed chapter expansion outlines are organized by course part:
+
+- [Part I: Foundations](parts/part-i-foundations.qmd)
+- [Part II: Core Bayesian Inference](parts/part-ii-core-bayesian-inference.qmd)
+- [Part III: Computation](parts/part-iii-computation.qmd)
+- [Part IV: Models](parts/part-iv-models.qmd)
+- [Part V: Optimization and Diagnostics](parts/part-v-optimization-and-diagnostics.qmd)
+- [Part VI: Software Workflows](parts/part-vi-software-workflows.qmd)
+- [Part VII: Advanced Topics](parts/part-vii-advanced-topics.qmd)
+
+Each part page is written as an expansion-ready authoring brief. For every chapter it lists:
+
+- core questions;
+- formal topics and definitions;
+- derivations that must be shown in detail;
+- computational labs and software targets;
+- diagnostics and common pitfalls;
+- exercises and reading suggestions.
+
+## Status Of Content In This Repository
+
+| Chapter | Status in this repository | Location |
+|---|---|---|
+| 1-2 | Detailed outline | Part I overview |
+| 3 | Fully written sample chapter | [Bayes theorem chapter](chapters/foundations/bayes-theorem-and-updating.qmd) |
+| 4-6 | Fully written chapters | [Part II chapters](parts/part-ii-core-bayesian-inference.qmd) |
+| 7-8 | Detailed outline | Part III overview |
+| 9 | Fully written sample chapter | [MCMC chapter](chapters/computation/markov-chain-monte-carlo.qmd) |
+| 10-12 | Detailed outline | Part III overview |
+| 13-24 | Detailed outline | Part IV-VI overviews |
+| 25 | Fully written sample chapter | [Stan workflow chapter](chapters/software/stan-hierarchical-models.qmd) |
+| 26 | Fully written sample chapter | [JAX workflow chapter](chapters/software/jax-gradient-based-bayes.qmd) |
+| 27-31 | Detailed outline | Part VII overview |
+
+## Authoring Convention
+
+To expand the remaining outline chapters into full textbook-style chapters, retain the following section order whenever it fits the material:
+
+1. Chapter introduction and learning outcomes.
+2. Motivation and intuition.
+3. Formal setup and notation.
+4. Main result or model structure.
+5. Step-by-step derivation.
+6. Worked analytic example.
+7. Computational implementation.
+8. Diagnostics and failure modes.
+9. Exercises with solution sketches.
+10. References and further reading.
+
+## Cross-Cutting Themes To Preserve
+
+As the site grows, every chapter should remain aligned with five global themes:
+
+### Mathematical precision
+
+Definitions and assumptions should be explicit. Approximation methods should always state the object being approximated and the mode of approximation error.
+
+### Workflow discipline
+
+Every model chapter should include some version of:
+
+- prior design;
+- posterior computation;
+- predictive checking;
+- sensitivity analysis;
+- reporting.
+
+### Computational transparency
+
+When algorithms are introduced, the course should state:
+
+- target distribution;
+- transition rule or optimization objective;
+- tuning parameters;
+- computational cost;
+- known pathologies.
+
+### Reproducibility
+
+Every substantial code example should have a corresponding source file in `labs/`, or a direct path for students to reproduce it.
+
+### Comparative reasoning
+
+Students should repeatedly compare:
+
+- likelihood vs posterior inference;
+- optimization vs integration;
+- MCMC vs VI;
+- exact conjugate inference vs numerical approximation;
+- prediction vs explanation vs decision.
+
+## Immediate Reading Paths
+
+Different audiences can enter the material through different routes.
+
+### Statistically mature reader
+
+Start with:
+
+1. [Part III: Computation](parts/part-iii-computation.qmd)
+2. [MCMC chapter](chapters/computation/markov-chain-monte-carlo.qmd)
+3. [Stan workflow chapter](chapters/software/stan-hierarchical-models.qmd)
+4. [Diagnostics section in Part V](parts/part-v-optimization-and-diagnostics.qmd)
+
+### Applied modeler
+
+Start with:
+
+1. [Part II: Core Bayesian Inference](parts/part-ii-core-bayesian-inference.qmd)
+2. [Part IV: Models](parts/part-iv-models.qmd)
+3. [Part VI: Software Workflows](parts/part-vi-software-workflows.qmd)
+
+### Theory-oriented reader
+
+Start with:
+
+1. [Part I: Foundations](parts/part-i-foundations.qmd)
+2. [Bayes theorem chapter](chapters/foundations/bayes-theorem-and-updating.qmd)
+3. [Part II: Core Bayesian Inference](parts/part-ii-core-bayesian-inference.qmd)

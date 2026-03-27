@@ -1,0 +1,217 @@
+---
+title: "Part VII. Advanced Topics"
+---
+
+## Part Overview
+
+Part VII extends the core workflow into the topics that distinguish mature Bayesian practice from elementary posterior calculation: model uncertainty, robustness, experimental design, communication, and open-ended projects.
+
+## Part Learning Goals
+
+By the end of Part VII, learners should be able to:
+
+- compare models using predictive and marginal-likelihood criteria with appropriate caution;
+- formulate robust alternatives under misspecification and outliers;
+- reason about design under uncertainty and utility;
+- communicate Bayesian results responsibly to scientific collaborators.
+
+## Chapter 27. Model Selection and Averaging
+
+### Core question
+
+How should we compare or combine models when model uncertainty itself matters?
+
+### Section blueprint
+
+- Bayes factors and marginal likelihood.
+- Bridge sampling.
+- Bayesian model averaging.
+- Stacking.
+- Projection predictive selection.
+
+### Derivations that must appear
+
+- Marginal likelihood identity.
+- Posterior model probabilities under prior model weights.
+- Predictive-risk intuition for stacking.
+
+### Computational lab
+
+- Estimate a marginal likelihood with bridge sampling.
+- Compare PSIS-LOO model ranking with Bayes factors under prior sensitivity.
+
+### Common pitfalls
+
+- Using Bayes factors with vague or improper priors.
+- Confusing explanatory and predictive goals in model comparison.
+- Treating one selection method as universally optimal.
+
+### Exercises
+
+- Show how posterior model probabilities depend on prior model probabilities.
+- Compare BMA and stacking conceptually on a misspecified model set.
+
+### Core references
+
+- @robert2007
+- @vehtari2017
+
+## Chapter 28. Robust Bayesian Methods
+
+### Core question
+
+How can Bayesian models remain useful when data contain outliers or the likelihood is misspecified?
+
+### Section blueprint
+
+- Heavy-tailed priors.
+- Heavy-tailed likelihoods.
+- Contamination models.
+- Outlier indicators and latent-mixture robustness.
+- Misspecification and posterior concentration issues.
+
+### Derivations that must appear
+
+- Student-$t$ likelihood as a scale-mixture intuition.
+- Contamination-model factorization.
+- Influence of heavy-tailed priors on posterior shrinkage.
+
+### Computational lab
+
+- Compare Gaussian and Student-$t$ regression under outliers.
+- Fit a contamination mixture and inspect posterior outlier probabilities.
+
+### Common pitfalls
+
+- Overusing robustness as a substitute for understanding the data-generating process.
+- Ignoring the computational costs of mixture-based robustification.
+
+### Exercises
+
+- Show why a Student-$t$ model downweights outliers more than a Gaussian model.
+- Compare posterior predictive behavior under robust and non-robust likelihoods.
+
+### Core references
+
+- @gelman2013
+- @murphy2023
+
+## Chapter 29. Bayesian Experimental Design
+
+### Core question
+
+How should one choose data collection strategies when uncertainty and utility are both explicit?
+
+### Section blueprint
+
+- Utility-based design.
+- Expected information gain.
+- Sequential and adaptive design.
+- Active learning overview.
+- Computational challenges in design optimization.
+
+### Derivations that must appear
+
+- Expected utility criterion for design selection.
+- Mutual-information intuition for information gain.
+- Posterior update within a sequential design loop.
+
+### Computational lab
+
+- Compare fixed and adaptive sampling in a toy binary-outcome experiment.
+- Approximate design utility by Monte Carlo.
+
+### Common pitfalls
+
+- Confusing parameter uncertainty reduction with decision utility.
+- Ignoring design-stage prior sensitivity.
+
+### Exercises
+
+- Write a Monte Carlo estimator for expected utility of a design.
+- Compare two candidate designs under different utility functions.
+
+### Core references
+
+- @berger1985
+- @mackay2003
+
+## Chapter 30. Communication and Interpretation
+
+### Core question
+
+How should Bayesian conclusions be reported so that uncertainty, model assumptions, and decision relevance are all clear?
+
+### Section blueprint
+
+- Reporting posterior summaries.
+- Interval interpretation.
+- Effect sizes and uncertainty communication.
+- Decision-oriented summaries.
+- Visual communication.
+- Reproducibility and literate analysis.
+
+### Derivations and conceptual targets
+
+- Translate posterior distributions into scientifically meaningful contrasts.
+- Explain posterior probability statements without frequency misuse.
+- Distinguish predictive uncertainty from parameter uncertainty in communication.
+
+### Computational lab
+
+- Build a one-page results summary from posterior draws.
+- Compare multiple interval types and visual summaries.
+
+### Common pitfalls
+
+- Reporting only posterior means.
+- Hiding assumptions behind polished plots.
+- Interpreting high posterior probability as practical importance.
+
+### Exercises
+
+- Rewrite a technical posterior summary for a nontechnical collaborator.
+- Build a plot that separates posterior uncertainty from observed-data noise.
+
+### Core references
+
+- @gabry2019
+- @gelman2013
+
+## Chapter 31. Capstone Projects
+
+### Core question
+
+How do all components of Bayesian workflow combine in a real, open-ended project?
+
+### Section blueprint
+
+- Project scoping and question formulation.
+- Data auditing and exploratory analysis.
+- Prior design and model specification.
+- Fitting, diagnostics, and criticism.
+- Sensitivity analysis.
+- Final communication.
+
+### Required outputs
+
+- reproducible code;
+- prior predictive checks;
+- posterior diagnostics;
+- predictive evaluation;
+- sensitivity analysis;
+- written discussion of limitations.
+
+### Computational lab
+
+- Use [Projects](../projects.qmd) as the canonical project bank.
+
+### Common pitfalls
+
+- Starting with a complicated model before articulating the scientific question.
+- Underreporting computational failures.
+- Omitting sensitivity analysis.
+
+### Exercises
+
+- Draft a one-page project proposal with model family, prior strategy, diagnostics plan, and evaluation criteria.

@@ -1,0 +1,132 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - bibliography/references.bib
+    - requirements.txt
+    - environment.yml
+    - install.R
+    - labs/
+
+website:
+  title: "Bayesian Inference and Bayesian Statistics"
+  description: "A mathematically rigorous long-form course in Bayesian statistics, computation, modeling, and workflow."
+  page-navigation: true
+  search:
+    location: sidebar
+    type: overlay
+  back-to-top-navigation: true
+  navbar:
+    pinned: true
+    left:
+      - href: index.qmd
+        text: Home
+      - href: course-blueprint.qmd
+        text: Blueprint
+      - href: syllabus.qmd
+        text: Syllabus
+      - text: Parts
+        menu:
+          - href: parts/part-i-foundations.qmd
+            text: Part I Foundations
+          - href: parts/part-ii-core-bayesian-inference.qmd
+            text: Part II Core Bayesian Inference
+          - href: parts/part-iii-computation.qmd
+            text: Part III Computation
+          - href: parts/part-iv-models.qmd
+            text: Part IV Models
+          - href: parts/part-v-optimization-and-diagnostics.qmd
+            text: Part V Optimization and Diagnostics
+          - href: parts/part-vi-software-workflows.qmd
+            text: Part VI Software Workflows
+          - href: parts/part-vii-advanced-topics.qmd
+            text: Part VII Advanced Topics
+      - href: exercises.qmd
+        text: Exercises
+      - href: projects.qmd
+        text: Projects
+      - href: deployment.qmd
+        text: Deployment
+      - href: references.qmd
+        text: References
+  sidebar:
+    style: docked
+    collapse-level: 1
+    search: true
+    contents:
+      - section: "Course Design"
+        contents:
+          - index.qmd
+          - course-blueprint.qmd
+          - syllabus.qmd
+          - chapter-outline.qmd
+      - section: "Part I"
+        contents:
+          - parts/part-i-foundations.qmd
+          - chapters/foundations/bayes-theorem-and-updating.qmd
+      - section: "Part II"
+        contents:
+          - parts/part-ii-core-bayesian-inference.qmd
+          - chapters/core/conjugate-analysis.qmd
+          - chapters/core/loss-functions-and-decision-theory.qmd
+          - chapters/core/prior-design.qmd
+      - section: "Part III"
+        contents:
+          - parts/part-iii-computation.qmd
+          - chapters/computation/markov-chain-monte-carlo.qmd
+      - section: "Part IV"
+        contents:
+          - parts/part-iv-models.qmd
+      - section: "Part V"
+        contents:
+          - parts/part-v-optimization-and-diagnostics.qmd
+      - section: "Part VI"
+        contents:
+          - parts/part-vi-software-workflows.qmd
+          - chapters/software/stan-hierarchical-models.qmd
+          - chapters/software/jax-gradient-based-bayes.qmd
+      - section: "Part VII"
+        contents:
+          - parts/part-vii-advanced-topics.qmd
+      - section: "Course Assets"
+        contents:
+          - exercises.qmd
+          - projects.qmd
+          - deployment.qmd
+          - appendix/notation.qmd
+          - appendix/measure-probability-review.qmd
+          - appendix/software-setup.qmd
+          - references.qmd
+
+bibliography: bibliography/references.bib
+
+format:
+  html:
+    theme:
+      light: [cosmo, styles/styles.scss]
+      dark: [darkly, styles/styles-dark.scss]
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    number-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    link-external-newwindow: true
+    citation-location: margin
+    html-math-method: mathjax
+    callout-appearance: simple
+    fig-align: center
+    reference-location: document
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false
+  message: false
+  error: false
+
+crossref:
+  fig-title: "Figure"
+  tbl-title: "Table"
+  eq-prefix: "Eq."
+  sec-prefix: "Section"

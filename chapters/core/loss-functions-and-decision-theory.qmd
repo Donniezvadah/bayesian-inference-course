@@ -1,0 +1,347 @@
+---
+title: "Loss Functions, Decision Theory, and Bayesian Estimation"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- define actions, losses, and posterior risk formally;
+- derive Bayes estimators under quadratic, absolute, and 0-1 loss;
+- distinguish inferential summaries from decision rules;
+- derive classification thresholds under asymmetric costs;
+- explain why credible intervals and confidence intervals answer different questions.
+
+## 1. Why Decision Theory Is Central
+
+Bayesian statistics is often introduced as “updating beliefs.” That is incomplete. In practice, analysis is usually performed to support an action:
+
+- approve or reject a treatment;
+- classify an email as spam or not spam;
+- choose a production threshold;
+- allocate resources under uncertainty.
+
+Decision theory formalizes how posterior uncertainty should be translated into action [@berger1985; @bernardo1994]. The posterior alone is not a decision. A decision requires a loss or utility function.
+
+## 2. Formal Setup
+
+Let:
+
+- $\theta$ be the unknown state of nature;
+- $a \in \mathcal{A}$ be an action;
+- $L(a,\theta)$ be the loss incurred by taking action $a$ when $\theta$ is true.
+
+After observing data $y$, the posterior expected loss or **posterior risk** of action $a$ is
+
+$$
+\rho(a \mid y)
+=
+\mathbb{E}[L(a,\theta)\mid y]
+=
+\int L(a,\theta)\, p(\theta \mid y)\, d\theta.
+$$
+
+:::{.proposition}
+A Bayes action is any action
+
+$$
+a^\star(y) \in \arg\min_{a \in \mathcal{A}} \rho(a \mid y).
+$$
+
+That is, Bayesian decision making chooses the action minimizing posterior expected loss.
+:::
+
+This looks simple because it is simple. The difficult part is choosing a loss that reflects the actual scientific or operational objective.
+
+## 3. Quadratic Loss And The Posterior Mean
+
+Suppose the action space is scalar and the loss is quadratic:
+
+$$
+L(a,\theta)=(a-\theta)^2.
+$$
+
+Then
+
+$$
+\rho(a \mid y)
+=
+\mathbb{E}[(a-\theta)^2 \mid y].
+$$
+
+Expand the square:
+
+$$
+\rho(a \mid y)
+=
+a^2 - 2a\, \mathbb{E}[\theta \mid y] + \mathbb{E}[\theta^2 \mid y].
+$$
+
+Differentiate with respect to $a$:
+
+$$
+\frac{d}{da}\rho(a \mid y)
+=
+2a - 2\mathbb{E}[\theta \mid y].
+$$
+
+Setting the derivative to zero gives
+
+$$
+a^\star(y)=\mathbb{E}[\theta \mid y].
+$$
+
+Thus the posterior mean is the Bayes estimator under squared loss.
+
+### Interpretation
+
+Quadratic loss penalizes large errors disproportionately, so it favors an estimator that balances posterior mass in a least-squares sense. It is appropriate when symmetric errors are acceptable but larger errors are increasingly costly.
+
+## 4. Absolute Loss And The Posterior Median
+
+Now take
+
+$$
+L(a,\theta)=|a-\theta|.
+$$
+
+Then
+
+$$
+\rho(a \mid y)=\int |a-\theta|\, p(\theta \mid y)\, d\theta.
+$$
+
+Split the integral at $a$:
+
+$$
+\rho(a \mid y)
+=
+\int_{-\infty}^a (a-\theta)p(\theta \mid y)\, d\theta
++
+\int_a^\infty (\theta-a)p(\theta \mid y)\, d\theta.
+$$
+
+Differentiating with respect to $a$ gives
+
+$$
+\frac{d}{da}\rho(a \mid y)
+=
+\Pr(\theta \le a \mid y) - \Pr(\theta \ge a \mid y).
+$$
+
+Any minimizer therefore satisfies
+
+$$
+\Pr(\theta \le a^\star \mid y) \ge \tfrac12,
+\qquad
+\Pr(\theta \ge a^\star \mid y) \ge \tfrac12.
+$$
+
+That is exactly the defining property of a posterior median.
+
+## 5. 0-1 Loss And The Posterior Mode
+
+In a discrete action problem with action space equal to the parameter space, define
+
+$$
+L(a,\theta)=
+\begin{cases}
+0, & a=\theta, \\
+1, & a \neq \theta.
+\end{cases}
+$$
+
+Then
+
+$$
+\rho(a \mid y)
+=
+1-\Pr(\theta=a \mid y).
+$$
+
+Minimizing posterior risk is equivalent to maximizing posterior probability, so the Bayes rule is the posterior mode.
+
+For continuous parameters, exact 0-1 loss is less useful because point probabilities vanish; one then uses small-ball or approximation-style losses instead.
+
+## 6. Credible Sets Versus Confidence Intervals
+
+This comparison matters because it is frequently misunderstood.
+
+### Bayesian credible interval
+
+A $100(1-\alpha)\%$ credible interval $C(y)$ satisfies
+
+$$
+\Pr(\theta \in C(y) \mid y)=1-\alpha.
+$$
+
+The probability statement is about the parameter under the posterior distribution.
+
+### Frequentist confidence interval
+
+A $100(1-\alpha)\%$ confidence interval procedure satisfies
+
+$$
+\Pr_\theta\{\theta \in C(Y)\}=1-\alpha
+$$
+
+under repeated sampling at a fixed true parameter value.
+
+The probability statement is about the random interval-generating procedure, not the realized parameter after data are observed.
+
+They may coincide numerically in special cases, but they solve different inferential problems.
+
+## 7. Bayesian Classification Under Asymmetric Loss
+
+Suppose $\theta \in \{0,1\}$ indicates class membership and the action is also binary. Let the losses be:
+
+- $L(1,0)=c_{10}$ for a false positive;
+- $L(0,1)=c_{01}$ for a false negative;
+- zero for correct classification.
+
+The posterior risk of action $a=1$ is
+
+$$
+\rho(1 \mid y)=c_{10}\Pr(\theta=0 \mid y),
+$$
+
+and the posterior risk of action $a=0$ is
+
+$$
+\rho(0 \mid y)=c_{01}\Pr(\theta=1 \mid y).
+$$
+
+Choose class 1 if
+
+$$
+c_{10}\Pr(\theta=0 \mid y)
+<
+c_{01}\Pr(\theta=1 \mid y).
+$$
+
+Since $\Pr(\theta=0 \mid y)=1-\Pr(\theta=1 \mid y)$, this becomes
+
+$$
+\Pr(\theta=1 \mid y)
+>
+\frac{c_{10}}{c_{10}+c_{01}}.
+$$
+
+This is the Bayes classification threshold. Under symmetric costs, the threshold is $1/2$. Under asymmetric losses, it shifts.
+
+## 8. Hypothesis Testing And Model Comparison
+
+In Bayesian work, model comparison can be framed either:
+
+- probabilistically through posterior model probabilities and Bayes factors;
+- decision-theoretically through posterior expected utility or loss.
+
+Suppose there are models $M_1,\dots,M_K$ with prior model probabilities $\Pr(M_k)$. Then
+
+$$
+\Pr(M_k \mid y)
+=
+\frac{p(y \mid M_k)\Pr(M_k)}
+{\sum_{\ell=1}^K p(y \mid M_\ell)\Pr(M_\ell)}.
+$$
+
+The ratio
+
+$$
+\operatorname{BF}_{12}
+=
+\frac{p(y \mid M_1)}{p(y \mid M_2)}
+$$
+
+is the Bayes factor.
+
+### Decision-theoretic caution
+
+Bayes factors summarize evidence under the specified priors, but decision making still requires utility. A model with a larger posterior probability need not be the best choice if the downstream cost structure favors robustness or predictive performance.
+
+This is why mature Bayesian workflow often combines posterior model summaries with predictive criteria and explicit utility calculations [@robert2007; @vehtari2017].
+
+## 9. Worked Example: Bayes Estimators From A Beta Posterior
+
+Suppose
+
+$$
+\theta \mid y \sim \operatorname{Beta}(16,8).
+$$
+
+Then:
+
+- under squared loss, the Bayes estimator is the posterior mean $16/24=2/3$;
+- under absolute loss, it is the posterior median, which can be computed numerically;
+- under 0-1 style modal loss, it is the posterior mode
+  $$
+  \frac{16-1}{16+8-2}=\frac{15}{22},
+  $$
+  since both shape parameters exceed 1.
+
+The estimators differ because they optimize different objectives.
+
+## 10. `R` Implementation From Posterior Draws
+
+The companion lab is [decision_rules.R](../../labs/r/decision_rules.R). The core idea is that Bayes decisions can be computed directly from posterior samples.
+
+```r
+posterior_draws <- rbeta(50000, shape1 = 16, shape2 = 8)
+
+bayes_estimator_squared <- mean(posterior_draws)
+bayes_estimator_absolute <- median(posterior_draws)
+
+loss_01_ball <- function(a, theta, eps = 0.01) {
+  as.numeric(abs(a - theta) > eps)
+}
+
+grid <- seq(0.01, 0.99, length.out = 200)
+empirical_risk <- sapply(grid, function(a) {
+  mean((a - posterior_draws)^2)
+})
+
+grid[which.min(empirical_risk)]
+```
+
+This general sample-based strategy is indispensable once analytic posterior forms disappear.
+
+## 11. Common Pitfalls
+
+### Reporting estimators without reference to loss
+
+A posterior mean is not universally “the Bayesian estimate.” It is the Bayes estimate for one particular loss.
+
+### Treating posterior probability as a decision rule by itself
+
+Posterior probability must be combined with consequences.
+
+### Confusing uncertainty summaries with actions
+
+A credible interval summarizes uncertainty. It does not, by itself, tell you what to do.
+
+### Ignoring asymmetry
+
+Many scientific and policy decisions are asymmetric. False negatives and false positives often have very different costs.
+
+## 12. Exercises
+
+1. Derive the posterior median optimality condition under absolute loss in full detail.
+2. Show that the posterior mean minimizes posterior expected quadratic loss in vector form when the loss is $(a-\theta)^\top W (a-\theta)$ for positive definite $W$.
+3. Derive the asymmetric binary classification threshold given false-positive and false-negative costs.
+4. Compare a decision rule based on posterior expected utility with one based on Bayes factors alone.
+5. Give an example where the posterior mean is a poor decision because the loss is asymmetric.
+
+## 13. Summary
+
+Bayesian decision theory completes the inferential pipeline:
+
+- the posterior quantifies uncertainty;
+- the loss function quantifies consequences;
+- posterior risk combines the two;
+- Bayes rules minimize posterior expected loss.
+
+Once this is understood, the posterior mean, median, mode, classification thresholds, and model-choice rules all become special cases of the same general principle.
+
+## References
+
+Key references include @berger1985, @bernardo1994, @robert2007, and @gelman2013.

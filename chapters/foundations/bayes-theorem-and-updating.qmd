@@ -1,0 +1,401 @@
+---
+title: "Bayes' Theorem, Sequential Updating, and Posterior Prediction"
+---
+
+## Chapter Position
+
+This chapter is the fully written exemplar for Part I. It shows the intended style for the rest of the course: intuition, formal structure, derivations, worked examples, code, diagnostics, and exercises in one integrated chapter.
+
+## Learning Outcomes
+
+After working through this chapter, you should be able to:
+
+- derive Bayes' theorem in both discrete and density-based settings;
+- explain the roles of prior, likelihood, posterior, and marginal likelihood;
+- derive posterior predictive distributions explicitly;
+- show why sequential updating gives the same result as batch updating;
+- interpret exchangeability as a structural justification for Bayesian modeling.
+
+## 1. Why Bayes' Theorem Matters
+
+At a high level, Bayesian inference answers the following question:
+
+> Given a probabilistic model for data and a prior distribution over unknown parameters, how should uncertainty about the parameters change after observing data?
+
+Bayes' theorem is the algebraic identity that answers this question. But in serious statistical work, it is more than an identity. It is the organizing rule that connects:
+
+- scientific assumptions encoded in the prior;
+- data-generating assumptions encoded in the likelihood;
+- inferential uncertainty encoded in the posterior;
+- out-of-sample reasoning encoded in the posterior predictive distribution.
+
+The theorem itself is elementary. The difficulty lies in understanding what its pieces mean and how they behave in realistic models [@bernardo1994; @gelman2013].
+
+## 2. Formal Setup
+
+Suppose:
+
+- $\theta \in \Theta$ denotes an unknown parameter;
+- $y \in \mathcal{Y}$ denotes observed data;
+- $\pi(\theta)$ is a prior density or mass function for $\theta$;
+- $p(y \mid \theta)$ is the sampling model or likelihood;
+- $p(\theta \mid y)$ is the posterior.
+
+The joint distribution factors as
+
+$$
+p(\theta, y) = p(y \mid \theta)\pi(\theta).
+$$
+
+Marginalizing over $\theta$ yields the evidence or marginal likelihood
+
+$$
+p(y) = \int_{\Theta} p(y \mid \theta)\pi(\theta)\, d\theta,
+$$
+
+assuming the integral is finite.
+
+## 3. Bayes' Theorem
+
+:::{.theorem #thm-bayes}
+If $p(y) > 0$, then the posterior density or mass function is
+
+$$
+p(\theta \mid y) = \frac{p(y \mid \theta)\pi(\theta)}{p(y)}
+=
+\frac{p(y \mid \theta)\pi(\theta)}{\int_{\Theta} p(y \mid \vartheta)\pi(\vartheta)\, d\vartheta}.
+$$
+:::
+
+### Derivation
+
+Start from the product rule:
+
+$$
+p(\theta, y) = p(\theta \mid y)p(y).
+$$
+
+But the same joint distribution can also be written as
+
+$$
+p(\theta, y) = p(y \mid \theta)\pi(\theta).
+$$
+
+Equating the two factorizations gives
+
+$$
+p(\theta \mid y)p(y) = p(y \mid \theta)\pi(\theta),
+$$
+
+and therefore
+
+$$
+p(\theta \mid y) = \frac{p(y \mid \theta)\pi(\theta)}{p(y)}.
+$$
+
+Finally, since
+
+$$
+p(y)=\int_{\Theta} p(y \mid \vartheta)\pi(\vartheta)\, d\vartheta,
+$$
+
+we obtain the usual normalized form.
+
+### Why The Denominator Matters
+
+Many computational methods work with the posterior only up to proportionality:
+
+$$
+p(\theta \mid y) \propto p(y \mid \theta)\pi(\theta).
+$$
+
+That simplification is useful for MCMC and optimization, but it can hide an important conceptual fact: the denominator is not decorative. It is the model-implied probability of the observed data under the prior and plays a central role in model comparison, Bayes factors, and predictive reasoning [@robert2007].
+
+## 4. Likelihood Versus Posterior
+
+The likelihood $p(y \mid \theta)$ is a function of $\theta$ with $y$ fixed. It is not generally a probability distribution over $\theta$ because it need not integrate to one over the parameter space.
+
+The posterior $p(\theta \mid y)$ is a probability distribution over $\theta$. It combines:
+
+- the data through the likelihood;
+- prior information or regularization through $\pi(\theta)$;
+- normalization through the marginal likelihood.
+
+This distinction is fundamental. In Bayesian inference, the posterior is the inferential object; the likelihood is one component used to build it.
+
+## 5. Posterior Prediction
+
+Inference about parameters is rarely the end of the story. Usually we care about future or replicated data $\tilde{y}$.
+
+:::{.proposition #prp-posterior-predictive}
+The posterior predictive distribution is
+
+$$
+p(\tilde{y} \mid y) = \int p(\tilde{y} \mid \theta)\, p(\theta \mid y)\, d\theta.
+$$
+:::
+
+### Derivation
+
+Condition on $\theta$ and integrate it out:
+
+$$
+p(\tilde{y} \mid y)
+= \int p(\tilde{y}, \theta \mid y)\, d\theta
+= \int p(\tilde{y} \mid \theta, y)\, p(\theta \mid y)\, d\theta.
+$$
+
+If the future data are conditionally independent of the observed data given the parameter, then
+
+$$
+p(\tilde{y} \mid \theta, y) = p(\tilde{y} \mid \theta),
+$$
+
+so
+
+$$
+p(\tilde{y} \mid y)=\int p(\tilde{y} \mid \theta)p(\theta \mid y)\, d\theta.
+$$
+
+This integral shows that Bayesian prediction averages over parameter uncertainty rather than plugging in a single estimate.
+
+## 6. Sequential Updating
+
+One of the cleanest features of Bayesian inference is that learning is recursive. Suppose the data arrive in a stream $y_{1:t} = (y_1, \dots, y_t)$. Then
+
+$$
+p(\theta \mid y_{1:t})
+\propto
+p(y_t \mid \theta, y_{1:t-1})\, p(\theta \mid y_{1:t-1}).
+$$
+
+If the data are conditionally independent given $\theta$, this simplifies to
+
+$$
+p(\theta \mid y_{1:t})
+\propto
+p(y_t \mid \theta)\, p(\theta \mid y_{1:t-1}).
+$$
+
+The posterior at time $t-1$ becomes the prior at time $t$.
+
+### Why Batch And Sequential Updating Agree
+
+For conditionally independent data,
+
+$$
+p(\theta \mid y_{1:n})
+\propto
+\left(\prod_{i=1}^n p(y_i \mid \theta)\right)\pi(\theta).
+$$
+
+Sequentially applying the recursion multiplies the same likelihood factors in the same product, so batch and sequential analysis yield the same posterior.
+
+This is one reason Bayesian methods are natural for online and streaming settings.
+
+## 7. Exchangeability And De Finetti Intuition
+
+Independent and identically distributed observations are often introduced first in statistics, but Bayesian modeling typically begins one level deeper: with **exchangeability**.
+
+A sequence $(Y_1, Y_2, \dots)$ is exchangeable if for every finite $n$ and every permutation $\sigma$ of $\{1,\dots,n\}$,
+
+$$
+p(y_1,\dots,y_n)=p(y_{\sigma(1)},\dots,y_{\sigma(n)}).
+$$
+
+Exchangeability says the joint distribution does not depend on labeling order. De Finetti's representation theorem gives the intuition that an exchangeable sequence can often be understood as conditionally i.i.d. given some latent quantity [@definetti1974].
+
+This matters because it explains why hierarchical and latent-variable models are so natural in Bayesian statistics. Exchangeability motivates modeling units as similar but not identical, which becomes partial pooling later in the course.
+
+## 8. Worked Example: Beta-Binomial Updating
+
+Suppose
+
+$$
+Y \mid \theta \sim \operatorname{Binomial}(n, \theta),
+\qquad
+\theta \sim \operatorname{Beta}(\alpha, \beta),
+$$
+
+with prior density
+
+$$
+\pi(\theta) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}
+\theta^{\alpha-1}(1-\theta)^{\beta-1},
+\qquad 0 < \theta < 1.
+$$
+
+The likelihood for observing $Y=y$ is
+
+$$
+p(y \mid \theta)
+=
+\binom{n}{y}\theta^y(1-\theta)^{n-y}.
+$$
+
+### Posterior Derivation
+
+Multiply prior and likelihood:
+
+$$
+p(\theta \mid y)
+\propto
+\theta^y(1-\theta)^{n-y}
+\theta^{\alpha-1}(1-\theta)^{\beta-1}.
+$$
+
+Collect exponents:
+
+$$
+p(\theta \mid y)
+\propto
+\theta^{\alpha+y-1}(1-\theta)^{\beta+n-y-1}.
+$$
+
+Therefore
+
+$$
+\theta \mid y \sim \operatorname{Beta}(\alpha + y, \beta + n - y).
+$$
+
+This is the simplest example of conjugacy.
+
+### Posterior Mean And Variance
+
+For a $\operatorname{Beta}(a,b)$ random variable,
+
+$$
+\mathbb{E}[\theta] = \frac{a}{a+b},
+\qquad
+\operatorname{Var}(\theta) = \frac{ab}{(a+b)^2(a+b+1)}.
+$$
+
+Hence,
+
+$$
+\mathbb{E}[\theta \mid y]
+=
+\frac{\alpha+y}{\alpha+\beta+n}.
+$$
+
+This can be rewritten as
+
+$$
+\mathbb{E}[\theta \mid y]
+=
+\frac{\alpha+\beta}{\alpha+\beta+n}\cdot \frac{\alpha}{\alpha+\beta}
+\;+\;
+\frac{n}{\alpha+\beta+n}\cdot \frac{y}{n},
+$$
+
+which shows the posterior mean as a weighted average of the prior mean and the sample proportion.
+
+### Posterior Predictive
+
+For one future Bernoulli observation $\tilde{Y}$,
+
+$$
+\Pr(\tilde{Y}=1 \mid y)
+=
+\int_0^1 \theta\, p(\theta \mid y)\, d\theta
+=
+\mathbb{E}[\theta \mid y]
+=
+\frac{\alpha+y}{\alpha+\beta+n}.
+$$
+
+For $m$ future trials, the posterior predictive count is Beta-Binomial:
+
+$$
+\Pr(\tilde{Y}=k \mid y)
+=
+\binom{m}{k}
+\frac{B(\alpha+y+k,\ \beta+n-y+m-k)}
+{B(\alpha+y,\ \beta+n-y)}.
+$$
+
+### Marginal Likelihood
+
+The evidence is
+
+$$
+p(y)
+=
+\binom{n}{y}
+\frac{B(\alpha+y,\ \beta+n-y)}{B(\alpha,\beta)}.
+$$
+
+This quantity is useful for model comparison but highly sensitive to prior choice.
+
+## 9. `R` Implementation
+
+The following code reproduces the analytic posterior, posterior predictive, and a simple visualization. A runnable version also lives in [beta_binomial.R](../../labs/r/beta_binomial.R).
+
+```r
+beta_binomial_update <- function(y, n, alpha, beta) {
+  list(
+    alpha_post = alpha + y,
+    beta_post = beta + n - y,
+    post_mean = (alpha + y) / (alpha + beta + n),
+    post_var = ((alpha + y) * (beta + n - y)) /
+      (((alpha + beta + n)^2) * (alpha + beta + n + 1))
+  )
+}
+
+beta_binomial_predictive <- function(k, m, y, n, alpha, beta) {
+  choose(m, k) *
+    beta(alpha + y + k, beta + n - y + m - k) /
+    beta(alpha + y, beta + n - y)
+}
+
+grid <- seq(0.001, 0.999, length.out = 500)
+prior <- dbeta(grid, 2, 2)
+post  <- dbeta(grid, 2 + 14, 2 + 20 - 14)
+
+plot(grid, prior, type = "l", lwd = 2, col = "steelblue",
+     ylab = "Density", xlab = expression(theta))
+lines(grid, post, lwd = 2, col = "firebrick")
+legend("topright", legend = c("Prior", "Posterior"),
+       col = c("steelblue", "firebrick"), lwd = 2, bty = "n")
+```
+
+## 10. Diagnostics, Pitfalls, And Conceptual Checks
+
+### Prior sensitivity
+
+Even in the Beta-Binomial model, different prior concentrations can materially change the posterior in small samples. This is a feature, not a bug. Priors encode information, and small data sets cannot erase strong prior assumptions automatically.
+
+### Posterior propriety
+
+Improper priors can be useful in some settings, but one must check whether the resulting posterior is proper. A posterior that does not integrate to one is not a valid inferential distribution.
+
+### Evidence is not “the probability the model is true”
+
+The marginal likelihood $p(y)$ is the probability of the observed data under the model and prior, not the posterior probability of the model itself. Posterior model probabilities require prior probabilities on models as well.
+
+### Posterior prediction is not plug-in prediction
+
+Bayesian predictive distributions integrate over $\theta$. Replacing $\theta$ by a point estimate underestimates predictive uncertainty whenever parameter uncertainty matters.
+
+## 11. Exercises
+
+1. Derive the posterior for a Gamma-Poisson model and show the predictive count is negative binomial.
+2. Show algebraically that sequential updating and batch updating are identical for the Beta-Binomial model.
+3. For a Beta$(\alpha,\beta)$ prior, derive the prior predictive distribution of $Y \sim \text{Binomial}(n,\theta)$.
+4. Compare the posteriors from Beta$(1,1)$, Beta$(2,2)$, and Beta$(20,20)$ priors after observing $y=3$ successes in $n=5$ trials. Explain the differences.
+5. Explain why exchangeability is weaker than independence but still enough to motivate latent-variable Bayesian models.
+
+## 12. Summary
+
+Bayes' theorem turns prior information and sampling assumptions into posterior inference. Its real statistical value appears in four facts:
+
+- the posterior is built from prior and likelihood;
+- the posterior predictive integrates over parameter uncertainty;
+- updating is sequential and recursive;
+- exchangeability provides a conceptual bridge from symmetry assumptions to latent Bayesian structure.
+
+These ideas will recur in every later chapter, from conjugate models to HMC, hierarchical modeling, and Bayesian workflow.
+
+## References
+
+Key references for this chapter include @bernardo1994, @jaynes2003, @gelman2013, @hoff2009, and @definetti1974.

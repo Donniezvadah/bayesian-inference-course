@@ -1,0 +1,298 @@
+---
+title: "Stan Workflow for Hierarchical Models and HMC Diagnostics"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- translate a hierarchical model into Stan blocks;
+- explain why centered and non-centered parameterizations behave differently;
+- fit a multilevel model using `cmdstanr`;
+- interpret divergences, ESS, $\hat{R}$, treedepth warnings, and E-BFMI;
+- tune Stan responsibly rather than blindly.
+
+## 1. Why Stan
+
+`Stan` is a probabilistic programming language built around gradient-based posterior computation using Hamiltonian Monte Carlo and the No-U-Turn Sampler [@carpenter2017; @hoffman2014]. It is especially effective for continuous-parameter Bayesian models where posterior geometry matters.
+
+Stan is not just a modeling language. It is a workflow:
+
+1. write a generative model clearly;
+2. fit it with HMC/NUTS;
+3. inspect diagnostics;
+4. revise parameterization or prior structure if geometry is problematic;
+5. perform predictive checks and sensitivity analysis.
+
+## 2. The Eight Schools Model
+
+The eight-schools problem is small, but it exhibits one of the most important geometric pathologies in Bayesian computation: the hierarchical funnel.
+
+Suppose observed treatment effects are
+
+$$
+y_j \mid \theta_j \sim \mathcal{N}(\theta_j, \sigma_j^2), \qquad j=1,\dots,J,
+$$
+
+with hierarchical prior
+
+$$
+\theta_j \mid \mu,\tau \sim \mathcal{N}(\mu, \tau^2).
+$$
+
+Hyperpriors complete the model, for example
+
+$$
+\mu \sim \mathcal{N}(0, 5^2),
+\qquad
+\tau \sim \mathcal{N}^+(0, 5^2).
+$$
+
+The joint posterior is
+
+$$
+p(\mu,\tau,\theta_{1:J}\mid y)
+\propto
+\left[\prod_{j=1}^J \mathcal{N}(y_j \mid \theta_j,\sigma_j^2)\right]
+\left[\prod_{j=1}^J \mathcal{N}(\theta_j \mid \mu,\tau^2)\right]
+\mathcal{N}(\mu \mid 0,5^2)\mathcal{N}^+(\tau \mid 0,5^2).
+$$
+
+When $\tau$ is near zero, the conditional distribution of the school effects becomes sharply concentrated around $\mu$. This creates the funnel geometry that challenges HMC in centered parameterizations [@betancourt2017].
+
+## 3. Centered Versus Non-Centered Parameterization
+
+### Centered form
+
+The centered formulation samples $\theta_j$ directly:
+
+$$
+\theta_j \sim \mathcal{N}(\mu,\tau^2).
+$$
+
+This is intuitive and often efficient when group-level information is strong.
+
+### Non-centered form
+
+Introduce auxiliary standard normal variables:
+
+$$
+z_j \sim \mathcal{N}(0,1),
+\qquad
+\theta_j = \mu + \tau z_j.
+$$
+
+The posterior in $(\mu,\tau,z)$ coordinates often has better geometry when the data are weak or when $\tau$ is weakly identified.
+
+### Why this matters
+
+The two parameterizations define the same model but induce different posterior geometry in unconstrained coordinates. HMC cares about geometry, so parameterization is computationally substantive even when inferentially equivalent.
+
+## 4. Complete Stan Program
+
+The following model is also stored in [eight_schools.stan](../../labs/stan/eight_schools.stan).
+
+```stan
+data {
+  int<lower=1> J;
+  array[J] real y;
+  array[J] real<lower=0> sigma;
+}
+
+parameters {
+  real mu;
+  real<lower=0> tau;
+  vector[J] z;
+}
+
+transformed parameters {
+  vector[J] theta;
+  theta = mu + tau * z;
+}
+
+model {
+  mu ~ normal(0, 5);
+  tau ~ normal(0, 5);
+  z ~ normal(0, 1);
+  y ~ normal(theta, sigma);
+}
+
+generated quantities {
+  array[J] real y_rep;
+  vector[J] log_lik;
+
+  for (j in 1:J) {
+    y_rep[j] = normal_rng(theta[j], sigma[j]);
+    log_lik[j] = normal_lpdf(y[j] | theta[j], sigma[j]);
+  }
+}
+```
+
+## 5. Reading The Stan Blocks Correctly
+
+### `data`
+
+Defines observed inputs. Keep this block minimal and explicit.
+
+### `parameters`
+
+Declares unknown quantities to be sampled. Stan automatically transforms constrained parameters, such as `real<lower=0> tau`, to an unconstrained space for HMC.
+
+### `transformed parameters`
+
+Stores deterministic transformations that should be available as generated draws. In the non-centered form, the latent school effects belong here because they are deterministic functions of sampled parameters.
+
+### `model`
+
+Contains priors and likelihood contributions. Every statement increments the log posterior density.
+
+### `generated quantities`
+
+Used for posterior predictive draws, log-likelihood contributions, and any derived quantities that do not influence the sampler but are needed for criticism or reporting.
+
+## 6. Fitting From `R` With `cmdstanr`
+
+The wrapper below is also available in [fit_eight_schools.R](../../labs/r/fit_eight_schools.R).
+
+```r
+library(cmdstanr)
+library(posterior)
+library(bayesplot)
+
+schools_data <- list(
+  J = 8,
+  y = c(28, 8, -3, 7, -1, 1, 18, 12),
+  sigma = c(15, 10, 16, 11, 9, 11, 10, 18)
+)
+
+mod <- cmdstan_model("labs/stan/eight_schools.stan")
+
+fit <- mod$sample(
+  data = schools_data,
+  seed = 1234,
+  chains = 4,
+  parallel_chains = 4,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  adapt_delta = 0.95,
+  max_treedepth = 12
+)
+
+fit$summary(c("mu", "tau", "theta"))
+fit$cmdstan_diagnose()
+```
+
+## 7. What Stan Diagnostics Mean
+
+### Divergences
+
+Divergences indicate numerical difficulty integrating the Hamiltonian dynamics. In practice they usually mean the posterior has regions of high curvature that the current parameterization or tuning cannot traverse faithfully.
+
+Important point: divergences are not mere warnings. They can bias posterior estimates if ignored [@betancourt2017].
+
+### $\hat{R}$
+
+Values near 1 indicate between-chain and within-chain variation agree reasonably well, but good $\hat{R}$ does not imply the model is well specified.
+
+### ESS
+
+Bulk ESS measures precision for central posterior summaries; tail ESS targets quantiles and tail behavior. Both matter.
+
+### E-BFMI
+
+Energy Bayesian fraction of missing information diagnoses whether the momentum resampling in HMC explores the energy distribution adequately. Low values can indicate poor geometry or adaptation.
+
+### Maximum treedepth warnings
+
+These indicate that the NUTS trajectory repeatedly hits the allowed trajectory cap. Sometimes more depth helps; often it simply reveals that the model geometry needs attention.
+
+## 8. Tuning Strategy
+
+The right order of operations is:
+
+1. check the model and priors;
+2. standardize predictors or rescale parameters if needed;
+3. prefer non-centered parameterizations when weak data induce funnel geometry;
+4. only then adjust `adapt_delta`, `max_treedepth`, or initialization.
+
+### About `adapt_delta`
+
+Increasing `adapt_delta` reduces the HMC step size and can remove some divergences, but it also increases computation. If a modest increase fixes a few numerical issues, fine. If a large increase is needed, the geometry is probably the real problem.
+
+### About `max_treedepth`
+
+Increasing treedepth helps only when the sampler genuinely needs longer trajectories to traverse a benign but elongated posterior. It does not fix pathological curvature.
+
+## 9. Posterior Predictive Checks
+
+Because the model includes `y_rep` in generated quantities, posterior predictive checks are immediate:
+
+```r
+draws_yrep <- fit$draws("y_rep")
+yrep_matrix <- posterior::as_draws_matrix(draws_yrep)
+
+bayesplot::ppc_dens_overlay(
+  y = schools_data$y,
+  yrep = yrep_matrix[1:200, ]
+)
+```
+
+A good workflow pairs this with substantive residual reasoning: does the model miss heteroskedasticity, heavy tails, or outlying schools?
+
+## 10. Pointwise Log Likelihood And PSIS-LOO
+
+Including `log_lik` in generated quantities enables predictive model assessment:
+
+```r
+library(loo)
+
+log_lik <- fit$draws("log_lik", format = "matrix")
+loo_result <- loo(log_lik)
+print(loo_result)
+```
+
+This is often more appropriate for practical model comparison than Bayes factors because it focuses on predictive adequacy and is less sensitive to arbitrary prior mass in diffuse regions [@vehtari2017].
+
+## 11. Common Mistakes In Stan Workflow
+
+### Mistake 1: weak priors that create weak geometry
+
+Diffuse priors can destabilize sampling and produce implausible prior predictive implications. Weakly informative priors are usually better than “flat” priors.
+
+### Mistake 2: using tuning to avoid rethinking the model
+
+If the model is badly parameterized, more warmup and higher `adapt_delta` are only partial patches.
+
+### Mistake 3: skipping generated quantities
+
+Without posterior predictive quantities or log-likelihood contributions, the fitted model is harder to criticize and compare.
+
+### Mistake 4: reading only one summary table
+
+Stan workflow requires:
+
+- numeric summaries;
+- trace plots;
+- divergence inspection;
+- predictive checks;
+- sensitivity analysis.
+
+## 12. Exercises
+
+1. Write the centered version of the eight-schools model in Stan and compare diagnostics to the non-centered form.
+2. Modify the Stan program to include a heavier-tailed prior on $\tau$ and discuss the computational consequences.
+3. Add a posterior predictive discrepancy based on standardized residual spread.
+4. Explain why the non-centered parameterization changes geometry but not the underlying statistical model.
+
+## 13. Summary
+
+Stan is most powerful when treated as part of a disciplined Bayesian workflow. The central lessons of this chapter are:
+
+- hierarchical models create geometry that matters computationally;
+- non-centered parameterizations can dramatically improve sampling;
+- diagnostics should be interpreted as information about posterior geometry, not as bureaucratic checkboxes;
+- posterior predictive and predictive-evaluation workflows belong inside the model implementation.
+
+## References
+
+The most relevant references are @carpenter2017, @hoffman2014, @betancourt2017, @vehtari2017, and @vehtari2021.

@@ -1,0 +1,320 @@
+---
+title: "JAX for Gradient-Based Bayesian Computation"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- explain why `JAX` is useful in Bayesian computation;
+- write log posterior functions in pure Python/JAX code;
+- compute gradients and Hessians automatically;
+- obtain MAP estimates and Laplace approximations;
+- implement a basic HMC-style integrator using JAX primitives.
+
+## 1. Why JAX Belongs In This Course
+
+This course is centered on `R` and `Stan`, but `JAX` serves a distinct purpose: it exposes the computational anatomy of modern Bayesian methods. Where Stan gives a robust high-level inference engine, JAX gives transparent access to:
+
+- log posterior evaluation;
+- automatic differentiation;
+- vectorization and just-in-time compilation;
+- custom optimization and custom gradient-based Monte Carlo.
+
+JAX runs as **Python code**. In a Quarto course centered on `R` and `Stan`, that means there are two clean integration strategies:
+
+1. keep JAX examples in dedicated Python scripts or notebooks and link them from the site;
+2. optionally render Python/JAX notebooks through Quarto when a Python environment is available.
+
+For this repository, the first strategy is used for robustness. The companion script is [jax_logistic_map_hmc.py](../../labs/jax/jax_logistic_map_hmc.py).
+
+## 2. Example Model: Bayesian Logistic Regression
+
+Consider binary responses $y_i \in \{0,1\}$ with predictors $x_i \in \mathbb{R}^p$. Let
+
+$$
+y_i \mid \beta \sim \operatorname{Bernoulli}(\sigma(x_i^\top \beta)),
+$$
+
+where $\sigma(a)=1/(1+e^{-a})$ is the logistic function.
+
+Assume an independent Gaussian prior:
+
+$$
+\beta \sim \mathcal{N}(0, s^2 I_p).
+$$
+
+Then the log posterior, up to an additive constant, is
+
+$$
+\log \tilde{\pi}(\beta)
+=
+\sum_{i=1}^n \left[
+y_i x_i^\top \beta - \log(1+\exp(x_i^\top \beta))
+\right]
+- \frac{1}{2s^2}\beta^\top\beta.
+$$
+
+This model is ideal for JAX because it has:
+
+- a smooth objective;
+- analytically meaningful gradients and Hessians;
+- direct connection to both MAP optimization and HMC.
+
+## 3. Writing A Stable Log Posterior In JAX
+
+Numerical stability matters. Instead of writing $\log(1+\exp(\eta))$ naively, it is better to use `jax.nn.softplus`.
+
+```python
+import jax
+import jax.numpy as jnp
+
+def log_posterior(beta, X, y, prior_scale=2.5):
+    eta = X @ beta
+    loglik = jnp.sum(y * eta - jax.nn.softplus(eta))
+    logprior = -0.5 * jnp.sum((beta / prior_scale) ** 2)
+    return loglik + logprior
+```
+
+This function is pure, vectorized, and differentiable. That is exactly the structure JAX wants.
+
+## 4. Automatic Differentiation
+
+One line gives the gradient:
+
+```python
+grad_log_posterior = jax.grad(log_posterior)
+```
+
+One line gives the Hessian:
+
+```python
+hess_log_posterior = jax.hessian(log_posterior)
+```
+
+Mathematically, the gradient is
+
+$$
+\nabla_\beta \log \tilde{\pi}(\beta)
+=
+X^\top(y - p) - \frac{1}{s^2}\beta,
+$$
+
+where $p_i=\sigma(x_i^\top \beta)$. The Hessian is
+
+$$
+\nabla_\beta^2 \log \tilde{\pi}(\beta)
+=
+-X^\top W X - \frac{1}{s^2} I_p,
+$$
+
+with $W=\operatorname{diag}(p_i(1-p_i))$.
+
+JAX does not require us to derive these expressions by hand, but understanding them is still important because they explain curvature, optimization stability, and local posterior shape.
+
+## 5. MAP Estimation
+
+The MAP estimate solves
+
+$$
+\hat{\beta}_{\text{MAP}} = \arg\max_\beta \log \tilde{\pi}(\beta).
+$$
+
+This is equivalent to minimizing the negative log posterior:
+
+$$
+U(\beta) = -\log \tilde{\pi}(\beta).
+$$
+
+### Newton updates
+
+Because the Hessian is available, Newton's method is natural:
+
+$$
+\beta^{(t+1)} = \beta^{(t)} - H(\beta^{(t)})^{-1} g(\beta^{(t)}),
+$$
+
+where
+
+- $g(\beta)=\nabla U(\beta)$,
+- $H(\beta)=\nabla^2 U(\beta)$.
+
+```python
+def newton_map(beta_init, X, y, prior_scale=2.5, n_steps=8):
+    beta = beta_init
+
+    def neg_log_post(b):
+        return -log_posterior(b, X, y, prior_scale)
+
+    grad_u = jax.grad(neg_log_post)
+    hess_u = jax.hessian(neg_log_post)
+
+    for step in range(n_steps):
+        g = grad_u(beta)
+        H = hess_u(beta)
+        step_direction = jnp.linalg.solve(H, g)
+        beta = beta - step_direction
+
+    return beta
+```
+
+The MAP is not a full Bayesian answer, but it is useful for:
+
+- initialization;
+- Laplace approximation;
+- curvature inspection;
+- optimization-based comparisons.
+
+## 6. Laplace Approximation
+
+Once the MAP estimate $\hat{\beta}$ is available, approximate the posterior locally by a Gaussian:
+
+$$
+\beta \mid y \approx \mathcal{N}\!\left(\hat{\beta},\, H(\hat{\beta})^{-1}\right),
+$$
+
+where $H(\hat{\beta})$ is the Hessian of the negative log posterior at the mode.
+
+This follows from a second-order Taylor expansion:
+
+$$
+\log \tilde{\pi}(\beta)
+\approx
+\log \tilde{\pi}(\hat{\beta})
+- \frac{1}{2}(\beta-\hat{\beta})^\top H(\hat{\beta})(\beta-\hat{\beta}).
+$$
+
+The Laplace approximation is often useful as a baseline, but it can fail badly for skewed, multimodal, or weakly identified posteriors.
+
+## 7. HMC-Style Building Blocks In JAX
+
+To understand HMC, define the potential energy
+
+$$
+U(\beta) = -\log \tilde{\pi}(\beta)
+$$
+
+and introduce auxiliary momentum $r \sim \mathcal{N}(0, M)$. The Hamiltonian is
+
+$$
+H(\beta, r) = U(\beta) + \frac{1}{2} r^\top M^{-1} r.
+$$
+
+For a Euclidean mass matrix $M=I$, the leapfrog integrator becomes:
+
+```python
+def leapfrog(position, momentum, step_size, n_steps, X, y, prior_scale=2.5):
+    def potential(q):
+        return -log_posterior(q, X, y, prior_scale)
+
+    grad_u = jax.grad(potential)
+    q = position
+    p = momentum - 0.5 * step_size * grad_u(q)
+
+    for step in range(n_steps):
+        q = q + step_size * p
+        if step != n_steps - 1:
+            p = p - step_size * grad_u(q)
+
+    p = p - 0.5 * step_size * grad_u(q)
+    return q, -p
+```
+
+This is not a production NUTS implementation. It is a pedagogical kernel that exposes the computational logic directly:
+
+- gradients move the momentum;
+- momentum moves the position;
+- the symplectic map approximately conserves Hamiltonian energy.
+
+## 8. A Basic HMC Step
+
+```python
+def hmc_step(key, position, step_size, n_steps, X, y, prior_scale=2.5):
+    momentum_key, accept_key = jax.random.split(key)
+    momentum = jax.random.normal(momentum_key, shape=position.shape)
+
+    def potential(q):
+        return -log_posterior(q, X, y, prior_scale)
+
+    def kinetic(p):
+        return 0.5 * jnp.dot(p, p)
+
+    proposed_q, proposed_p = leapfrog(
+        position, momentum, step_size, n_steps, X, y, prior_scale
+    )
+
+    current_H = potential(position) + kinetic(momentum)
+    proposed_H = potential(proposed_q) + kinetic(proposed_p)
+    log_alpha = current_H - proposed_H
+
+    accept = jnp.log(jax.random.uniform(accept_key)) < log_alpha
+    new_position = jnp.where(accept, proposed_q, position)
+    return new_position, accept
+```
+
+This code is intentionally simple. Its purpose is not to compete with Stan; its purpose is to reveal how gradients, leapfrog integration, and Metropolis correction fit together.
+
+## 9. Where JAX Fits Relative To Stan
+
+### Use Stan when
+
+- you want robust, general-purpose HMC/NUTS;
+- diagnostics and model criticism are the priority;
+- the model fits Stan's continuous-parameter framework.
+
+### Use JAX when
+
+- you want direct control over objectives, gradients, and Hessians;
+- you are prototyping custom algorithms;
+- you want to combine Bayesian computation with differentiable programming pipelines.
+
+In other words, Stan is the better default inference engine. JAX is the better environment for algorithmic transparency and experimentation.
+
+## 10. Environment Requirements
+
+The JAX material is Python-based. To run it locally:
+
+```bash
+python -m pip install -r requirements.txt
+python labs/jax/jax_logistic_map_hmc.py
+```
+
+For online use, Binder or Codespaces is recommended. JAX is not well suited to pure in-browser Pyodide execution, so the course keeps JAX execution outside the static site itself.
+
+## 11. Common Pitfalls
+
+### Numerical instability
+
+Naive exponentials in logistic models can overflow. Use `softplus` and stable transformations.
+
+### Optimizer convergence is not posterior convergence
+
+A MAP estimate can be useful, but it does not characterize posterior uncertainty by itself.
+
+### Hidden side effects break JAX transformations
+
+JAX works best with pure functions. Code written with mutation-heavy patterns is harder to differentiate and compile.
+
+### Small pedagogical HMC kernels are not production samplers
+
+A basic HMC demonstration is excellent for learning. It is not a substitute for a mature NUTS implementation with adaptation and diagnostics.
+
+## 12. Exercises
+
+1. Derive the gradient and Hessian of the Bayesian logistic regression log posterior.
+2. Implement gradient ascent and Newton updates and compare convergence.
+3. Build a Laplace approximation at the MAP and compare its posterior standard deviations with those from a small HMC run.
+4. Experiment with leapfrog step size and number of steps. Describe how acceptance probability changes.
+
+## 13. Summary
+
+JAX is the course's bridge between Bayesian statistics and differentiable scientific computing. The key ideas are:
+
+- a posterior can be represented as a pure log density function;
+- automatic differentiation gives gradients and Hessians essentially for free once the model is coded correctly;
+- MAP and Laplace approximations are natural first uses of autodiff;
+- HMC can be understood mechanically by implementing its building blocks directly.
+
+## References
+
+Key references for this chapter are @jax2018, @numpyro2020, @betancourt2017, and @murphy2023.

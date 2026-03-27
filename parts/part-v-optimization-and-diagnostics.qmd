@@ -1,0 +1,158 @@
+---
+title: "Part V. Optimization, Tuning, and Diagnostics"
+---
+
+## Part Overview
+
+Part V makes the course operational. Bayesian methods are only as credible as their optimization, tuning, diagnostics, and model criticism practices.
+
+## Part Learning Goals
+
+By the end of Part V, learners should be able to:
+
+- connect MAP estimation to optimization and regularization;
+- tune HMC, MCMC, and variational methods deliberately;
+- diagnose convergence and model misfit using modern Bayesian workflow tools;
+- communicate what diagnostics can and cannot certify.
+
+## Chapter 21. Optimization Techniques in Bayesian Statistics
+
+### Core question
+
+When does posterior mode optimization help, and how does it relate to full Bayesian inference?
+
+### Section blueprint
+
+- MAP estimation.
+- Penalized likelihood connections.
+- Gradient descent and Newton-Raphson.
+- Quasi-Newton and coordinate descent.
+- Stochastic gradient methods.
+- Natural-gradient overview.
+- Constrained optimization and Lagrange multipliers.
+
+### Derivations that must appear
+
+- MAP as maximization of log likelihood plus log prior.
+- Newton step from second-order Taylor expansion.
+- Coordinate descent idea in separable penalties.
+- Constrained MAP via Lagrangian formulation.
+
+### Computational lab
+
+- Compute MAP for logistic regression in `R` and `JAX`.
+- Compare MAP, posterior mean, and Laplace approximation.
+- Examine sensitivity to optimization initialization in non-convex settings.
+
+### Common pitfalls
+
+- Treating MAP as a substitute for posterior uncertainty.
+- Ignoring posterior curvature when reporting only point estimates.
+- Applying Newton methods without checking Hessian stability.
+
+### Exercises
+
+- Derive the MAP objective for Bayesian linear regression.
+- Compute one Newton step for logistic regression.
+
+### Core references
+
+- @mackay2003
+- @murphy2023
+- @bishop2006
+
+## Chapter 22. Tuning and Calibration
+
+### Core question
+
+How should algorithmic hyperparameters be chosen so that computation is stable, efficient, and diagnostically trustworthy?
+
+### Section blueprint
+
+- Tuning proposal scales in MCMC.
+- Choosing warmup, chain length, and number of chains.
+- Stan controls: `adapt_delta`, `max_treedepth`, and initialization.
+- Selecting variational families and optimization schedules.
+- Tuning gradient-based optimizers in JAX.
+- Hyperparameter sensitivity versus prior sensitivity.
+
+### Derivations that must appear
+
+- Acceptance rate trade-offs in random-walk proposals.
+- ESS and Monte Carlo error as functions of autocorrelation.
+- Step-size stability intuition for gradient methods.
+
+### Computational lab
+
+- Tune a random-walk Metropolis sampler and compare ESS per second.
+- Fit the same Stan model under several `adapt_delta` settings.
+- Compare learning-rate schedules for a JAX MAP optimizer.
+
+### Common pitfalls
+
+- Using longer chains instead of fixing poor geometry.
+- Overfitting optimizer hyperparameters to one data set.
+- Confusing computational tuning with model specification.
+
+### Exercises
+
+- Explain when increasing `max_treedepth` helps and when it only masks problems.
+- Compare fixed and adaptive proposal scales on a skewed target.
+
+### Core references
+
+- @hoffman2014
+- @betancourt2017
+- @vehtari2021
+
+## Chapter 23. Diagnostics and Model Criticism
+
+### Core question
+
+How do we determine whether posterior computation is trustworthy and whether the model is scientifically adequate?
+
+### Section blueprint
+
+- Prior predictive checks.
+- Posterior predictive checks.
+- Residual diagnostics.
+- Simulation-based calibration.
+- $\hat{R}$, ESS, trace plots, and autocorrelation.
+- Divergences and E-BFMI.
+- WAIC and PSIS-LOO.
+- Bayes factors, stacking, and model averaging.
+- Sensitivity analysis.
+
+### Derivations that must appear
+
+- Posterior predictive discrepancy construction.
+- SBC rank-uniformity intuition.
+- ESS from autocorrelation sums.
+- PSIS-LOO rationale and importance-weight stabilization overview.
+
+### Computational lab
+
+- Posterior predictive checks in `bayesplot`.
+- Compute PSIS-LOO and compare to WAIC.
+- Diagnose divergences in a hierarchical model and trace them to geometry.
+- Run a small SBC experiment for a simple model.
+
+### Common pitfalls
+
+- Treating $\hat{R} < 1.01$ as a complete guarantee of correctness.
+- Using predictive criteria without checking observation-wise diagnostics.
+- Relying on Bayes factors without prior sensitivity analysis.
+- Ignoring prior predictive absurdities because posterior fit looks acceptable.
+
+### Exercises
+
+- Compute ESS from an autocorrelation sequence.
+- Design a posterior predictive discrepancy for count overdispersion.
+- Explain what uniform SBC ranks would mean in a well-calibrated workflow.
+
+### Core references
+
+- @gelman1992
+- @vehtari2017
+- @vehtari2021
+- @gabry2019

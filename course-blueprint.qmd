@@ -1,0 +1,225 @@
+---
+title: "Course Blueprint"
+---
+
+## Overview
+
+This page serves as the master design document for the course website. It gives the overall site map, instructional sequencing, learning goals, pacing, and the structural logic behind the repository.
+
+## Primary Design Objectives
+
+The course is built to satisfy six requirements simultaneously:
+
+1. **Mathematical seriousness.** Core definitions, theorems, and derivations are stated carefully rather than gestured at.
+2. **Computational modernity.** Every theoretical theme eventually connects to algorithms, tuning, diagnostics, or software workflow.
+3. **Pedagogical repeatability.** Every chapter follows a consistent architecture so the course can be used for both self-study and formal instruction.
+4. **Reproducibility.** Code is versioned, environments are documented, and deployment targets are explicit.
+5. **Cross-language fluency.** `R`, `Stan`, and `JAX` each play a distinct role in the workflow.
+6. **Direct expandability.** The outline pages are detailed enough that an instructor or author can extend them into full lecture notes, handouts, notebooks, or slides without redesigning the curriculum.
+
+## Site Map
+
+```text
+Home
+├── Course Blueprint
+├── Syllabus and Pacing
+├── Chapter Expansion Map
+├── Part I. Foundations
+│   └── Sample chapter: Bayes' theorem and updating
+├── Part II. Core Bayesian Inference
+├── Part III. Computational Methods
+│   └── Sample chapter: Markov chain Monte Carlo
+├── Part IV. Bayesian Models
+├── Part V. Optimization, Tuning, Diagnostics
+├── Part VI. Software Workflows
+│   ├── Sample chapter: Stan hierarchical workflow
+│   └── Sample chapter: JAX gradient-based Bayes
+├── Part VII. Advanced Topics
+├── Exercises
+├── Projects
+├── Deployment and online execution
+├── Appendices
+│   ├── Notation
+│   ├── Measure-probability review
+│   └── Software setup
+└── References
+```
+
+## Full Module Sequence
+
+| Part | Chapters | Central question | Main outputs |
+|---|---:|---|---|
+| I. Foundations | 1-3 | What is probability, what is likelihood, and what does Bayesian updating mean? | Formal probability language, likelihood logic, posterior factorization |
+| II. Core Bayesian Inference | 4-6 | How do priors, posteriors, prediction, and decisions interact? | Conjugate derivations, posterior risk, prior design workflow |
+| III. Computation | 7-12 | How are posterior quantities approximated in practice? | Monte Carlo, MCMC, HMC, VI, SMC, online Bayes |
+| IV. Models | 13-20 | Which model classes matter in modern Bayesian practice? | Regression, multilevel models, mixtures, time series, nonparametrics, spatial and causal models |
+| V. Optimization and Diagnostics | 21-23 | How are algorithms tuned and models criticized? | MAP, calibration, SBC, PPCs, LOO, WAIC, divergences, sensitivity |
+| VI. Software Workflows | 24-26 | How do we implement robust Bayesian workflows in actual tools? | Reproducible R, Stan, and JAX pipelines |
+| VII. Advanced Topics | 27-31 | How do we handle model uncertainty, robustness, design, and communication? | BMA, stacking, robust Bayes, experimental design, capstones |
+
+## Chapter Inventory
+
+| Chapter | Title | Deliverable type |
+|---|---|---|
+| 1 | Probability foundations | Theory + derivations + simulation lab |
+| 2 | Likelihood theory | Theory + asymptotics + comparison notes |
+| 3 | Bayes' theorem and Bayesian paradigm | Theory + full sample chapter |
+| 4 | Conjugate analysis | Derivations + posterior predictive lab |
+| 5 | Loss functions and decision theory | Theory + worked decisions |
+| 6 | Prior design | Workflow + sensitivity lab |
+| 7 | Numerical integration and approximation | Approximation methods + comparison lab |
+| 8 | Monte Carlo methods | Simulation + ESS calculations |
+| 9 | Markov chain Monte Carlo | Theory + full sample chapter |
+| 10 | Advanced MCMC | HMC/NUTS geometry + diagnostics |
+| 11 | Variational inference | ELBO derivation + ADVI notes |
+| 12 | Sequential and online computation | Particle methods + state-space workflow |
+| 13 | Bayesian linear models | Derivations + shrinkage examples |
+| 14 | Generalized linear models | Logistic/Poisson/ordinal workflow |
+| 15 | Hierarchical and multilevel models | Partial pooling + funnel geometry |
+| 16 | Mixture and latent variable models | Identifiability + label switching |
+| 17 | Time series and state-space models | Kalman filtering + smoothing |
+| 18 | Nonparametric Bayesian methods | DP and GP overview with derivations |
+| 19 | Spatial and graphical models | Conditional independence + structured priors |
+| 20 | Bayesian causal inference | Potential outcomes + sensitivity |
+| 21 | Optimization techniques | MAP and gradient methods |
+| 22 | Tuning and calibration | Hyperparameters + algorithm control |
+| 23 | Diagnostics and model criticism | PPC, SBC, LOO, WAIC, divergences |
+| 24 | Bayesian workflow in R | Reproducible analysis toolkit |
+| 25 | Bayesian workflow in Stan | Full sample chapter |
+| 26 | Bayesian workflow in JAX | Full sample chapter |
+| 27 | Model selection and averaging | Bayes factors, stacking, projection |
+| 28 | Robust Bayesian methods | Heavy tails, contamination, misspecification |
+| 29 | Bayesian experimental design | Utility-based design |
+| 30 | Communication and interpretation | Reporting and decision summaries |
+| 31 | Capstone projects | Full project pipeline |
+
+## Learning Goals By Part
+
+### Part I. Foundations
+
+By the end of Part I, learners should be able to:
+
+- state probability models using measurable spaces and conditional distributions;
+- distinguish probability statements from likelihood statements;
+- derive posterior distributions from Bayes' theorem in both discrete and density-based settings;
+- explain exchangeability and sequential updating as core Bayesian ideas.
+
+### Part II. Core Bayesian Inference
+
+Learners should be able to:
+
+- derive conjugate posteriors, predictive distributions, and marginal likelihoods;
+- compute Bayes estimators under several loss functions;
+- design informative, weakly informative, and reference-style priors;
+- perform prior predictive checks and sensitivity analysis.
+
+### Part III. Computation
+
+Learners should be able to:
+
+- approximate posterior expectations using quadrature, Laplace approximation, and importance sampling;
+- implement and tune Metropolis-Hastings and Gibbs samplers;
+- explain the geometry and adaptation logic of HMC and NUTS;
+- compare MCMC, variational inference, and sequential methods in terms of fidelity, scalability, and failure modes.
+
+### Part IV. Models
+
+Learners should be able to:
+
+- build Bayesian versions of classical regression and generalized linear models;
+- interpret shrinkage and partial pooling in multilevel models;
+- reason about latent allocations, label switching, and state-space structure;
+- connect nonparametric, spatial, and causal models to their conditional independence assumptions.
+
+### Part V. Optimization, Tuning, Diagnostics
+
+Learners should be able to:
+
+- connect MAP estimation to penalized optimization;
+- tune MCMC, HMC, and variational algorithms with principled diagnostics;
+- use posterior predictive checks, simulation-based calibration, and cross-validation to criticize models;
+- report weaknesses and sensitivity rather than only point estimates.
+
+### Part VI-VII. Software and Advanced Topics
+
+Learners should be able to:
+
+- run reproducible Bayesian workflows in `R`, `Stan`, and `JAX`;
+- choose among model comparison tools such as LOO, stacking, and Bayes factors;
+- formulate robust Bayesian models for misspecified or outlier-prone data;
+- communicate posterior uncertainty in a decision-oriented and reproducible way.
+
+## Recommended Pacing
+
+### Semester Format: 14 Weeks
+
+| Weeks | Coverage | Main work |
+|---|---|---|
+| 1-2 | Chapters 1-3 | Foundations and Bayes theorem |
+| 3-4 | Chapters 4-6 | Conjugacy, decision theory, priors |
+| 5-7 | Chapters 7-10 | Numerical methods, Monte Carlo, MCMC, HMC |
+| 8 | Chapter 11-12 | VI and sequential methods |
+| 9-11 | Chapters 13-20 | Modeling block |
+| 12 | Chapters 21-23 | Optimization, tuning, diagnostics |
+| 13 | Chapters 24-26 | Software workflows |
+| 14 | Chapters 27-31 | Advanced topics and project presentations |
+
+### Self-Study Format: 28 Weeks
+
+- Use one week per chapter for Chapters 1-20.
+- Use two weeks for Chapters 9, 10, 15, 23, 25, and 26 because these are computationally dense.
+- Reserve two additional weeks for project work and review.
+
+### Graduate Reading Course
+
+For a mathematically mature student working with an advisor:
+
+- treat Parts I-II as a compressed review unless probability foundations are weak;
+- spend most effort on Parts III-VI;
+- require one project that includes prior sensitivity, diagnostics, and predictive evaluation.
+
+## Assessment Design
+
+Recommended assessment mix:
+
+- weekly or biweekly derivation sets;
+- computational labs in `R` and `Stan`;
+- one short algorithmic implementation assignment in `JAX`;
+- one model criticism memo based on PPC, LOO, and sensitivity analysis;
+- one capstone project with a written report and reproducible code.
+
+## Repository And Folder Structure
+
+The course is organized to make authoring and future expansion straightforward:
+
+```text
+.
+├── _quarto.yml
+├── index.qmd
+├── course-blueprint.qmd
+├── syllabus.qmd
+├── chapter-outline.qmd
+├── parts/
+├── chapters/
+│   ├── foundations/
+│   ├── computation/
+│   └── software/
+├── appendix/
+├── bibliography/
+├── labs/
+│   ├── r/
+│   ├── stan/
+│   └── jax/
+├── styles/
+└── .github/workflows/
+```
+
+## Citation Strategy
+
+The course uses three citation layers:
+
+1. **Canonical foundations** such as @bernardo1994, @berger1985, @jeffreys1961, and @gelman2013.
+2. **Landmark methodological papers** such as @metropolis1953, @hastings1970, @hoffman2014, @kucukelbir2017, and @vehtari2017.
+3. **Software references** such as @carpenter2017, @cmdstanr2024, @posterior2024, and @jax2018.
+
+This allows individual chapters to combine theory, algorithms, and software documentation without breaking citation consistency.

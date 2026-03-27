@@ -1,0 +1,372 @@
+---
+title: "Part IV. Bayesian Models"
+---
+
+## Part Overview
+
+Part IV is the modeling core of the course. The goal is not to present disconnected model families, but to show how Bayesian modeling principles recur across regression, multilevel structure, latent variables, temporal dependence, nonparametrics, and causal reasoning.
+
+## Part Learning Goals
+
+By the end of Part IV, learners should be able to:
+
+- formulate generative models for structured data;
+- choose priors that regularize realistically;
+- interpret posterior structure in terms of shrinkage, dependence, and latent heterogeneity;
+- anticipate computational and identifiability issues for each model family.
+
+## Chapter 13. Bayesian Linear Models
+
+### Core question
+
+How does Bayesian regression extend classical least squares into a full posterior and predictive framework?
+
+### Section blueprint
+
+- Gaussian linear regression model.
+- Priors on regression coefficients and variance.
+- Conjugate and semi-conjugate analyses.
+- $g$-priors and shrinkage interpretations.
+- Bayesian analogues of ridge and lasso regularization.
+- Posterior predictive regression.
+
+### Derivations that must appear
+
+- Posterior for coefficients under Gaussian prior and known variance.
+- Normal-Inverse-Gamma posterior for unknown variance.
+- Posterior predictive distribution for a new covariate vector.
+- Ridge connection from Gaussian priors and MAP estimation.
+
+### Computational lab
+
+- Simulate linear regression with known signal-to-noise ratio.
+- Compare flat, weakly informative, and shrinkage priors.
+- Fit the same model in closed form and in Stan.
+
+### Common pitfalls
+
+- Using diffuse priors on poorly scaled predictors.
+- Ignoring posterior predictive uncertainty in forecasts.
+- Treating shrinkage as purely computational rather than inferential.
+
+### Exercises
+
+- Derive the posterior mean and covariance for Bayesian linear regression.
+- Show the penalized least-squares form of the MAP estimator under a Gaussian prior.
+
+### Core references
+
+- @gelman2013
+- @hoff2009
+- @mackay2003
+
+## Chapter 14. Generalized Linear Models
+
+### Core question
+
+How do Bayesian methods generalize regression when responses are binary, counts, ordinal, or multinomial?
+
+### Section blueprint
+
+- Logistic and probit regression.
+- Poisson and negative binomial regression.
+- Ordinal models.
+- Multinomial models.
+- Hierarchical GLMs.
+- Prior scaling and regularization in nonlinear link models.
+
+### Derivations that must appear
+
+- Likelihood and log-posterior for logistic regression.
+- Posterior predictive probabilities for binary and count outcomes.
+- Negative binomial as a gamma-mixed Poisson intuition.
+- Latent-variable view of probit and ordinal models.
+
+### Computational lab
+
+- Prior sensitivity for logistic regression.
+- Stan implementation of Poisson and negative binomial models.
+- Posterior predictive checks for overdispersion and zero inflation.
+
+### Common pitfalls
+
+- Separation in logistic regression.
+- Using weak priors on coefficients with unscaled predictors.
+- Overinterpreting coefficients without translating to predictive probabilities.
+
+### Exercises
+
+- Derive gradient and Hessian of a logistic regression log posterior.
+- Compare Poisson and negative binomial predictive dispersion.
+
+### Core references
+
+- @gelman2013
+- @mcelreath2020
+- @murphy2023
+
+## Chapter 15. Hierarchical and Multilevel Models
+
+### Core question
+
+How does partial pooling emerge from exchangeability assumptions and hierarchical priors?
+
+### Section blueprint
+
+- Partial pooling intuition.
+- Random intercept and random slope models.
+- Nested and crossed effects.
+- Hyperpriors and exchangeability.
+- Funnel geometry and centered versus non-centered parameterizations.
+
+### Derivations that must appear
+
+- Hierarchical factorization of the joint posterior.
+- Shrinkage decomposition in a normal-normal hierarchical model.
+- Posterior predictive distribution for a new group.
+- Centered and non-centered parameterization algebra.
+
+### Computational lab
+
+- Eight schools and hierarchical regression examples in Stan.
+- Compare pooling regimes visually.
+- Diagnose funnel pathologies with HMC diagnostics.
+
+### Common pitfalls
+
+- Treating group-level effects as fixed when partial pooling is the inferential target.
+- Choosing hyperpriors without considering scale.
+- Interpreting convergence pathologies as mere tuning problems.
+
+### Exercises
+
+- Derive the posterior mean in a normal-normal hierarchical model and interpret shrinkage.
+- Compare centered and non-centered parameterizations analytically.
+
+### Core references
+
+- @gelman2013
+- @gelman2006
+- @betancourt2017
+
+## Chapter 16. Mixture Models and Latent Variable Models
+
+### Core question
+
+How do latent allocations create flexible models, and what new inferential pathologies do they introduce?
+
+### Section blueprint
+
+- Finite mixtures.
+- Latent class models.
+- Gaussian mixtures.
+- Switching regressions.
+- Hidden Markov models.
+- Label switching and identifiability.
+- Mixture-of-experts overview.
+
+### Derivations that must appear
+
+- Complete-data likelihood factorization.
+- Gibbs updates for latent allocations in simple mixture settings.
+- Marginalization versus latent-state sampling comparison.
+- Forward-backward recursions for discrete latent-state models.
+
+### Computational lab
+
+- Fit a Gaussian mixture in Stan or with custom Gibbs sampling.
+- Visualize label switching.
+- Compare identifiable summaries based on predictive density rather than component labels.
+
+### Common pitfalls
+
+- Interpreting raw component labels as meaningful without identifiability constraints.
+- Overstating certainty in the number of mixture components.
+- Ignoring multimodality in posterior summaries.
+
+### Exercises
+
+- Write the full conditional for mixture allocations.
+- Explain why symmetric priors induce label-switching invariance.
+
+### Core references
+
+- @gelman2013
+- @neal2000
+- @murphy2023
+
+## Chapter 17. Time Series and State-Space Models
+
+### Core question
+
+How can Bayesian models represent evolving latent states and temporal dependence?
+
+### Section blueprint
+
+- Dynamic linear models.
+- Bayesian AR and ARIMA ideas.
+- Local level and local trend models.
+- Stochastic volatility overview.
+- Hidden Markov models.
+- Kalman filtering and smoothing.
+
+### Derivations that must appear
+
+- State-space factorization.
+- Kalman filter prediction and update equations.
+- Rauch-Tung-Striebel smoothing overview.
+- Bayesian forecast distribution under linear Gaussian assumptions.
+
+### Computational lab
+
+- Implement a local-level model in Stan or `R`.
+- Compare filtering and smoothing estimates.
+- Explore posterior uncertainty under missing observations.
+
+### Common pitfalls
+
+- Confusing latent state uncertainty with observation noise.
+- Ignoring initialization sensitivity in short time series.
+- Overfitting with highly flexible latent dynamics.
+
+### Exercises
+
+- Derive Kalman filter recursions for a scalar local-level model.
+- Compare AR(1) and local-level formulations conceptually.
+
+### Core references
+
+- @gelman2013
+- @doucet2001
+
+## Chapter 18. Nonparametric Bayesian Methods
+
+### Core question
+
+How can Bayesian models increase flexibility without fixing parameter dimension in advance?
+
+### Section blueprint
+
+- Dirichlet process and Ferguson construction.
+- Chinese restaurant process intuition.
+- Stick-breaking construction.
+- DP mixtures.
+- Hierarchical Dirichlet process overview.
+- Gaussian processes.
+- Bayesian additive regression trees overview.
+
+### Derivations that must appear
+
+- Basic DP expectation and clustering intuition.
+- Predictive scheme underlying the Chinese restaurant process.
+- Stick-breaking representation.
+- GP posterior mean and covariance formulas.
+
+### Computational lab
+
+- GP regression on a small one-dimensional data set.
+- Visualize prior and posterior functions under different kernels.
+- Simulate cluster allocations under a DP-style predictive process.
+
+### Common pitfalls
+
+- Thinking “nonparametric” means assumption-free.
+- Ignoring kernel prior implications in GPs.
+- Assuming DP mixtures automatically identify the true number of clusters.
+
+### Exercises
+
+- Derive the GP posterior conditional distribution.
+- Explain how DP concentration affects expected clustering.
+
+### Core references
+
+- @ferguson1973
+- @rasmussen2006
+- @murphy2023
+
+## Chapter 19. Spatial and Graphical Bayesian Models
+
+### Core question
+
+How do conditional independence structures encode spatial and network dependence efficiently?
+
+### Section blueprint
+
+- Probabilistic graphical models.
+- Bayesian networks and directed factorization.
+- Gaussian Markov random fields.
+- CAR and SAR model overview.
+- Message passing overview.
+- Conditional independence and sparse precision matrices.
+
+### Derivations that must appear
+
+- Factorization from DAG structure.
+- Precision-based conditional independence in Gaussian models.
+- CAR full conditional structure.
+
+### Computational lab
+
+- Build a simple Bayesian network factorization.
+- Explore a lattice-based CAR prior conceptually or computationally.
+- Compare covariance and precision views in Gaussian models.
+
+### Common pitfalls
+
+- Confusing sparse covariance with sparse precision.
+- Ignoring identifiability constraints in intrinsic CAR models.
+- Treating graphical structure as purely computational rather than substantive.
+
+### Exercises
+
+- Factorize a joint distribution from a DAG.
+- Show conditional independence relations implied by a GMRF precision matrix.
+
+### Core references
+
+- @murphy2023
+- @gelman2013
+
+## Chapter 20. Causal Inference and Bayesian Perspectives
+
+### Core question
+
+What does a Bayesian workflow add to causal inference problems formulated through potential outcomes or structural models?
+
+### Section blueprint
+
+- Potential outcomes and estimands.
+- Bayesian propensity-score-style approaches overview.
+- Bayesian mediation overview.
+- Structural model overview.
+- Sensitivity analysis for unmeasured confounding.
+- Posterior predictive thinking in causal contexts.
+
+### Derivations that must appear
+
+- Factorization of causal assumptions into model components.
+- Posterior for causal estimands under a simple outcome model.
+- Sensitivity parameter incorporation in a Bayesian model.
+
+### Computational lab
+
+- Fit a Bayesian treatment-effect model under ignorability.
+- Perform sensitivity analysis to hidden bias.
+- Compare causal estimands under different prior assumptions.
+
+### Common pitfalls
+
+- Confusing predictive fit with causal identification.
+- Allowing flexible models to obscure identifying assumptions.
+- Treating posterior probability of an effect as proof of causality.
+
+### Exercises
+
+- Write a Bayesian model for treatment and outcome under ignorability.
+- Explain how sensitivity parameters can be treated probabilistically.
+
+### Core references
+
+- @gelman2013
+- @berger1985

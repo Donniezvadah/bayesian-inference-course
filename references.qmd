@@ -1,0 +1,87 @@
+---
+title: "References and Citation Strategy"
+nocite: |
+  @*
+---
+
+## Citation Strategy
+
+The course cites sources for four distinct purposes:
+
+1. **Foundations** for probability, Bayesian theory, and decision theory.
+2. **Methodological landmarks** for Monte Carlo, MCMC, HMC, variational inference, and Bayesian workflow.
+3. **Modeling references** for hierarchical models, Gaussian processes, nonparametrics, and predictive evaluation.
+4. **Software references** for `R`, `Stan`, `cmdstanr`, `posterior`, `bayesplot`, `loo`, and `JAX`.
+
+## Canonical Textbooks
+
+The most important book-length references for the course are:
+
+- @bernardo1994
+- @berger1985
+- @gelman2013
+- @hoff2009
+- @robert2007
+- @robert2004
+- @brooks2011
+- @mcelreath2020
+- @mackay2003
+- @murphy2023
+
+## Landmark Papers And Articles
+
+Core methodological papers repeatedly used in the course include:
+
+- @metropolis1953
+- @hastings1970
+- @geman1984
+- @andrieu2003
+- @neal2011
+- @hoffman2014
+- @betancourt2017
+- @kucukelbir2017
+- @blei2017
+- @vehtari2017
+- @vehtari2021
+- @gabry2019
+- @ferguson1973
+- @neal2000
+
+## Software References
+
+When the course discusses tools or packages, the preferred citations are:
+
+- @r2025
+- @carpenter2017
+- @cmdstanr2024
+- @posterior2024
+- @bayesplot2024
+- @loo2024
+- @jax2018
+- @numpyro2020
+
+## Recommended Reading Paths
+
+### Foundations-first
+
+- @durrett2019
+- @casella2002
+- @bernardo1994
+- @jeffreys1961
+
+### Applied modeling
+
+- @gelman2013
+- @hoff2009
+- @mcelreath2020
+- @gabry2019
+
+### Computation-heavy
+
+- @robert2004
+- @brooks2011
+- @betancourt2017
+- @hoffman2014
+- @blei2017
+
+## Full Bibliography

@@ -1,0 +1,167 @@
+---
+title: "Part II. Core Bayesian Inference"
+---
+
+## Part Overview
+
+Part II moves from the basic posterior identity to the standard inferential toolkit: conjugate models, decision theory, and prior design. This is where Bayesian analysis becomes concrete and operational.
+
+## Part Learning Goals
+
+By the end of Part II, learners should be able to:
+
+- derive exact posteriors, marginal likelihoods, and predictive distributions for standard conjugate families;
+- compute Bayes estimators under multiple loss functions;
+- justify prior choices scientifically and computationally;
+- evaluate prior consequences using predictive simulation and sensitivity analysis.
+
+## Fully Written Chapters In This Repository
+
+- [Conjugate analysis](../chapters/core/conjugate-analysis.qmd)
+- [Loss functions and decision theory](../chapters/core/loss-functions-and-decision-theory.qmd)
+- [Prior design](../chapters/core/prior-design.qmd)
+
+## Chapter 4. Conjugate Analysis
+
+### Core question
+
+When can posterior inference be derived analytically, and what does conjugacy teach us about Bayesian structure?
+
+### Section blueprint
+
+- Definition of conjugacy.
+- Beta-Binomial model.
+- Gamma-Poisson and Gamma-Exponential models.
+- Normal-Normal and Normal-Inverse-Gamma models.
+- Dirichlet-Multinomial model.
+- Matrix-normal and inverse-Wishart discussion with modern cautions.
+- Posterior predictive and marginal likelihood formulas.
+- Advantages and limitations of conjugacy.
+
+### Derivations that must appear
+
+- Full posterior derivation for each scalar conjugate pair.
+- Beta-Binomial posterior predictive and marginal likelihood.
+- Gamma-Poisson posterior predictive as a negative binomial.
+- Normal-Normal posterior mean as precision-weighted averaging.
+- Normal-Inverse-Gamma posterior and Student-$t$ predictive.
+- Dirichlet-Multinomial posterior and predictive probabilities.
+
+### Computational lab
+
+- Implement analytic updating functions in `R`.
+- Compare exact posterior summaries with grid approximations.
+- Simulate posterior predictive distributions and coverage behavior.
+
+### Common pitfalls
+
+- Treating conjugate families as universally good priors.
+- Ignoring the scientific meaning of pseudo-count or precision parameters.
+- Using inverse-Wishart priors without understanding induced marginal behavior.
+
+### Exercises
+
+- Derive the Beta-Binomial marginal likelihood.
+- Show how the posterior predictive variance differs from the plug-in variance.
+- Compare weakly informative and strongly informative conjugate priors on the same data.
+
+### Core references
+
+- @hoff2009
+- @gelman2013
+- @bernardo1994
+
+## Chapter 5. Loss Functions and Decision Theory
+
+### Core question
+
+How do posterior distributions become decisions, actions, classifications, and scientifically meaningful summaries?
+
+### Section blueprint
+
+- Action spaces, loss functions, and utility.
+- Posterior risk and Bayes rules.
+- Quadratic, absolute, and 0-1 loss.
+- Credible sets versus confidence intervals.
+- Bayesian classification and thresholding.
+- Bayesian hypothesis testing and model comparison.
+
+### Derivations that must appear
+
+- Posterior mean as Bayes estimator under squared loss.
+- Posterior median under absolute loss.
+- Posterior mode under 0-1 or approximation-style losses.
+- Bayes classifier under asymmetric misclassification costs.
+- Posterior expected utility calculations for simple decision problems.
+
+### Computational lab
+
+- Compute Bayes estimators under different losses for a shared posterior sample.
+- Compare threshold decisions under balanced and asymmetric utility.
+- Explore how posterior uncertainty changes optimal actions.
+
+### Common pitfalls
+
+- Reporting posterior means when the decision problem is asymmetric.
+- Treating interval estimation as the only inferential goal.
+- Confusing posterior probability statements with evidence about utilities.
+
+### Exercises
+
+- Show that the posterior median minimizes posterior expected absolute loss.
+- Construct a decision rule under unequal false-positive and false-negative costs.
+- Compare a Bayes factor decision with a posterior expected loss decision.
+
+### Core references
+
+- @berger1985
+- @bernardo1994
+- @robert2007
+
+## Chapter 6. Prior Design
+
+### Core question
+
+How should priors be chosen so that they encode information responsibly, regularize sensibly, and support robust posterior computation?
+
+### Section blueprint
+
+- Informative, weakly informative, and noninformative priors.
+- Improper priors and posterior propriety.
+- Jeffreys priors and reference priors.
+- Hierarchical priors, shrinkage priors, and sparsity priors.
+- Regularization as Bayesian prior structure.
+- Prior predictive checking.
+- Sensitivity analysis and robustness to prior specification.
+
+### Derivations that must appear
+
+- Jeffreys prior for Bernoulli and normal scale examples.
+- Posterior propriety checks in simple models.
+- Prior predictive distributions for at least one regression setting.
+- Shrinkage interpretation of Gaussian and horseshoe-style priors.
+
+### Computational lab
+
+- Prior predictive simulation in `R` and `Stan`.
+- Sensitivity analysis over prior scales in logistic regression.
+- Visual comparison of Gaussian, Student-$t$, Laplace, and horseshoe-type priors.
+
+### Common pitfalls
+
+- Calling a prior “noninformative” when it encodes strong information on a transformed scale.
+- Using improper priors in model comparison contexts.
+- Choosing priors only to stabilize computation without checking prior predictive implications.
+
+### Exercises
+
+- Derive Jeffreys prior for a Binomial parameter.
+- Show how a Gaussian prior induces ridge-like regularization in MAP estimation.
+- Perform a prior sensitivity study for a logistic regression coefficient.
+
+### Core references
+
+- @jeffreys1961
+- @gelman2006
+- @simpson2017
+- @piironen2017
