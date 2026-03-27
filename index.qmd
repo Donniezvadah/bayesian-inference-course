@@ -100,6 +100,8 @@ The site includes several fully written exemplar chapters that demonstrate the i
 - [Bayesian linear models](chapters/models/bayesian-linear-models.qmd)
 - [Hierarchical and multilevel models](chapters/models/hierarchical-and-multilevel-models.qmd)
 - [Nonparametric Bayesian methods](chapters/models/nonparametric-bayesian-methods.qmd)
+- [Optimization techniques in Bayesian statistics](chapters/practice/optimization-techniques-in-bayesian-statistics.qmd)
+- [Diagnostics and model criticism](chapters/practice/diagnostics-and-model-criticism.qmd)
 - [Stan workflow for hierarchical models and HMC diagnostics](chapters/software/stan-hierarchical-models.qmd)
 - [JAX for gradient-based Bayesian computation](chapters/software/jax-gradient-based-bayes.qmd)
 

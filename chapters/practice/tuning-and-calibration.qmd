@@ -1,0 +1,198 @@
+---
+title: "Tuning and Calibration: Proposal Scales, Warmup, Chain Length, and Practical Control"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- tune proposal scales in random-walk MCMC deliberately;
+- explain the roles of warmup, chain count, and chain length;
+- interpret `adapt_delta`, `max_treedepth`, and initialization in Stan;
+- tune learning rates and schedules in gradient-based optimization;
+- distinguish computational tuning from model specification.
+
+## 1. Why Tuning Matters
+
+Every Bayesian algorithm contains control parameters:
+
+- proposal scales;
+- integration step sizes;
+- number of particles;
+- learning rates;
+- variational family choices;
+- chain lengths and warmup allocations.
+
+These choices do not change the target posterior, but they strongly affect whether the approximation to that target is trustworthy and efficient.
+
+## 2. Tuning Random-Walk Metropolis
+
+For proposal
+
+$$
+\theta' \sim \mathcal{N}(\theta,\sigma_q^2),
+$$
+
+the scale $\sigma_q$ determines the exploration pattern.
+
+### Too small
+
+- high acceptance;
+- very slow movement;
+- large autocorrelation.
+
+### Too large
+
+- low acceptance;
+- many rejections;
+- poor exploration.
+
+The right tuning criterion is not acceptance rate in isolation. It is Monte Carlo efficiency, often approximated by ESS per second or similar diagnostics.
+
+## 3. Chain Count, Chain Length, And Warmup
+
+### Chain count
+
+Multiple chains are valuable because they reveal chain-to-chain disagreement and make $\hat{R}$ meaningful.
+
+### Chain length
+
+Longer chains reduce Monte Carlo error only if the sampler explores the target reasonably well. Very long but highly autocorrelated chains can be less informative than shorter, better-tuned ones.
+
+### Warmup
+
+Warmup serves two roles:
+
+- move the chain from arbitrary initialization toward typical posterior regions;
+- adapt internal tuning parameters such as step size and mass matrix in HMC.
+
+Warmup is not wasted computation if adaptation is actually learning useful geometry.
+
+## 4. Stan Controls
+
+### `adapt_delta`
+
+This is the target average acceptance statistic used in HMC adaptation.
+
+- higher values imply smaller step sizes;
+- smaller step sizes reduce integrator error;
+- computation becomes more expensive.
+
+Increasing `adapt_delta` is appropriate when modest numerical pathologies remain, but it should not be the first response to severe divergences.
+
+### `max_treedepth`
+
+This caps the length of NUTS trajectories.
+
+- if it is too small, exploration can be truncated;
+- if it is repeatedly saturated, the model may be geometrically difficult.
+
+Increasing treedepth can help elongated but otherwise benign geometry. It does not fix fundamentally pathological geometry.
+
+### Initialization
+
+Initialization can affect:
+
+- early adaptation;
+- numerical stability;
+- convergence speed.
+
+Reasonable initializations matter especially in hierarchical and weakly identified models.
+
+## 5. Tuning Variational Methods
+
+Variational approximations introduce their own control parameters:
+
+- variational family complexity;
+- learning-rate schedule;
+- stochastic-gradient batch size;
+- stopping criteria.
+
+Fast optimization is not enough. One must still ask whether the resulting approximation captures the posterior features that matter for the inferential goal.
+
+## 6. Tuning Optimization In JAX
+
+For gradient-based optimization, the central control parameter is the learning rate $\eta_t$.
+
+### If $\eta_t$ is too large
+
+- updates overshoot;
+- optimization oscillates or diverges.
+
+### If $\eta_t$ is too small
+
+- progress is slow;
+- wall-clock efficiency collapses.
+
+Schedules such as step decay, cosine decay, or adaptive methods can help, but they do not eliminate the need to reason about objective curvature.
+
+## 7. Initialization Strategies
+
+Good initial values often come from:
+
+- prior centers;
+- least-squares or GLM fits;
+- small-variance random perturbations around plausible values;
+- MAP estimates.
+
+Bad initial values can lead to:
+
+- wasted warmup;
+- numerical overflows in nonlinear models;
+- misleading early diagnostics.
+
+## 8. Calibration Beyond Tuning
+
+Tuning asks whether the algorithm is operating efficiently. Calibration asks whether the overall workflow is inferentially valid.
+
+Examples:
+
+- simulation-based calibration;
+- recovery under synthetic data;
+- comparing exact and approximate inference on benchmark models;
+- prior predictive calibration.
+
+Calibration therefore sits one level above tuning: it checks whether the tuned algorithm and the full workflow behave correctly on known problems.
+
+## 9. `R` Workflow
+
+The companion tuning lab is [mcmc_tuning_grid.R](../../labs/r/mcmc_tuning_grid.R). It runs a random-walk Metropolis sampler across a grid of proposal scales and compares acceptance, autocorrelation, and ESS heuristics.
+
+## 10. Diagnostics And Pitfalls
+
+### Using longer runs to hide poor tuning
+
+This is often inefficient and sometimes misleading.
+
+### Blaming computation for model misspecification
+
+Some “tuning” problems are actually model-design problems.
+
+### Overtuning to one data set
+
+Algorithm settings should generalize to similar problems, not only the current realization.
+
+### Confusing adaptation with inference
+
+Adaptation is part of the computational procedure, not part of the model itself.
+
+## 11. Exercises
+
+1. Explain how proposal scale affects acceptance rate and autocorrelation in random-walk Metropolis.
+2. Describe the distinct roles of warmup and post-warmup iterations.
+3. Explain when increasing `adapt_delta` is reasonable and when it masks geometry problems.
+4. Describe one principled initialization strategy for a hierarchical model.
+5. Explain the difference between tuning an algorithm and calibrating a Bayesian workflow.
+
+## 12. Summary
+
+Tuning is unavoidable in practical Bayesian computation:
+
+- algorithms have control parameters;
+- efficiency depends on those parameters;
+- good tuning must be separated from model redesign;
+- calibration asks a broader question than tuning alone.
+
+## References
+
+Key references are @hoffman2014, @betancourt2017, @vehtari2021, and @murphy2023.

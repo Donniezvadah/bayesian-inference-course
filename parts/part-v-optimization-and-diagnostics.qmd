@@ -15,6 +15,12 @@ By the end of Part V, learners should be able to:
 - diagnose convergence and model misfit using modern Bayesian workflow tools;
 - communicate what diagnostics can and cannot certify.
 
+## Fully Written Chapters In This Repository
+
+- [Optimization techniques in Bayesian statistics](../chapters/practice/optimization-techniques-in-bayesian-statistics.qmd)
+- [Tuning and calibration](../chapters/practice/tuning-and-calibration.qmd)
+- [Diagnostics and model criticism](../chapters/practice/diagnostics-and-model-criticism.qmd)
+
 ## Chapter 21. Optimization Techniques in Bayesian Statistics
 
 ### Core question

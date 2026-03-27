@@ -1,0 +1,225 @@
+---
+title: "Diagnostics and Model Criticism: Posterior Checks, SBC, ESS, Divergences, and Predictive Evaluation"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- distinguish computation diagnostics from model diagnostics;
+- derive posterior predictive checking logic;
+- explain simulation-based calibration and what rank uniformity means;
+- interpret ESS, $\hat{R}$, divergences, and E-BFMI together;
+- compare WAIC, PSIS-LOO, Bayes factors, and stacking at a high level.
+
+## 1. Two Diagnostic Questions
+
+Bayesian workflow requires two different diagnostic questions:
+
+1. **Did the algorithm approximate the posterior reliably?**
+2. **Is the posterior model itself adequate for the scientific question?**
+
+These are not the same question. Good chains can target a bad model, and a good model can still be approximated badly.
+
+## 2. Posterior Predictive Checks
+
+The posterior predictive distribution is
+
+$$
+p(\tilde y \mid y)
+=
+\int p(\tilde y \mid \theta)p(\theta \mid y)\, d\theta.
+$$
+
+Posterior predictive checking compares the observed data to replicated data drawn from this distribution.
+
+### Discrepancy statistics
+
+Choose a statistic $T(y)$ sensitive to the aspect of fit you care about:
+
+- mean;
+- variance;
+- tail behavior;
+- zero inflation;
+- residual asymmetry;
+- group-level dispersion.
+
+Then compare $T(y)$ with the distribution of $T(\tilde y)$ under replicated data.
+
+### Interpretation
+
+If the observed statistic is extreme relative to the replicated distribution, the model struggles to reproduce an important data feature.
+
+Posterior predictive checks do not prove a model correct. They reveal where it fails to mimic data features that matter.
+
+## 3. Prior Predictive Checks
+
+Posterior predictive checks happen after seeing the data. Prior predictive checks happen before fitting:
+
+$$
+p(y)=\int p(y \mid \theta)\pi(\theta)\, d\theta.
+$$
+
+These are indispensable because many computational and inferential failures begin with absurd priors that already imply absurd data.
+
+## 4. Effective Sample Size
+
+For an MCMC estimator based on autocorrelated draws,
+
+$$
+\operatorname{ESS}
+=
+\frac{S}{1 + 2\sum_{k=1}^\infty \rho_k},
+$$
+
+where $\rho_k$ is lag-$k$ autocorrelation.
+
+This quantifies how much independent-sample information the chain contains for a given functional of interest.
+
+### Bulk and tail ESS
+
+Modern workflows distinguish:
+
+- bulk ESS for central posterior summaries;
+- tail ESS for quantiles and extreme posterior behavior.
+
+Both matter.
+
+## 5. $\hat{R}$
+
+The modern rank-normalized $\hat{R}$ compares within-chain and between-chain variation across multiple chains. Values near 1 indicate the chains mix consistently with one another [@vehtari2021].
+
+### Interpretation
+
+- large $\hat{R}$ signals nonconvergence or poor mixing;
+- good $\hat{R}$ is necessary but not sufficient;
+- one must still inspect ESS, trace plots, and model-specific diagnostics.
+
+## 6. Divergences And E-BFMI
+
+For HMC-based workflows:
+
+### Divergences
+
+Divergences indicate the numerical integrator struggled with posterior geometry. They are computational warnings with inferential consequences.
+
+### E-BFMI
+
+Low E-BFMI indicates poor exploration of the energy distribution and often suggests momentum resampling does not match target geometry well.
+
+These are geometry diagnostics, not generic MCMC diagnostics. They should be treated as signals of model-parameterization problems unless mild and clearly resolved.
+
+## 7. Simulation-Based Calibration
+
+SBC tests end-to-end inferential calibration under the assumed model.
+
+### Procedure
+
+1. Draw parameters $\theta^{(s)}$ from the prior.
+2. Simulate data $y^{(s)}$ from the likelihood.
+3. Fit the model to $y^{(s)}$.
+4. Compare the true simulated parameter to its posterior rank among posterior draws.
+
+If the full workflow is calibrated under the model, those ranks should be approximately uniform.
+
+### What SBC diagnoses
+
+- coding mistakes;
+- algorithmic bias;
+- systematic under- or over-dispersion in approximate inference.
+
+SBC is one of the strongest tests of a Bayesian workflow because it validates the entire inferential pipeline, not just one run on one data set [@rubin1984].
+
+## 8. Predictive Model Comparison
+
+### WAIC
+
+WAIC approximates expected out-of-sample predictive fit using posterior draws and pointwise log-likelihood terms.
+
+### PSIS-LOO
+
+PSIS-LOO approximates leave-one-out cross-validation through importance reweighting and Pareto smoothing [@vehtari2017].
+
+### Bayes factors
+
+Bayes factors compare marginal likelihoods:
+
+$$
+\operatorname{BF}_{12}=\frac{p(y \mid M_1)}{p(y \mid M_2)}.
+$$
+
+They are coherent but often highly sensitive to prior mass in low-likelihood regions.
+
+### Stacking
+
+Stacking combines models by optimizing predictive performance of an ensemble rather than selecting a single model.
+
+The key distinction is:
+
+- Bayes factors emphasize model evidence under the prior;
+- LOO and stacking emphasize predictive adequacy.
+
+## 9. Sensitivity Analysis
+
+A posterior conclusion should be stress-tested against:
+
+- prior choices;
+- likelihood assumptions;
+- outliers;
+- parameterization choices;
+- alternative plausible model structures.
+
+Sensitivity analysis belongs to diagnostics because robustness is itself a property to be evaluated, not assumed.
+
+## 10. `R` Workflow
+
+The companion diagnostics labs are:
+
+- [posterior_predictive_checks.R](../../labs/r/posterior_predictive_checks.R)
+- [simulation_based_calibration_demo.R](../../labs/r/simulation_based_calibration_demo.R)
+
+Together they illustrate:
+
+- replicated-data diagnostics;
+- SBC rank histograms;
+- observation-level predictive reasoning.
+
+## 11. Diagnostics And Pitfalls
+
+### Trusting one scalar summary
+
+No single diagnostic certifies correctness.
+
+### Confusing model fit with causal validity
+
+Posterior predictive success does not prove the model answers the substantive question of interest.
+
+### Ignoring observation-wise predictive failures
+
+Aggregate metrics can hide localized bad fit.
+
+### Treating Bayes factors as default
+
+They require strong prior care and are often not the most practical model comparison tool.
+
+## 12. Exercises
+
+1. Explain why posterior predictive checking requires simulated replicated data rather than only residuals.
+2. Derive the ESS formula conceptually from autocorrelation inflation of Monte Carlo variance.
+3. Describe the SBC workflow and explain what uniform ranks mean.
+4. Compare the goals of PSIS-LOO and Bayes factors.
+5. Give an example where the algorithm is well behaved but the model is still poor.
+
+## 13. Summary
+
+Bayesian diagnostics are multi-layered:
+
+- chain diagnostics assess computation;
+- predictive checks assess model-data mismatch;
+- SBC assesses full-workflow calibration;
+- sensitivity analysis assesses robustness;
+- predictive comparison assesses practical out-of-sample utility.
+
+## References
+
+Key references are @gelman1992, @gabry2019, @vehtari2017, @vehtari2021, and @rubin1984.

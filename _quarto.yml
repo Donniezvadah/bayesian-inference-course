@@ -95,9 +95,13 @@ website:
       - section: "Part V"
         contents:
           - parts/part-v-optimization-and-diagnostics.qmd
+          - chapters/practice/optimization-techniques-in-bayesian-statistics.qmd
+          - chapters/practice/tuning-and-calibration.qmd
+          - chapters/practice/diagnostics-and-model-criticism.qmd
       - section: "Part VI"
         contents:
           - parts/part-vi-software-workflows.qmd
+          - chapters/software/bayesian-workflow-in-r.qmd
           - chapters/software/stan-hierarchical-models.qmd
           - chapters/software/jax-gradient-based-bayes.qmd
       - section: "Part VII"

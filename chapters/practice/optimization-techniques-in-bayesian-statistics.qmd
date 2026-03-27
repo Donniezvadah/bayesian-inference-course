@@ -1,0 +1,304 @@
+---
+title: "Optimization Techniques in Bayesian Statistics: MAP, Curvature, and Gradient Methods"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- derive MAP objectives from likelihood-prior pairs;
+- distinguish posterior mode optimization from posterior integration;
+- derive Newton and quasi-Newton updates from Taylor expansion;
+- connect priors to penalized optimization explicitly;
+- explain when optimization is useful in Bayesian workflow and when it is insufficient.
+
+## 1. Why Optimization Appears In Bayesian Statistics
+
+Bayesian inference is fundamentally about distributions, not point estimates. Even so, optimization plays a central role:
+
+- posterior mode estimation;
+- initialization for MCMC and HMC;
+- Laplace approximation;
+- variational inference;
+- hyperparameter tuning;
+- large-scale approximate inference.
+
+The key is to use optimization without forgetting that uncertainty is the inferential target, not the optimizer's final parameter vector [@mackay2003; @murphy2023].
+
+## 2. MAP Estimation
+
+If the posterior is
+
+$$
+p(\theta \mid y) \propto p(y \mid \theta)\pi(\theta),
+$$
+
+then a MAP estimate is
+
+$$
+\hat\theta_{\text{MAP}}
+\in
+\arg\max_\theta \log p(y \mid \theta) + \log \pi(\theta).
+$$
+
+Equivalently,
+
+$$
+\hat\theta_{\text{MAP}}
+\in
+\arg\min_\theta U(\theta),
+$$
+
+where
+
+$$
+U(\theta) = -\log p(y \mid \theta) - \log \pi(\theta).
+$$
+
+The negative log posterior plays the role of an optimization objective or potential energy.
+
+## 3. Penalized Likelihood Connection
+
+Suppose
+
+$$
+\beta \sim \mathcal{N}(0,\tau^2 I).
+$$
+
+Then
+
+$$
+\log \pi(\beta)
+=
+-\frac{1}{2\tau^2}\beta^\top \beta + C.
+$$
+
+Therefore the MAP problem becomes
+
+$$
+\arg\min_\beta
+\left\{
+-\log p(y \mid \beta)
++
+\frac{1}{2\tau^2}\beta^\top \beta
+\right\},
+$$
+
+which is ridge regularization.
+
+Similarly, a Laplace prior yields an $\ell_1$ penalty. This is why regularization and Bayesian prior design are mathematically linked rather than metaphorically linked.
+
+## 4. Gradient Descent
+
+The most basic iterative optimization rule is
+
+$$
+\theta^{(t+1)}=\theta^{(t)}-\eta_t \nabla U(\theta^{(t)}),
+$$
+
+where $\eta_t$ is the step size or learning rate.
+
+### Advantages
+
+- easy to implement;
+- works with autodiff;
+- scales well in large problems.
+
+### Limitations
+
+- sensitive to step-size choice;
+- can be slow near ill-conditioned optima;
+- ignores curvature unless modified.
+
+## 5. Newton-Raphson
+
+Take a second-order Taylor expansion of $U(\theta)$ around $\theta^{(t)}$:
+
+$$
+U(\theta)
+\approx
+U(\theta^{(t)})
++
+g_t^\top(\theta-\theta^{(t)})
++
+\frac12(\theta-\theta^{(t)})^\top H_t(\theta-\theta^{(t)}),
+$$
+
+where
+
+$$
+g_t=\nabla U(\theta^{(t)}),\qquad H_t=\nabla^2 U(\theta^{(t)}).
+$$
+
+Minimizing the quadratic approximation gives the Newton step:
+
+$$
+\theta^{(t+1)}=\theta^{(t)}-H_t^{-1}g_t.
+$$
+
+### Why it is powerful
+
+Newton uses local curvature, so it can converge very quickly near the optimum.
+
+### Why it is risky
+
+- Hessian computation can be expensive;
+- Hessian may be indefinite away from the optimum;
+- step sizes can be too aggressive without line search or damping.
+
+## 6. Quasi-Newton And Coordinate Methods
+
+Quasi-Newton methods such as BFGS or L-BFGS replace the exact Hessian with a learned approximation. This often gives much of Newton's speed without full second-order cost.
+
+Coordinate descent instead updates one parameter block at a time:
+
+$$
+\theta_j^{(t+1)}
+\in
+\arg\min_{\theta_j}
+U(\theta_1^{(t+1)},\dots,\theta_{j-1}^{(t+1)},\theta_j,\theta_{j+1}^{(t)},\dots).
+$$
+
+This is especially useful when:
+
+- the objective decomposes cleanly;
+- penalties are separable;
+- closed-form coordinate updates exist.
+
+## 7. Stochastic Gradient And Large Data
+
+When
+
+$$
+U(\theta)=\sum_{i=1}^n U_i(\theta) - \log \pi(\theta),
+$$
+
+one can replace the full gradient with a mini-batch estimate. This yields stochastic gradient descent and its adaptive variants.
+
+These are important for variational inference and large-scale Bayesian computation, but they introduce noisy updates and new tuning problems:
+
+- learning-rate schedules;
+- batch-size choice;
+- stability versus speed.
+
+## 8. Natural Gradients
+
+A Euclidean gradient ignores the geometry of the parameter space. Natural-gradient methods instead rescale by an information metric, often approximated by Fisher information:
+
+$$
+\theta^{(t+1)}
+=
+\theta^{(t)} - \eta_t G(\theta^{(t)})^{-1}\nabla U(\theta^{(t)}).
+$$
+
+Conceptually this means optimization steps are measured in statistically meaningful geometry rather than raw coordinate units.
+
+This is especially relevant in variational inference and probabilistic models with poorly scaled parameterizations.
+
+## 9. Constrained Optimization
+
+Bayesian models often include constrained parameters:
+
+- variances must be positive;
+- probabilities must lie in the simplex;
+- AR coefficients may need stationarity constraints.
+
+There are two broad strategies:
+
+### Transform the parameter
+
+For example, write $\sigma=\exp(\eta)$ and optimize over unconstrained $\eta$.
+
+### Use Lagrange multipliers
+
+If one insists on explicit equality constraints, solve
+
+$$
+\mathcal{L}(\theta,\lambda)=U(\theta)+\lambda^\top c(\theta),
+$$
+
+where $c(\theta)=0$ encodes the constraint.
+
+In modern Bayesian software, transformations are usually preferred because they integrate cleanly with autodiff and MCMC.
+
+## 10. Worked Example: MAP For Bayesian Logistic Regression
+
+For logistic regression with Gaussian prior,
+
+$$
+U(\beta)
+=
+-\sum_{i=1}^n \left[y_i x_i^\top \beta - \log(1+\exp(x_i^\top \beta))\right]
++
+\frac{1}{2\tau^2}\beta^\top\beta.
+$$
+
+The gradient is
+
+$$
+\nabla U(\beta)=X^\top(p-y)+\frac{1}{\tau^2}\beta,
+$$
+
+and the Hessian is
+
+$$
+\nabla^2 U(\beta)=X^\top W X+\frac{1}{\tau^2}I.
+$$
+
+This makes logistic MAP estimation a natural testbed for:
+
+- Newton steps;
+- line search;
+- Laplace approximation.
+
+The companion lab is [map_logistic_newton.R](../../labs/r/map_logistic_newton.R).
+
+## 11. What Optimization Cannot Do
+
+A MAP estimate does not reveal:
+
+- posterior skewness;
+- posterior multimodality away from the mode;
+- uncertainty in predictive quantities;
+- tail behavior.
+
+Optimization is therefore part of Bayesian workflow, not a substitute for it.
+
+## 12. Diagnostics And Pitfalls
+
+### Confusing convergence of the optimizer with adequacy of the model
+
+A wrong model can optimize perfectly.
+
+### Using MAP when posterior asymmetry matters
+
+The mode can be a poor summary of posterior mass.
+
+### Ignoring scaling and curvature
+
+Optimization failure is often a geometry problem.
+
+### Treating priors as penalties only
+
+Priors are inferential objects. The penalty view is useful, but incomplete.
+
+## 13. Exercises
+
+1. Derive the MAP objective for Bayesian linear regression with Gaussian prior.
+2. Derive the Newton update from a second-order Taylor expansion.
+3. Show how a Laplace prior yields an $\ell_1$ penalty in the MAP objective.
+4. Explain when a natural gradient would be preferable to a Euclidean gradient.
+5. Give an example where a MAP estimate is misleading as a posterior summary.
+
+## 14. Summary
+
+Optimization in Bayesian statistics is essential but subordinate:
+
+- MAP turns posterior computation into an optimization problem;
+- priors become explicit regularizers in the objective;
+- curvature information drives Newton and quasi-Newton methods;
+- uncertainty quantification still requires more than an optimum.
+
+## References
+
+Key references are @mackay2003, @bishop2006, and @murphy2023.

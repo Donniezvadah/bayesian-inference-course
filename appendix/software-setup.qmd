@@ -70,6 +70,10 @@ Recommended cloud pathways:
 | `R` | `labs/r/gaussian_process_regression.R` | Exact Gaussian-process posterior prediction |
 | `R` | `labs/r/hmm_forward_algorithm.R` | Forward recursion for a hidden Markov model |
 | `R` | `labs/r/causal_sensitivity_grid.R` | Treatment-effect sensitivity grid |
+| `R` | `labs/r/map_logistic_newton.R` | MAP optimization with Newton updates |
+| `R` | `labs/r/mcmc_tuning_grid.R` | Proposal-scale tuning study for Metropolis |
+| `R` | `labs/r/posterior_predictive_checks.R` | Basic posterior predictive discrepancy checks |
+| `R` | `labs/r/simulation_based_calibration_demo.R` | SBC rank-histogram demonstration |
 | `Stan` | `labs/stan/eight_schools.stan` | Canonical hierarchical model |
 | `R` | `labs/r/fit_eight_schools.R` | `cmdstanr` wrapper for the Stan lab |
 | Python/JAX | `labs/jax/jax_logistic_map_hmc.py` | Autodiff, MAP, and basic HMC-style demo |

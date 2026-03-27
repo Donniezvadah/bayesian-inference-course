@@ -14,6 +14,12 @@ By the end of Part VI, learners should be able to:
 - write and diagnose Stan programs for nontrivial posterior inference;
 - use JAX for autodiff-based objectives, gradients, Hessians, and custom gradient-based Bayesian algorithms.
 
+## Fully Written Chapters In This Repository
+
+- [Bayesian workflow in R](../chapters/software/bayesian-workflow-in-r.qmd)
+- [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
+- [JAX for gradient-based Bayesian computation](../chapters/software/jax-gradient-based-bayes.qmd)
+
 ## Chapter 24. Bayesian Workflow in `R`
 
 ### Core question

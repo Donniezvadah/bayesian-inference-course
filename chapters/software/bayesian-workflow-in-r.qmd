@@ -1,0 +1,255 @@
+---
+title: "Bayesian Workflow in R: Simulation, Summaries, Diagnostics, and Reproducibility"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- use `R` as the orchestration layer for Bayesian workflows;
+- write reusable functions for conjugate updating and custom samplers;
+- compute posterior summaries from raw draws rather than only fitted-model printouts;
+- organize posterior predictive checks, diagnostics, and model comparison in `R`;
+- structure Bayesian analysis scripts for reproducibility and extension.
+
+## 1. Why `R` Matters In This Course
+
+`R` is not used here merely because it is common in statistics. It plays a specific technical role:
+
+- fast prototyping of models and diagnostics;
+- clear vectorized statistical code;
+- direct plotting for predictive checks and posterior summaries;
+- integration with `cmdstanr`, `posterior`, `bayesplot`, and `loo` [@r2025; @posterior2024; @bayesplot2024; @loo2024].
+
+Even when the final sampler is Stan or JAX-based, `R` remains a highly effective environment for data preparation, posterior summarization, workflow diagnostics, and reporting.
+
+## 2. Minimal Workflow Structure
+
+A serious Bayesian `R` workflow usually has four layers:
+
+1. **model definition**: prior, likelihood, parameterization;
+2. **computation**: exact update, MCMC, Stan fit, or external engine;
+3. **posterior object handling**: draws, summaries, intervals, predictions;
+4. **criticism**: PPCs, ESS, $\hat{R}$, LOO, sensitivity analysis.
+
+The practical discipline is to keep those layers separable in code.
+
+## 3. Conjugate Functions As Reusable Building Blocks
+
+The fastest route to reproducible Bayesian code is to encapsulate exact model updates as functions.
+
+For example, the Beta-Binomial update:
+
+```r
+beta_binomial_update <- function(y, n, alpha, beta) {
+  list(
+    alpha_post = alpha + y,
+    beta_post = beta + n - y,
+    post_mean = (alpha + y) / (alpha + beta + n)
+  )
+}
+```
+
+This style matters because it makes exact calculations:
+
+- testable;
+- reusable in teaching materials;
+- comparable with approximate algorithms later.
+
+See [beta_binomial.R](../../labs/r/beta_binomial.R) and [conjugate_families.R](../../labs/r/conjugate_families.R).
+
+## 4. Hand-Coded MCMC In `R`
+
+Writing one’s own sampler is educational because it forces clarity about:
+
+- target density;
+- proposal mechanism;
+- acceptance rule;
+- diagnostics.
+
+The repository includes a random-walk Metropolis implementation in [mh_sampler.R](../../labs/r/mh_sampler.R). A minimal structure is:
+
+```r
+rw_metropolis <- function(init, n_iter, proposal_sd, log_target) {
+  draws <- numeric(n_iter)
+  draws[1] <- init
+  accept <- 0L
+
+  for (t in 2:n_iter) {
+    proposal <- rnorm(1, draws[t - 1], proposal_sd)
+    log_alpha <- log_target(proposal) - log_target(draws[t - 1])
+
+    if (log(runif(1)) < log_alpha) {
+      draws[t] <- proposal
+      accept <- accept + 1L
+    } else {
+      draws[t] <- draws[t - 1]
+    }
+  }
+
+  list(draws = draws, accept_rate = accept / (n_iter - 1))
+}
+```
+
+This is obviously not industrial-strength software. Its value lies in transparency.
+
+## 5. Working With Posterior Draws
+
+Bayesian analysis should be draw-centric. Once posterior draws exist, many quantities follow by direct transformation.
+
+### Means and intervals
+
+```r
+mean(draws)
+quantile(draws, c(0.05, 0.5, 0.95))
+```
+
+### Functionals
+
+If a scientific quantity of interest is $g(\theta)$, compute it on each draw:
+
+```r
+g_draws <- exp(draws)
+mean(g_draws)
+quantile(g_draws, c(0.05, 0.95))
+```
+
+This draw-based approach avoids deriving new asymptotics for every transformed estimand.
+
+## 6. Posterior Predictive Simulation In `R`
+
+Posterior predictive checks become easy once draws are available:
+
+```r
+y_rep <- replicate(length(mu_draws), {
+  rnorm(n, mean = mu_draws[i], sd = sigma_draws[i])
+})
+```
+
+Of course, in actual code one should index cleanly and vectorize where appropriate, but the principle is simple:
+
+- draw parameters from the posterior;
+- draw replicated data from the sampling model;
+- compare replicated and observed summaries.
+
+See [posterior_predictive_checks.R](../../labs/r/posterior_predictive_checks.R).
+
+## 7. Diagnostics With `posterior` And `bayesplot`
+
+When draws come from Stan or another modern MCMC backend, the `posterior` package standardizes storage and summaries.
+
+Common workflow:
+
+```r
+library(posterior)
+library(bayesplot)
+
+summarise_draws(draws_object)
+mcmc_trace(draws_object, pars = c("beta[1]", "beta[2]"))
+mcmc_acf(draws_object, pars = "beta[1]")
+```
+
+The advantage is not just convenience. It is consistency across projects and models.
+
+## 8. Model Comparison With `loo`
+
+If pointwise log likelihood contributions are available, `loo` provides an efficient route to PSIS-LOO:
+
+```r
+library(loo)
+loo_result <- loo(log_lik_matrix)
+print(loo_result)
+```
+
+This makes `R` the natural place to compare fitted models, aggregate predictive summaries, and present model criticism cleanly.
+
+## 9. Organizing Scripts Cleanly
+
+A strong repository layout usually separates:
+
+- `labs/r/` for executable examples;
+- `labs/stan/` for Stan programs;
+- `chapters/` for course prose;
+- helper functions into compact reusable scripts when repetition begins.
+
+Within an analysis, it is usually better to keep:
+
+- data generation or import explicit;
+- model functions pure when possible;
+- random seeds fixed in teaching examples;
+- plotting code separate from model code.
+
+## 10. Recommended `R` Workflow Pattern
+
+For a typical Bayesian analysis:
+
+1. simulate or import data;
+2. write the generative model mathematically;
+3. implement exact or approximate posterior computation;
+4. retain raw draws;
+5. compute posterior functionals from draws;
+6. generate posterior predictive replicates;
+7. run diagnostics and model comparison;
+8. summarize results in a Quarto document.
+
+This pattern scales from toy conjugate examples to serious Stan workflows.
+
+## 11. Existing Labs In This Repository
+
+The repository now includes a broad `R` lab spine:
+
+- [beta_binomial.R](../../labs/r/beta_binomial.R)
+- [conjugate_families.R](../../labs/r/conjugate_families.R)
+- [mh_sampler.R](../../labs/r/mh_sampler.R)
+- [decision_rules.R](../../labs/r/decision_rules.R)
+- [prior_predictive_logistic.R](../../labs/r/prior_predictive_logistic.R)
+- [bayesian_linear_regression.R](../../labs/r/bayesian_linear_regression.R)
+- [glm_logistic_poisson.R](../../labs/r/glm_logistic_poisson.R)
+- [hierarchical_partial_pooling.R](../../labs/r/hierarchical_partial_pooling.R)
+- [laplace_importance_sampling.R](../../labs/r/laplace_importance_sampling.R)
+- [meanfield_vi_normal_gamma.R](../../labs/r/meanfield_vi_normal_gamma.R)
+- [particle_filter_local_level.R](../../labs/r/particle_filter_local_level.R)
+- [posterior_predictive_checks.R](../../labs/r/posterior_predictive_checks.R)
+- [simulation_based_calibration_demo.R](../../labs/r/simulation_based_calibration_demo.R)
+
+This is deliberate: `R` is the backbone of the course’s executable workflow.
+
+## 12. Diagnostics And Pitfalls
+
+### Treating fitted-model summaries as enough
+
+Raw draws should be preserved and analyzed directly.
+
+### Mixing modeling, plotting, and data munging in one opaque script
+
+This makes Bayesian work harder to debug and harder to teach.
+
+### Forgetting reproducible seeds
+
+Stochastic examples should be reproducible by default in a course repository.
+
+### Hiding transformations
+
+If a model quantity is standardized, transformed, or reparameterized, the code should make that explicit.
+
+## 13. Exercises
+
+1. Write a reusable `R` function for a conjugate posterior update of your choice.
+2. Implement posterior predictive simulation from posterior draws and compare observed versus replicated summaries.
+3. Refactor an ad hoc analysis script into distinct sections for model definition, computation, summaries, and criticism.
+4. Use posterior draws to estimate a nonlinear functional and a credible interval for it.
+5. Explain why a draw-centric workflow is preferable to a summary-centric workflow.
+
+## 14. Summary
+
+`R` is the course’s operational glue:
+
+- exact examples are easy to encode;
+- custom algorithms are transparent;
+- posterior draws are easy to manipulate;
+- diagnostics and predictive checks are straightforward;
+- Quarto integration makes the workflow reproducible.
+
+## References
+
+Key references are @r2025, @posterior2024, @bayesplot2024, @loo2024, and @cmdstanr2024.
