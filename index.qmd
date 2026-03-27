@@ -51,8 +51,13 @@ Optimization, MAP estimation, tuning, calibration, posterior diagnostics, model 
 :::
 
 ::: {.course-card}
-### Part VI-VII
-Full workflows in `R`, `Stan`, and `JAX`, then advanced topics: model averaging, robustness, experimental design, communication, and capstone projects.
+### Part VI
+Full workflows in `R`, `Stan`, and `JAX`, including diagnostics, reproducibility, and computational practice.
+:::
+
+::: {.course-card}
+### Part VII
+Model selection, stacking, robustness, experimental design, communication, and capstone-level workflow synthesis.
 :::
 :::
 
@@ -104,6 +109,10 @@ The site includes several fully written exemplar chapters that demonstrate the i
 - [Diagnostics and model criticism](chapters/practice/diagnostics-and-model-criticism.qmd)
 - [Stan workflow for hierarchical models and HMC diagnostics](chapters/software/stan-hierarchical-models.qmd)
 - [JAX for gradient-based Bayesian computation](chapters/software/jax-gradient-based-bayes.qmd)
+- [Model selection and averaging](chapters/advanced/model-selection-and-averaging.qmd)
+- [Robust Bayesian methods](chapters/advanced/robust-bayesian-methods.qmd)
+- [Bayesian experimental design](chapters/advanced/bayesian-experimental-design.qmd)
+- [Communication and interpretation](chapters/advanced/communication-and-interpretation.qmd)
 
 ## Software Stack
 
@@ -154,6 +163,7 @@ The course is intentionally layered.
 - [Part I: Foundations](parts/part-i-foundations.qmd)
 - [Part III: Computational Bayesian methods](parts/part-iii-computation.qmd)
 - [Part VI: Software workflows](parts/part-vi-software-workflows.qmd)
+- [Part VII: Advanced topics](parts/part-vii-advanced-topics.qmd)
 - [Projects and capstones](projects.qmd)
 - [References and citation strategy](references.qmd)
 

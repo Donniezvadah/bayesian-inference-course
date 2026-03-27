@@ -37,7 +37,7 @@ Each part page is written as an expansion-ready authoring brief. For every chapt
 | 13-20 | Fully written chapters | [Part IV chapters](parts/part-iv-models.qmd) |
 | 21-23 | Fully written chapters | [Part V chapters](parts/part-v-optimization-and-diagnostics.qmd) |
 | 24-26 | Fully written chapters | [Part VI chapters](parts/part-vi-software-workflows.qmd) |
-| 27-31 | Detailed outline | Part VII overview |
+| 27-31 | Fully written chapters | [Part VII chapters](parts/part-vii-advanced-topics.qmd) |
 
 ## Authoring Convention
 

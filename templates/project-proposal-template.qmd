@@ -1,0 +1,73 @@
+---
+title: "Bayesian Project Proposal Template"
+---
+
+## Project Title
+
+State a concise title that names the scientific problem rather than only the model class.
+
+## Scientific Question
+
+- What is the substantive question?
+- What is the target estimand?
+- Why is a Bayesian approach appropriate?
+
+## Data And Measurement Context
+
+- What are the observational units?
+- How were the data collected?
+- What dependence, grouping, missingness, or measurement issues are expected?
+
+## Candidate Model Family
+
+Write the generative structure:
+
+$$
+p(y,\theta)=p(y \mid \theta)\pi(\theta).
+$$
+
+If hierarchical or latent structure is involved, write the factorization in expanded form.
+
+## Prior Strategy
+
+- Which priors will be used?
+- What scale information justifies them?
+- What prior predictive checks will be run?
+
+## Computational Plan
+
+- Which inference method will be used?
+- Why is it appropriate for the model geometry?
+- Which diagnostics will be used?
+
+## Model Ladder
+
+List:
+
+1. the baseline model;
+2. the reference model;
+3. at least one sensitivity or robustness alternative.
+
+## Evaluation Plan
+
+- How will predictive performance be assessed?
+- How will sensitivity analysis be conducted?
+- What constitutes success for the project?
+
+## Risks
+
+List the main expected failure modes:
+
+- identifiability;
+- poor mixing or divergences;
+- prior sensitivity;
+- weak signal;
+- data quality problems.
+
+## Deliverables
+
+- proposal;
+- reproducible code;
+- diagnostics;
+- final report;
+- appendix of sensitivity analyses.

@@ -15,6 +15,14 @@ By the end of Part VII, learners should be able to:
 - reason about design under uncertainty and utility;
 - communicate Bayesian results responsibly to scientific collaborators.
 
+## Fully Written Chapters In This Repository
+
+- [Model selection and averaging](../chapters/advanced/model-selection-and-averaging.qmd)
+- [Robust Bayesian methods](../chapters/advanced/robust-bayesian-methods.qmd)
+- [Bayesian experimental design](../chapters/advanced/bayesian-experimental-design.qmd)
+- [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
+- [Capstone projects](../chapters/advanced/capstone-projects.qmd)
+
 ## Chapter 27. Model Selection and Averaging
 
 ### Core question
@@ -56,6 +64,10 @@ How should we compare or combine models when model uncertainty itself matters?
 - @robert2007
 - @vehtari2017
 
+### Full chapter
+
+- [Model selection and averaging](../chapters/advanced/model-selection-and-averaging.qmd)
+
 ## Chapter 28. Robust Bayesian Methods
 
 ### Core question
@@ -96,6 +108,10 @@ How can Bayesian models remain useful when data contain outliers or the likeliho
 - @gelman2013
 - @murphy2023
 
+### Full chapter
+
+- [Robust Bayesian methods](../chapters/advanced/robust-bayesian-methods.qmd)
+
 ## Chapter 29. Bayesian Experimental Design
 
 ### Core question
@@ -135,6 +151,10 @@ How should one choose data collection strategies when uncertainty and utility ar
 
 - @berger1985
 - @mackay2003
+
+### Full chapter
+
+- [Bayesian experimental design](../chapters/advanced/bayesian-experimental-design.qmd)
 
 ## Chapter 30. Communication and Interpretation
 
@@ -178,6 +198,10 @@ How should Bayesian conclusions be reported so that uncertainty, model assumptio
 - @gabry2019
 - @gelman2013
 
+### Full chapter
+
+- [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
+
 ## Chapter 31. Capstone Projects
 
 ### Core question
@@ -215,3 +239,7 @@ How do all components of Bayesian workflow combine in a real, open-ended project
 ### Exercises
 
 - Draft a one-page project proposal with model family, prior strategy, diagnostics plan, and evaluation criteria.
+
+### Full chapter
+
+- [Capstone projects](../chapters/advanced/capstone-projects.qmd)

@@ -1,0 +1,267 @@
+---
+title: "Communication and Interpretation: Posterior Summaries, Predictive Uncertainty, Decision Reporting, and Reproducibility"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- define posterior summaries as functionals of posterior draws rather than as isolated scalar estimates;
+- distinguish equal-tail intervals, HPD sets, and predictive intervals;
+- separate parameter uncertainty from outcome uncertainty mathematically;
+- report results on scientifically meaningful transformed scales;
+- construct decision-oriented posterior summaries that remain transparent about assumptions.
+
+## 1. Reporting Is Part Of Inference
+
+Bayesian inference is not finished when posterior draws are obtained. The analyst must decide which posterior functionals matter for the scientific question. That step is substantive, not cosmetic.
+
+If $\theta$ is the model parameter but the scientific estimand is
+
+$$
+\psi = g(\theta),
+$$
+
+then the real inferential target is the posterior of $\psi$:
+
+$$
+p(\psi \mid y).
+$$
+
+Reporting $\theta$ directly when collaborators care about $g(\theta)$ is a failure of translation.
+
+## 2. Posterior Summaries As Functionals
+
+For any posterior distribution $p(\theta \mid y)$, common summaries are functionals:
+
+- posterior mean
+  $$
+  E(\theta \mid y);
+  $$
+- posterior median, defined coordinatewise or marginally;
+- posterior mode
+  $$
+  \arg\max_\theta p(\theta \mid y);
+  $$
+- posterior standard deviation
+  $$
+  \sqrt{\operatorname{Var}(\theta \mid y)};
+  $$
+- posterior tail probabilities such as
+  $$
+  p(\theta > 0 \mid y).
+  $$
+
+None of these is universally best. The choice depends on loss function, interpretability, and audience.
+
+## 3. Credible Sets
+
+A set $C_\alpha(y)$ is a $(1-\alpha)$ posterior credible set if
+
+$$
+p(\theta \in C_\alpha(y) \mid y)=1-\alpha.
+$$
+
+### Equal-tail intervals
+
+For a scalar parameter,
+
+$$
+C_\alpha^{\mathrm{ET}}(y)
+=
+\left[
+F^{-1}_{\theta \mid y}\left(\frac{\alpha}{2}\right),
+F^{-1}_{\theta \mid y}\left(1-\frac{\alpha}{2}\right)
+\right].
+$$
+
+### Highest posterior density sets
+
+An HPD set satisfies:
+
+1. it has posterior probability $1-\alpha$;
+2. every point inside has density at least as large as every point outside.
+
+HPD sets are natural for skewed posteriors, but they can be awkward or nonunique in multimodal settings.
+
+### Credible versus confidence intervals
+
+A Bayesian credible interval is a posterior probability statement conditional on the observed data. A frequentist confidence interval is a procedure with long-run coverage properties. The two objects may be numerically similar in regular models, but they are conceptually different.
+
+## 4. Transformed And Derived Quantities
+
+Many scientific questions are about transformations:
+
+- odds ratios in logistic regression;
+- risk differences;
+- contrasts between treatment arms;
+- elasticities;
+- predicted mean differences;
+- threshold exceedance probabilities.
+
+If posterior draws are $\theta^{(1)},\dots,\theta^{(S)}$, then transformed draws
+
+$$
+\psi^{(s)} = g(\theta^{(s)})
+$$
+
+automatically approximate the posterior of $\psi$.
+
+This is one of the strongest practical advantages of Bayesian computation: nonlinear uncertainty propagation is handled by transforming draws rather than linearizing everything analytically.
+
+## 5. Parameter Uncertainty Versus Predictive Uncertainty
+
+Analysts frequently conflate uncertainty about parameters with uncertainty about future outcomes. The law of total variance separates them:
+
+$$
+\operatorname{Var}(\tilde y \mid y)
+=
+E\left[\operatorname{Var}(\tilde y \mid \theta,y)\mid y\right]
++ \operatorname{Var}\left(E[\tilde y \mid \theta,y]\mid y\right).
+$$
+
+The first term is irreducible observational noise under the model. The second is uncertainty induced by not knowing $\theta$ exactly.
+
+### Why the distinction matters
+
+If one reports only credible intervals for coefficients, collaborators may think the study says more about future observables than it actually does. Predictive intervals are often wider and more decision-relevant.
+
+## 6. Decision-Oriented Summaries
+
+Suppose actions lie in $\mathcal{A}$ and the loss is $L(a,\theta)$. The posterior risk is
+
+$$
+\rho(a \mid y)=E[L(a,\theta)\mid y].
+$$
+
+The Bayes action is
+
+$$
+a^\star(y)=\arg\min_{a \in \mathcal{A}} \rho(a \mid y).
+$$
+
+Reporting should then include:
+
+- the recommended action;
+- the posterior risk of that action;
+- the posterior risks of close alternatives;
+- how the recommendation changes under plausible alternative losses.
+
+This is more honest than pretending that one posterior mean alone determines the decision.
+
+## 7. Worked Example: Logistic Regression Communication
+
+Suppose
+
+$$
+\Pr(Y=1 \mid x,\beta)=\operatorname{logit}^{-1}(x^\top \beta).
+$$
+
+The coefficient $\beta_j$ is a log-odds change. Many collaborators do not think in log odds. More meaningful summaries may include:
+
+- the posterior odds ratio
+  $$
+  \exp(\beta_j);
+  $$
+- the risk difference at representative covariate values
+  $$
+  \operatorname{logit}^{-1}(x_1^\top \beta) - \operatorname{logit}^{-1}(x_0^\top \beta);
+  $$
+- the posterior probability the intervention improves risk by more than a practically relevant threshold $\delta$:
+  $$
+  p\left(
+  \operatorname{RD} > \delta \mid y
+  \right).
+  $$
+
+These are more directly aligned with scientific or policy decisions.
+
+## 8. Visualization As Statistical Argument
+
+Plots are not decorations. They are inferential objects that emphasize some posterior functionals and suppress others.
+
+Strong Bayesian graphics typically show:
+
+- raw uncertainty, not only point summaries;
+- prior-to-posterior movement when prior sensitivity matters;
+- predictive distributions, not only parameter intervals;
+- differences between groups on substantively relevant scales.
+
+Visualization is part of model criticism as well as communication [@gabry2019].
+
+## 9. Reproducibility And Literate Reporting
+
+A credible Bayesian report should make the following traceable:
+
+- the model formula;
+- prior specification and rationale;
+- computation engine and tuning choices;
+- diagnostics;
+- predictive checks;
+- sensitivity analysis;
+- code and environment.
+
+Literate tools such as Quarto make it possible to couple derivation, code, diagnostics, and narrative in one document.
+
+## 10. `R` Implementation
+
+The companion lab is [posterior_reporting_summary.R](../../labs/r/posterior_reporting_summary.R). It:
+
+- constructs posterior draws for a simple regression example;
+- reports coefficient summaries, transformed-scale summaries, and predictive intervals;
+- separates parameter uncertainty from predictive noise;
+- prints a compact decision-oriented summary table.
+
+Posterior summaries from draws are straightforward:
+
+```r
+summarize_draws <- function(x) {
+  c(
+    mean = mean(x),
+    sd = sd(x),
+    q05 = unname(quantile(x, 0.05)),
+    q50 = unname(quantile(x, 0.50)),
+    q95 = unname(quantile(x, 0.95))
+  )
+}
+```
+
+## 11. Diagnostics And Pitfalls
+
+### Reporting only posterior means
+
+This collapses uncertainty, skewness, and multimodality into a single number.
+
+### Reporting parameter scales that nobody uses
+
+If collaborators need absolute risk, reporting only log odds is not enough.
+
+### Conflating statistical and practical significance
+
+A large posterior probability of a tiny effect does not imply practical importance.
+
+### Hiding model assumptions
+
+Posterior summaries should be accompanied by enough model context that readers know what assumptions produced them.
+
+## 12. Exercises
+
+1. Define a posterior credible set and explain how it differs from a confidence interval.
+2. Use the law of total variance to separate predictive uncertainty into noise and parameter-uncertainty components.
+3. For a logistic model, describe three transformed quantities more interpretable than raw coefficients.
+4. Explain why posterior tail probabilities may be more useful than means for threshold-based decisions.
+5. Draft a one-paragraph posterior summary for a nontechnical collaborator that preserves uncertainty honestly.
+
+## 13. Summary
+
+Communication is not an afterthought. It determines whether the posterior is translated into the right scientific object:
+
+- posterior summaries are loss-dependent functionals;
+- credible sets and predictive intervals answer different questions;
+- transformed quantities often matter more than primitive parameters;
+- decision reporting requires posterior risk, not only coefficient tables;
+- reproducible reporting keeps the inferential chain auditable.
+
+## References
+
+Key references are @berger1985, @gelman2013, @gabry2019, and @mcelreath2020.

@@ -24,6 +24,11 @@ Every project should include:
 5. Sensitivity analysis.
 6. A final report with uncertainty-aware conclusions.
 
+Reusable templates are provided at:
+
+- [Project proposal template](templates/project-proposal-template.qmd)
+- [Final project report template](templates/final-project-report-template.qmd)
+
 ## Project 1: Hierarchical Bayesian Regression On Grouped Data
 
 **Question.** How much variation exists within and between groups, and when does partial pooling improve predictive performance?

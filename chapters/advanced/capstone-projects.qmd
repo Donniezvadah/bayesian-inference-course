@@ -1,0 +1,245 @@
+---
+title: "Capstone Projects: End-to-End Bayesian Workflow, Project Architecture, and Assessment"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- structure a serious Bayesian project from scientific question to final report;
+- define the minimum evidentiary standard for a graduate-level Bayesian analysis;
+- build a model-development ladder instead of jumping directly to the most complex model;
+- document diagnostics, sensitivity analysis, and limitations as core outputs;
+- use the provided proposal and report templates to organize a reproducible capstone.
+
+## 1. What A Bayesian Capstone Must Demonstrate
+
+A capstone is not a code dump and not a single fitted model. It is an integrated demonstration of:
+
+- scientific framing;
+- probabilistic modeling;
+- prior design;
+- posterior computation;
+- diagnostic criticism;
+- predictive or decision evaluation;
+- uncertainty communication.
+
+The standard should be closer to a small research report than to a homework submission.
+
+## 2. The Project As A Workflow Object
+
+Every serious project should make explicit the tuple
+
+$$
+(\mathcal{Q}, \mathcal{D}, M, \Pi, A, C, R),
+$$
+
+where:
+
+- $\mathcal{Q}$ is the substantive question;
+- $\mathcal{D}$ is the observed data and data-generating context;
+- $M$ is the model family;
+- $\Pi$ is the prior specification;
+- $A$ is the computation algorithm;
+- $C$ is the criticism and sensitivity plan;
+- $R$ is the reporting target or decision target.
+
+Weak projects leave several of these implicit.
+
+## 3. Project Architecture
+
+### Stage 1: Scientific question
+
+State the question in a way that determines the estimand. “Fit a Bayesian model” is not a question.
+
+### Stage 2: Data audit
+
+Document:
+
+- units of observation;
+- missingness;
+- measurement scale;
+- grouping or dependence;
+- likely sources of bias or contamination.
+
+### Stage 3: Generative story
+
+Write down the joint factorization
+
+$$
+p(y,\theta)=p(y \mid \theta)\pi(\theta)
+$$
+
+or its hierarchical extension. If the factorization cannot be written clearly, the model is not yet ready.
+
+### Stage 4: Model ladder
+
+A good project usually fits several models:
+
+1. baseline model;
+2. minimally enriched model;
+3. scientifically serious reference model;
+4. sensitivity or robustness alternatives.
+
+This ladder is essential. Without it, the analyst cannot distinguish genuine scientific structure from overfitting or computational artifact.
+
+## 4. Minimum Evidence Package
+
+At a minimum, the final project should contain:
+
+1. prior predictive checks;
+2. posterior computation diagnostics;
+3. posterior predictive checks;
+4. sensitivity analysis;
+5. predictive evaluation or decision analysis;
+6. discussion of limitations.
+
+Any project lacking several of these may still be interesting, but it is not a complete Bayesian workflow.
+
+## 5. Proposal Requirements
+
+The proposal should include:
+
+- the scientific question and estimand;
+- the candidate model family;
+- key priors and why they are plausible;
+- the intended computation engine;
+- the planned diagnostics;
+- the evaluation criterion;
+- a risk register describing expected failure points.
+
+The companion proposal template is [project-proposal-template.qmd](../../templates/project-proposal-template.qmd).
+
+## 6. Final Report Requirements
+
+The final report should do more than show that a model ran. It should provide:
+
+- the final model specification;
+- why simpler alternatives were insufficient;
+- diagnostics and what they imply;
+- predictive or decision summaries;
+- sensitivity to prior and likelihood choices;
+- a transparent statement of residual uncertainty.
+
+The companion report template is [final-project-report-template.qmd](../../templates/final-project-report-template.qmd).
+
+## 7. Computational Standards
+
+Each project should make the computational target explicit:
+
+- posterior draws from MCMC;
+- an approximation from variational inference;
+- a MAP plus Laplace approximation;
+- filtering or sequential approximation;
+- a custom algorithm for a structured latent model.
+
+The choice is acceptable only if the project states:
+
+- why the algorithm matches the model geometry;
+- what tuning choices were made;
+- how convergence or approximation quality was checked.
+
+## 8. Diagnostic Review Checklist
+
+Before interpretation, a project should be able to answer:
+
+1. Did prior predictive simulation reveal absurd implications?
+2. Did the algorithm mix or converge adequately?
+3. Did predictive checks reveal structural mismatch?
+4. Were influential observations or outliers assessed?
+5. Were key conclusions stable to plausible alternative priors?
+6. Was predictive utility or decision utility evaluated on a clear scale?
+
+If several answers are “no,” the project is not yet mature.
+
+## 9. Recommended Repository Structure
+
+For a reproducible project, a clean structure is:
+
+```text
+project/
+  data/
+  notebooks/
+  model/
+  scripts/
+  reports/
+  figures/
+  README.md
+  _quarto.yml
+```
+
+The point is not rigid directory aesthetics. The point is separation of data, model code, diagnostics, and narrative.
+
+## 10. Project Bank
+
+The canonical project bank is [projects.qmd](../../projects.qmd). It includes:
+
+- hierarchical regression with partial pooling;
+- hidden Markov modeling of longitudinal behavior;
+- Dirichlet-multinomial compositional analysis;
+- prior-sensitive Bayesian logistic regression;
+- Gaussian process regression;
+- finite-mixture label-switching study;
+- HMC diagnostics case study.
+
+Each of these can be expanded to doctoral-level depth if the proposal is framed carefully.
+
+## 11. Assessment Rubric
+
+The grading logic is aligned with the rubric on [projects.qmd](../../projects.qmd), but the hierarchy is:
+
+- first: scientific coherence and workflow completeness;
+- second: mathematical and computational rigor;
+- third: communication quality and reproducibility.
+
+A mathematically sophisticated project with weak diagnostics is weaker than a slightly simpler project with full workflow discipline.
+
+## 12. Common Failure Modes
+
+### Starting from a maximal model
+
+This hides whether the final complexity is necessary.
+
+### Using diagnostics as decoration
+
+Plots and scalar summaries must change modeling decisions, not merely appear in an appendix.
+
+### Underreporting computational failures
+
+Divergences, unstable VI, or label switching are results. They are not embarrassments to be hidden.
+
+### Omitting sensitivity analysis
+
+Without sensitivity analysis, posterior confidence often exceeds what the workflow has earned.
+
+## 13. Suggested Timeline
+
+1. Week 1: proposal, literature review, and data audit.
+2. Week 2: prior predictive exploration and baseline model.
+3. Week 3: serious model fitting and computational debugging.
+4. Week 4: diagnostics, criticism, and sensitivity.
+5. Week 5: communication, revision, and final report.
+
+Longer schedules should still preserve this order.
+
+## 14. Exercises
+
+1. Draft a project proposal that includes question, estimand, prior strategy, computation plan, and diagnostics plan.
+2. Write a model ladder for one project in the project bank, from simplest defensible model to reference model.
+3. Identify three realistic failure modes for a hierarchical or latent-variable project and explain how you would detect them.
+4. Explain why prior predictive checks belong in the proposal stage rather than only in the final report.
+5. Describe what evidence would justify using VI rather than MCMC in a capstone.
+
+## 15. Summary
+
+The capstone chapter closes the course by treating workflow as the real object of mastery:
+
+- the scientific question determines the estimand;
+- the model must be stated as a joint probability structure;
+- diagnostics and sensitivity are mandatory, not optional;
+- reproducible computation is part of the evidence;
+- communication should report what the model supports, and no more.
+
+## References
+
+Key references are @gelman2013, @gabry2019, @vehtari2017, and @murphy2023.

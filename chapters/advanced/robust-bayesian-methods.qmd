@@ -1,0 +1,332 @@
+---
+title: "Robust Bayesian Methods: Heavy Tails, Contamination, Misspecification, and Generalized Updating"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- explain what robustness means in Bayesian analysis and what it does not mean;
+- derive the Student-$t$ likelihood as a scale mixture of Gaussians;
+- formulate contamination models with latent outlier indicators;
+- describe posterior behavior under model misspecification;
+- compare classical posterior updating with generalized Bayes updates based on losses.
+
+## 1. Why Robustness Matters
+
+All models are approximations. Robust Bayesian analysis asks how posterior conclusions behave when the approximation is imperfect:
+
+- outliers may appear;
+- tails may be heavier than assumed;
+- latent heterogeneity may be missing;
+- the likelihood may be systematically misspecified.
+
+Robustness is not a license to stop modeling carefully. It is a way to reduce the inferential damage when the model is not exactly correct.
+
+## 2. Posterior Concentration Under Misspecification
+
+Let $p_0$ denote the true data-generating distribution and let $\{p_\theta : \theta \in \Theta\}$ be the model family. If $p_0 \notin \{p_\theta\}$, then the posterior cannot concentrate at a “true” parameter value. Under regularity conditions it concentrates near the pseudo-true parameter
+
+$$
+\theta^\star
+=
+\arg\min_{\theta \in \Theta}
+\operatorname{KL}(p_0 \,\|\, p_\theta)
+$$
+
+instead [@kleijn2012].
+
+This fact has two consequences:
+
+1. posterior precision can increase around the wrong target;
+2. good computation does not rescue bad likelihood geometry.
+
+Hence robustness is partly about changing the model family so the pseudo-true target is less distorted by localized failures.
+
+## 3. Heavy-Tailed Likelihoods
+
+The most common robustification is to replace a Gaussian observation model with a Student-$t$ model.
+
+Suppose
+
+$$
+y_i = x_i^\top \beta + \varepsilon_i,
+\qquad
+\varepsilon_i \sim t_\nu(0,\sigma).
+$$
+
+The log likelihood contribution for residual $r_i = y_i - x_i^\top\beta$ is
+
+$$
+\log p(r_i)
+=
+\text{const}
+- \frac{\nu+1}{2}\log\left(1+\frac{r_i^2}{\nu \sigma^2}\right).
+$$
+
+For large residuals this grows only logarithmically in $r_i^2$, unlike the Gaussian penalty
+
+$$
+\log p(r_i)
+=
+\text{const}
+- \frac{r_i^2}{2\sigma^2},
+$$
+
+which is quadratic. This is why the Student-$t$ downweights outliers.
+
+## 4. Student-$t$ As A Scale Mixture
+
+The representation
+
+$$
+\lambda_i \sim \operatorname{Gamma}\left(\frac{\nu}{2}, \frac{\nu}{2}\right),
+\qquad
+y_i \mid \lambda_i,\beta,\sigma^2
+\sim
+\mathcal{N}\left(x_i^\top \beta, \frac{\sigma^2}{\lambda_i}\right)
+$$
+
+implies a marginal Student-$t$ distribution for $y_i$.
+
+### Derivation
+
+Conditional on $\lambda_i$,
+
+$$
+p(y_i \mid \lambda_i,\beta,\sigma^2)
+\propto
+\lambda_i^{1/2}
+\exp\left(
+-\frac{\lambda_i}{2\sigma^2}(y_i-x_i^\top \beta)^2
+\right).
+$$
+
+The gamma prior contributes
+
+$$
+p(\lambda_i)
+\propto
+\lambda_i^{\nu/2-1}
+\exp\left(-\frac{\nu}{2}\lambda_i\right).
+$$
+
+Multiplying terms,
+
+$$
+p(y_i,\lambda_i \mid \beta,\sigma^2)
+\propto
+\lambda_i^{(\nu+1)/2-1}
+\exp\left[
+-\frac{\lambda_i}{2}
+\left(
+\nu + \frac{(y_i-x_i^\top \beta)^2}{\sigma^2}
+\right)
+\right].
+$$
+
+Integrating out $\lambda_i$ yields
+
+$$
+p(y_i \mid \beta,\sigma^2)
+\propto
+\left(
+1 + \frac{(y_i-x_i^\top \beta)^2}{\nu\sigma^2}
+\right)^{-(\nu+1)/2},
+$$
+
+which is exactly the Student-$t$ kernel.
+
+### Conditional weight intuition
+
+The latent precision has posterior mean
+
+$$
+E(\lambda_i \mid y_i,\beta,\sigma^2)
+=
+\frac{\nu+1}{\nu + (r_i/\sigma)^2}.
+$$
+
+Large residuals therefore receive smaller effective precision weights.
+
+## 5. Robust Priors
+
+Likelihood robustness is only half the story. Priors can also be chosen to reduce overshrinkage or separation pathologies.
+
+Examples include:
+
+- Student-$t$ priors on regression coefficients;
+- global-local shrinkage priors such as the horseshoe;
+- weakly informative priors that rule out implausibly extreme scales.
+
+Heavy-tailed priors preserve regularization near zero while allowing genuine large signals to escape. This is especially important in sparse high-dimensional settings.
+
+## 6. Contamination Models
+
+Another robustification is explicit contamination:
+
+$$
+y_i \mid z_i,\theta,\phi
+\sim
+\begin{cases}
+f(y_i \mid \theta), & z_i = 0, \\
+g(y_i \mid \phi), & z_i = 1,
+\end{cases}
+$$
+with
+$$
+z_i \mid \epsilon \sim \operatorname{Bernoulli}(\epsilon).
+$$
+
+Marginally,
+
+$$
+p(y_i \mid \theta,\phi,\epsilon)
+=
+(1-\epsilon)f(y_i \mid \theta)
+
++ \epsilon g(y_i \mid \phi).
+$$
+
+### Posterior outlier probability
+
+Conditional on parameters,
+
+$$
+p(z_i=1 \mid y_i,\theta,\phi,\epsilon)
+=
+\frac{\epsilon g(y_i \mid \phi)}
+{(1-\epsilon)f(y_i \mid \theta)+\epsilon g(y_i \mid \phi)}.
+$$
+
+This supplies an interpretable posterior probability that case $i$ comes from the contaminating component.
+
+### Strength and weakness
+
+Contamination models are expressive, but they introduce:
+
+- latent discreteness;
+- multimodality;
+- sensitivity to the specification of $g$;
+- extra computational burden.
+
+## 7. Generalized Bayes
+
+Classical Bayesian updating uses log likelihood accumulation. A broader decision-theoretic update replaces the negative log likelihood by a generic loss $\ell(y,\theta)$ [@bissiri2016]:
+
+$$
+p_w(\theta \mid y)
+\propto
+\exp\left(
+-w \sum_{i=1}^n \ell(y_i,\theta)
+\right)\pi(\theta),
+$$
+
+where $w>0$ calibrates learning rate.
+
+If
+
+$$
+\ell(y_i,\theta) = -\log p(y_i \mid \theta),
+$$
+
+then classical Bayes is recovered. But one can choose alternative losses that are less sensitive to extreme observations or local misspecification.
+
+### Why this matters
+
+Generalized Bayes clarifies that robustness need not be tied to one parametric likelihood family. One can build posterior-like updates around loss functions. The cost is that coherence with a fully specified generative model is partially relaxed.
+
+## 8. Worked Comparison: Gaussian Versus Student-$t$ Regression
+
+Consider a Gaussian prior
+
+$$
+\beta \sim \mathcal{N}(0,\tau^2 I_p)
+$$
+
+and fixed $(\sigma,\nu)$. The Gaussian log posterior is
+
+$$
+\log p(\beta \mid y)
+=
+\text{const}
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-x_i^\top\beta)^2
+-\frac{1}{2\tau^2}\beta^\top \beta.
+$$
+
+The Student-$t$ version is
+
+$$
+\log p(\beta \mid y)
+=
+\text{const}
+-\frac{\nu+1}{2}\sum_{i=1}^n
+\log\left(
+1+\frac{(y_i-x_i^\top \beta)^2}{\nu\sigma^2}
+\right)
+-\frac{1}{2\tau^2}\beta^\top\beta.
+$$
+
+The Gaussian objective is dominated by large squared residuals. The Student-$t$ objective is much flatter for large residuals. Therefore a small number of aberrant observations distort the posterior much less.
+
+## 9. `R` Implementation
+
+The companion lab is [robust_t_vs_gaussian.R](../../labs/r/robust_t_vs_gaussian.R). It:
+
+- simulates a linear regression with a few strong outliers;
+- computes MAP estimates under Gaussian and Student-$t$ likelihoods;
+- reports residual-based weights implied by the Student-$t$ model;
+- compares predictions on a held-out grid.
+
+The MAP objective for Student-$t$ regression can be optimized in base `R`:
+
+```r
+neg_log_post_t <- function(beta, X, y, sigma, tau, nu) {
+  resid <- y - drop(X %*% beta)
+  ll <- -0.5 * (nu + 1) * sum(log1p(resid^2 / (nu * sigma^2)))
+  lp <- -0.5 * sum(beta^2) / tau^2
+  -(ll + lp)
+}
+```
+
+## 10. Diagnostics And Pitfalls
+
+### Robustness is not immunity
+
+A Student-$t$ likelihood helps with outliers, but it does not solve omitted-variable bias, dependence misspecification, or systematic measurement error.
+
+### Contamination models can overfit anomalies
+
+If the contamination component is too flexible, the model may label structurally informative observations as outliers rather than learning a richer signal model.
+
+### Generalized Bayes requires calibration
+
+The learning-rate parameter $w$ matters. If it is poorly calibrated, the update can be too conservative or too aggressive.
+
+### Robust likelihoods do not replace predictive checks
+
+One must still inspect whether the fitted robust model reproduces the parts of the data that matter scientifically.
+
+## 11. Exercises
+
+1. Derive the Student-$t$ density from the Gaussian-gamma scale-mixture representation.
+2. Show that the Student-$t$ residual penalty grows more slowly than the Gaussian penalty for large residuals.
+3. Derive the posterior outlier probability in the contamination model.
+4. Explain the pseudo-true parameter under misspecification.
+5. Compare classical Bayes and generalized Bayes in terms of the objective being accumulated across observations.
+
+## 12. Summary
+
+Robust Bayesian analysis is about controlled resistance to misspecification:
+
+- misspecified posteriors concentrate around KL-optimal pseudo-true targets;
+- Student-$t$ likelihoods downweight outliers through latent precision adaptation;
+- contamination models separate signal from anomalous behavior probabilistically;
+- heavy-tailed priors reduce overshrinkage;
+- generalized Bayes extends updating beyond strict likelihood models.
+
+Robustness should be treated as part of workflow, not as a one-line fix.
+
+## References
+
+Key references are @gelman2013, @lange1989, @kleijn2012, @bissiri2016, and @murphy2023.

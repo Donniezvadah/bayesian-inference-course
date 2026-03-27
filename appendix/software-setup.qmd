@@ -74,10 +74,21 @@ Recommended cloud pathways:
 | `R` | `labs/r/mcmc_tuning_grid.R` | Proposal-scale tuning study for Metropolis |
 | `R` | `labs/r/posterior_predictive_checks.R` | Basic posterior predictive discrepancy checks |
 | `R` | `labs/r/simulation_based_calibration_demo.R` | SBC rank-histogram demonstration |
+| `R` | `labs/r/model_averaging_weights.R` | Marginal likelihood, BMA, and stacking weights |
+| `R` | `labs/r/robust_t_vs_gaussian.R` | Robust regression with Gaussian versus Student-`t` likelihood |
+| `R` | `labs/r/expected_utility_design.R` | Analytic and Monte Carlo Bayesian design utility |
+| `R` | `labs/r/posterior_reporting_summary.R` | Posterior summaries on transformed and predictive scales |
 | `Stan` | `labs/stan/eight_schools.stan` | Canonical hierarchical model |
 | `R` | `labs/r/fit_eight_schools.R` | `cmdstanr` wrapper for the Stan lab |
 | Python/JAX | `labs/jax/jax_logistic_map_hmc.py` | Autodiff, MAP, and basic HMC-style demo |
 | Python/JAX | `labs/jax/hmc_gaussian_demo.py` | HMC geometry on a correlated Gaussian target |
+
+## Project Templates
+
+The site also includes reusable authoring templates for longer project work:
+
+- `templates/project-proposal-template.qmd`
+- `templates/final-project-report-template.qmd`
 
 ## Reproducibility Advice
 

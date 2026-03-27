@@ -1,0 +1,348 @@
+---
+title: "Bayesian Experimental Design: Expected Utility, Information Gain, Sequential Design, and Active Learning"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- formulate experimental design as a Bayesian decision problem;
+- derive expected utility and expected information gain criteria;
+- distinguish terminal utility from information utility;
+- construct Monte Carlo estimators for design value;
+- explain the difference between static, adaptive, and sequential designs.
+
+## 1. Design Is Decision Before Data
+
+Inference happens after data are observed. Design happens before data are observed. Bayesian design therefore asks:
+
+> Which data collection action should be taken now, given current uncertainty and the utility of future consequences?
+
+Let $d \in \mathcal{D}$ denote a design choice. Examples include:
+
+- sample size;
+- treatment allocation;
+- dose level;
+- time points of measurement;
+- spatial monitoring locations.
+
+The future data distribution depends on $d$ through
+
+$$
+p(y \mid \theta,d).
+$$
+
+## 2. Expected Utility Criterion
+
+Let $U(d,y,\theta)$ denote the utility obtained when design $d$ is chosen, data $y$ are observed, and the true state is $\theta$. The Bayesian criterion is
+
+$$
+\operatorname{EU}(d)
+=
+\int_{\Theta}\int_{\mathcal{Y}}
+U(d,y,\theta)\, p(y \mid \theta,d)\pi(\theta)\, dy\, d\theta.
+$$
+
+The optimal design is
+
+$$
+d^\star = \arg\max_{d \in \mathcal{D}} \operatorname{EU}(d).
+$$
+
+### Interpretation
+
+Expected utility averages over both parameter uncertainty and future data randomness. Design is therefore prior-dependent in the right way: before collecting data, prior beliefs are the only beliefs available.
+
+## 3. Posterior Utility As A Two-Stage Decision Problem
+
+Often the design is followed by an action $a$ chosen after seeing data. Then one can write utility as $U(a,\theta,d)$ and let the data-dependent action be $a(y)$. The design problem becomes
+
+$$
+\operatorname{EU}(d)
+=
+\int
+\left[
+\max_{a}
+\int U(a,\theta,d)\, p(\theta \mid y,d)\, d\theta
+\right]
+p(y \mid d)\, dy,
+$$
+
+where
+
+$$
+p(y \mid d)=\int p(y \mid \theta,d)\pi(\theta)\, d\theta.
+$$
+
+This expression makes the nesting explicit:
+
+1. a future posterior is formed after observing $y$;
+2. a Bayes action is chosen under that posterior;
+3. the design is evaluated by averaging the resulting utility over possible future data.
+
+## 4. Expected Information Gain
+
+When the design goal is learning rather than direct action, a common choice is expected information gain:
+
+$$
+\operatorname{EIG}(d)
+=
+E_{y,\theta \mid d}
+\left[
+\log \frac{p(\theta \mid y,d)}{\pi(\theta)}
+\right].
+$$
+
+### Derivation as mutual information
+
+Using Bayes' theorem,
+
+$$
+\log \frac{p(\theta \mid y,d)}{\pi(\theta)}
+=
+\log \frac{p(y \mid \theta,d)}{p(y \mid d)}.
+$$
+
+Therefore
+
+$$
+\operatorname{EIG}(d)
+=
+\int \int
+\log \frac{p(y \mid \theta,d)}{p(y \mid d)}
+\,
+p(y \mid \theta,d)\pi(\theta)\, dy\, d\theta.
+$$
+
+This is exactly the mutual information
+
+$$
+I(\theta;Y \mid d).
+$$
+
+Hence information-based design chooses the design under which future data are expected to reduce posterior uncertainty the most.
+
+## 5. Analytic Example: Beta-Binomial Design
+
+Suppose
+
+$$
+\theta \sim \operatorname{Beta}(\alpha,\beta),
+\qquad
+Y \mid \theta,n \sim \operatorname{Binomial}(n,\theta).
+$$
+
+After observing $Y=y$,
+
+$$
+\theta \mid y,n \sim \operatorname{Beta}(\alpha+y,\beta+n-y).
+$$
+
+Its posterior variance is
+
+$$
+\operatorname{Var}(\theta \mid y,n)
+=
+\frac{(\alpha+y)(\beta+n-y)}
+{(\alpha+\beta+n)^2(\alpha+\beta+n+1)}.
+$$
+
+If design utility is negative posterior variance minus linear sampling cost,
+
+$$
+U(n,y)= -\operatorname{Var}(\theta \mid y,n) - c n,
+$$
+
+then expected utility is
+
+$$
+\operatorname{EU}(n)
+=
+-E[\operatorname{Var}(\theta \mid Y,n)] - cn.
+$$
+
+By the law of total variance,
+
+$$
+\operatorname{Var}(\theta)
+=
+E[\operatorname{Var}(\theta \mid Y,n)]
++ \operatorname{Var}(E[\theta \mid Y,n]).
+$$
+
+For the Beta-Binomial model,
+
+$$
+\operatorname{Var}(\theta)
+=
+\frac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}
+$$
+
+and
+
+$$
+E[\theta \mid Y,n]
+=
+\frac{\alpha+Y}{\alpha+\beta+n}.
+$$
+
+Since
+
+$$
+\operatorname{Var}(Y)
+=
+\frac{n\alpha\beta(\alpha+\beta+n)}
+{(\alpha+\beta)^2(\alpha+\beta+1)},
+$$
+
+we obtain
+
+$$
+\operatorname{Var}(E[\theta \mid Y,n])
+=
+\frac{n\alpha\beta}
+{(\alpha+\beta)^2(\alpha+\beta+1)(\alpha+\beta+n)}.
+$$
+
+Therefore
+
+$$
+E[\operatorname{Var}(\theta \mid Y,n)]
+=
+\frac{\alpha\beta}
+{(\alpha+\beta)(\alpha+\beta+1)(\alpha+\beta+n)}.
+$$
+
+Hence
+
+$$
+\operatorname{EU}(n)
+=
+-\frac{\alpha\beta}
+{(\alpha+\beta)(\alpha+\beta+1)(\alpha+\beta+n)}
+- cn.
+$$
+
+This provides an exact analytic tradeoff between information gain and sampling cost.
+
+## 6. Monte Carlo Design Estimation
+
+In most realistic designs the integrals are intractable. A standard nested Monte Carlo estimator for expected utility is:
+
+1. draw $\theta^{(s)} \sim \pi(\theta)$;
+2. draw $y^{(s)} \sim p(y \mid \theta^{(s)},d)$;
+3. compute posterior-based utility $U(d,y^{(s)},\theta^{(s)})$ or a Monte Carlo approximation to it;
+4. average over $s=1,\dots,S$.
+
+For expected information gain,
+
+$$
+\widehat{\operatorname{EIG}}(d)
+=
+\frac{1}{S}\sum_{s=1}^S
+\left[
+\log p(y^{(s)} \mid \theta^{(s)},d)
+- \log \hat p(y^{(s)} \mid d)
+\right],
+$$
+
+with
+
+$$
+\hat p(y^{(s)} \mid d)
+=
+\frac{1}{T}\sum_{t=1}^T p(y^{(s)} \mid \theta^{(t)},d).
+$$
+
+This nested estimator is expensive but conceptually direct.
+
+## 7. Sequential And Adaptive Design
+
+In sequential design, one chooses
+
+$$
+d_t = \delta_t(y_{1:t-1})
+$$
+
+based on previously collected data. The state of information changes after each update. A full dynamic-programming formulation writes a value function
+
+$$
+V_t(s_t)
+=
+\max_{d_t}
+E\left[
+U_t(s_t,d_t,Y_t)
++ V_{t+1}(s_{t+1})
+\mid s_t,d_t
+\right],
+$$
+
+where $s_t$ is a sufficient summary of current posterior information.
+
+### Practical note
+
+Exact dynamic optimization is often too expensive. Many applied Bayesian design systems therefore use myopic or one-step-ahead expected utility rules, which can still be highly effective.
+
+## 8. Active Learning And Bayesian Optimization
+
+Active learning chooses observations adaptively to learn prediction functions efficiently. Bayesian optimization chooses evaluation points of an expensive black-box objective using an acquisition rule built from a posterior surrogate, often a Gaussian process.
+
+These are design problems because they optimize future information or utility under uncertainty.
+
+## 9. `R` Implementation
+
+The companion lab is [expected_utility_design.R](../../labs/r/expected_utility_design.R). It:
+
+- evaluates a Beta-Binomial design problem analytically and by Monte Carlo;
+- adds per-observation cost to show nontrivial optimal sample size;
+- illustrates how prior concentration changes the preferred design.
+
+The core analytic expected utility function is:
+
+```r
+expected_utility_beta_binomial <- function(n, alpha, beta, cost) {
+  expected_post_var <- alpha * beta /
+    ((alpha + beta) * (alpha + beta + 1) * (alpha + beta + n))
+  -expected_post_var - cost * n
+}
+```
+
+## 10. Diagnostics And Pitfalls
+
+### Confusing information with decision value
+
+A design that learns parameters well may still be poor for the downstream decision problem if the utility function values different regions of the parameter space unevenly.
+
+### Ignoring prior sensitivity
+
+Design is necessarily prior-sensitive. If the prior is unrealistic, the chosen design can be unrealistic too.
+
+### Optimizing a myopic objective for a long-horizon problem
+
+Greedy one-step rules are often reasonable, but one should state explicitly when future design opportunities are being ignored.
+
+### Forgetting computational cost
+
+Nested Monte Carlo design optimization can dominate the cost of the final inference itself.
+
+## 11. Exercises
+
+1. Derive the expected utility formula for the Beta-Binomial design with sampling cost.
+2. Show that expected information gain can be written as mutual information.
+3. Explain the distinction between design utility and posterior decision utility.
+4. Construct a Monte Carlo estimator for the expected utility of a design in a normal-mean experiment.
+5. Give an example where the design maximizing information gain differs from the design maximizing practical utility.
+
+## 12. Summary
+
+Bayesian design treats data collection as part of inference rather than a pre-statistical step:
+
+- design variables enter the likelihood before data exist;
+- optimal design maximizes expected utility, not arbitrary sample size;
+- expected information gain is mutual information;
+- sequential design updates choices as posterior information evolves;
+- computational difficulty is intrinsic because the design problem nests the inference problem.
+
+## References
+
+Key references are @berger1985, @chaloner1995, @mackay2003, and @murphy2023.

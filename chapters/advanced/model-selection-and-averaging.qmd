@@ -1,0 +1,437 @@
+---
+title: "Model Selection and Averaging: Marginal Likelihood, Predictive Utility, Stacking, and Projection"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- derive posterior model probabilities from prior model weights and marginal likelihoods;
+- explain why Bayes factors are sensitive to prior mass in low-likelihood regions;
+- distinguish explanatory evidence criteria from predictive utility criteria;
+- formulate Bayesian model averaging, stacking, and projection predictive selection precisely;
+- implement a simple model-comparison workflow from pointwise predictive densities.
+
+## 1. Why Model Uncertainty Must Be Modeled
+
+In elementary examples one often acts as if a single model $M$ were fixed in advance. Serious practice is different. Analysts routinely face:
+
+- competing likelihoods;
+- competing prior structures;
+- competing predictor sets;
+- competing latent-state structures.
+
+If model uncertainty is ignored, posterior uncertainty is often understated because one conditions on a choice that was itself uncertain.
+
+Let $\mathcal{M}=\{M_1,\dots,M_K\}$ be a finite model list. Each model $M_k$ carries:
+
+- a parameter $\theta_k \in \Theta_k$;
+- a prior $\pi_k(\theta_k)$;
+- a sampling model $p_k(y \mid \theta_k)$;
+- a prior model weight $w_k = p(M_k)$ with $\sum_{k=1}^K w_k = 1$.
+
+The Bayesian object is then the joint posterior over both model index and model-specific parameters.
+
+## 2. Posterior Model Probabilities
+
+The joint prior factorizes as
+
+$$
+p(M_k,\theta_k)=w_k \pi_k(\theta_k).
+$$
+
+After observing data $y$,
+
+$$
+p(M_k,\theta_k \mid y)
+\propto
+p_k(y \mid \theta_k)\pi_k(\theta_k)w_k.
+$$
+
+Integrating out $\theta_k$ gives
+
+$$
+p(M_k \mid y)
+=
+\frac{p(y \mid M_k)w_k}
+{\sum_{j=1}^K p(y \mid M_j)w_j},
+$$
+
+where
+
+$$
+p(y \mid M_k)
+=
+\int_{\Theta_k} p_k(y \mid \theta_k)\pi_k(\theta_k)\, d\theta_k
+$$
+
+is the marginal likelihood, also called the model evidence.
+
+### Derivation
+
+By Bayes' theorem,
+
+$$
+p(M_k \mid y)
+=
+\int p(M_k,\theta_k \mid y)\, d\theta_k.
+$$
+
+Substitute the joint posterior:
+
+$$
+p(M_k \mid y)
+=
+\frac{w_k \int p_k(y \mid \theta_k)\pi_k(\theta_k)\, d\theta_k}
+{\sum_{j=1}^K w_j \int p_j(y \mid \theta_j)\pi_j(\theta_j)\, d\theta_j},
+$$
+
+which is the claimed expression.
+
+### Interpretation
+
+Posterior model probabilities are posterior odds built from two ingredients:
+
+- prior odds $w_k / w_j$;
+- data evidence ratio $p(y \mid M_k)/p(y \mid M_j)$.
+
+This is coherent closed-world learning: probability mass is redistributed only among the models in $\mathcal{M}$.
+
+## 3. Marginal Likelihood And The Occam Effect
+
+The marginal likelihood averages the likelihood over the entire prior:
+
+$$
+p(y \mid M_k)
+=
+\int p_k(y \mid \theta_k)\pi_k(\theta_k)\, d\theta_k.
+$$
+
+This is not the likelihood evaluated at a point estimate. It rewards a model only when substantial prior mass lands in parameter regions that predict the observed data well.
+
+### Sequential factorization
+
+For data $y=(y_1,\dots,y_n)$,
+
+$$
+p(y \mid M_k)
+=
+\prod_{i=1}^n p(y_i \mid y_{1:i-1}, M_k).
+$$
+
+This follows from the chain rule:
+
+$$
+p(y_1,\dots,y_n \mid M_k)
+=
+p(y_1 \mid M_k)\prod_{i=2}^n p(y_i \mid y_{1:i-1},M_k).
+$$
+
+The factorization is useful because it shows marginal likelihood as a cumulative prior-to-posterior predictive score.
+
+### Occam factor intuition
+
+A flexible model can fit many data sets well after tuning parameters, but if its prior spreads mass over a very large parameter space then its average predictive density can still be small. This is often summarized as an automatic Occam penalty.
+
+That penalty is real, but it is entirely prior-dependent. If the prior is not substantively meaningful, the resulting Bayes factor is often not substantively meaningful either [@kass1995; @robert2007].
+
+## 4. Bayes Factors
+
+For two models $M_1$ and $M_2$, the Bayes factor is
+
+$$
+\operatorname{BF}_{12}
+=
+\frac{p(y \mid M_1)}{p(y \mid M_2)}.
+$$
+
+Posterior odds obey
+
+$$
+\frac{p(M_1 \mid y)}{p(M_2 \mid y)}
+=
+\operatorname{BF}_{12}\frac{w_1}{w_2}.
+$$
+
+### Key warning
+
+Bayes factors require proper priors on parameters that differ across models. If an improper prior is used, the normalizing constant is undefined, and the marginal likelihood is undefined up to arbitrary scale.
+
+### Why vague priors can destabilize Bayes factors
+
+Suppose a model has a diffuse prior over a parameter region where likelihood is negligible. Then the average likelihood can become extremely small even if the model contains parameter values that fit the data very well. Bayes factors therefore answer a sharper question than “which model can fit better?” They ask:
+
+> Under the model as a full prior-predictive device, how much mass was assigned to data like those observed?
+
+That is a strong and sometimes fragile question.
+
+## 5. Bridge Sampling For Marginal Likelihood
+
+Except in conjugate models, the evidence integral is rarely available in closed form. Bridge sampling is one stable strategy for estimating it [@meng1996].
+
+Let
+
+$$
+\tilde p(\theta)=p(y \mid \theta,M)\pi(\theta \mid M)
+$$
+
+denote the unnormalized posterior and let
+
+$$
+Z = p(y \mid M) = \int \tilde p(\theta)\, d\theta.
+$$
+
+Then the normalized posterior is
+
+$$
+p(\theta \mid y,M)=\frac{\tilde p(\theta)}{Z}.
+$$
+
+Choose any density $g(\theta)$ with overlapping support and any bridge function $h(\theta)$. Then
+
+$$
+E_g[h(\theta)\tilde p(\theta)]
+=
+\int h(\theta)\tilde p(\theta)g(\theta)\, d\theta
+$$
+
+and
+
+$$
+E_{p(\theta \mid y,M)}[h(\theta)g(\theta)]
+=
+\frac{1}{Z}\int h(\theta)\tilde p(\theta)g(\theta)\, d\theta.
+$$
+
+Therefore,
+
+$$
+Z
+=
+\frac{E_g[h(\theta)\tilde p(\theta)]}
+{E_{p(\theta \mid y,M)}[h(\theta)g(\theta)]}.
+$$
+
+The bridge function is chosen to control Monte Carlo variance. In practice one uses posterior draws and proposal draws jointly.
+
+### Why bridge sampling matters
+
+Naive harmonic-mean estimators rely too strongly on low-density tails and are typically unstable. Bridge sampling is preferred because it uses overlap between two distributions more symmetrically.
+
+## 6. Predictive Criteria: WAIC And PSIS-LOO
+
+Closed-world evidence is not the only goal. Often the real target is predictive performance on future observations.
+
+For model $M_k$, define the expected log predictive density
+
+$$
+\operatorname{elpd}(M_k)
+=
+\sum_{i=1}^n \log p(y_i \mid y_{-i}, M_k),
+$$
+
+where $y_{-i}$ is the data with case $i$ removed.
+
+This targets out-of-sample prediction more directly than the marginal likelihood. WAIC and PSIS-LOO approximate this quantity [@vehtari2017].
+
+### Conceptual contrast
+
+- marginal likelihood: prior-sensitive evidence for the model as a whole;
+- LOO / WAIC: predictive accuracy for new observations from the same process;
+- posterior predictive checks: model adequacy with respect to chosen data features.
+
+These are different inferential questions. They should not be expected to agree.
+
+## 7. Bayesian Model Averaging
+
+Instead of selecting one model, Bayesian model averaging integrates over model uncertainty:
+
+$$
+p(\tilde y \mid y)
+=
+\sum_{k=1}^K p(\tilde y \mid y,M_k)p(M_k \mid y).
+$$
+
+This is exact under the finite model list when posterior model probabilities are meaningful.
+
+### Decision-theoretic interpretation
+
+Under logarithmic scoring, averaging can improve predictive performance by accounting for uncertainty in the model index. But BMA inherits the same closed-world prior sensitivity as posterior model probabilities.
+
+### Limitation under misspecification
+
+If all models are wrong and one still receives nearly all posterior model mass, BMA can become overconfident because it treats the model list as exhaustive. This is one reason predictive aggregation methods such as stacking are attractive.
+
+## 8. Stacking Of Predictive Distributions
+
+Stacking chooses weights
+
+$$
+w=(w_1,\dots,w_K)
+$$
+
+on the simplex
+
+$$
+w_k \ge 0,
+\qquad
+\sum_{k=1}^K w_k = 1,
+$$
+
+to maximize leave-one-out predictive performance [@yao2018]:
+
+$$
+\hat w
+=
+\arg\max_{w \in \Delta_K}
+\sum_{i=1}^n
+\log\left(
+\sum_{k=1}^K w_k p(y_i \mid y_{-i}, M_k)
+\right).
+$$
+
+### Why this objective is sensible
+
+For each held-out observation, the ensemble predictive density is a convex combination of model-specific predictive densities. The objective sums the log score of that ensemble over held-out data points. Hence stacking directly optimizes predictive performance rather than posterior belief in a single model.
+
+### Comparison with BMA
+
+- BMA uses posterior model probabilities.
+- Stacking uses predictive weights chosen by an external performance criterion.
+- BMA assumes the model list is the full inferential universe.
+- Stacking is more tolerant of misspecification and overlapping model classes.
+
+## 9. Projection Predictive Selection
+
+Projection predictive selection begins with a rich reference model $M_{\mathrm{ref}}$ intended to capture the main posterior structure. Simpler submodels are then chosen to mimic the reference model's predictive distribution rather than to refit the original response directly [@piironen2020].
+
+For a posterior draw $\theta^{(s)}$ from the reference model, one seeks a projected parameter $\theta^\perp_{m,s}$ in submodel $m$ minimizing predictive discrepancy:
+
+$$
+\theta^\perp_{m,s}
+=
+\arg\min_{\vartheta \in \Theta_m}
+\operatorname{KL}
+\left(
+p(\tilde y \mid \theta^{(s)}, M_{\mathrm{ref}})
+\;\|\;
+p(\tilde y \mid \vartheta, m)
+\right).
+$$
+
+The submodel is then assessed by the predictive loss it incurs relative to the reference model. The logic is:
+
+1. build one defensible reference model carefully;
+2. project to simpler submodels;
+3. accept simplicity only when predictive degradation is small.
+
+This avoids some of the instability of searching across many small models directly.
+
+## 10. Worked Gaussian Example
+
+Suppose under model $M_k$,
+
+$$
+y \mid \beta_k, M_k \sim \mathcal{N}(X_k\beta_k,\sigma^2 I_n),
+\qquad
+\beta_k \sim \mathcal{N}(0,\tau^2 I_{p_k}),
+$$
+
+with known $\sigma^2$ and $\tau^2$. Integrating out $\beta_k$ gives
+
+$$
+y \mid M_k \sim \mathcal{N}\left(0,\sigma^2 I_n + \tau^2 X_k X_k^\top\right).
+$$
+
+Hence
+
+$$
+\log p(y \mid M_k)
+=
+-\frac{n}{2}\log(2\pi)
+-\frac{1}{2}\log |\Sigma_k|
+-\frac{1}{2}y^\top \Sigma_k^{-1}y,
+$$
+
+where
+
+$$
+\Sigma_k=\sigma^2 I_n + \tau^2 X_k X_k^\top.
+$$
+
+This makes clear that exact marginal likelihoods can be computed in conjugate Gaussian model comparison.
+
+## 11. `R` Implementation
+
+The companion lab is [model_averaging_weights.R](../../labs/r/model_averaging_weights.R). It:
+
+- compares linear and quadratic Gaussian regression models;
+- computes exact Gaussian marginal likelihoods under Gaussian priors;
+- computes posterior model weights;
+- optimizes stacking weights from leave-one-out predictive densities.
+
+The core stacking optimization in base `R` has the form:
+
+```r
+stack_objective <- function(eta, log_pred_matrix) {
+  w_raw <- c(exp(eta), 1)
+  w <- w_raw / sum(w_raw)
+  value <- 0
+  for (i in seq_len(nrow(log_pred_matrix))) {
+    value <- value + log(sum(w * exp(log_pred_matrix[i, ])))
+  }
+  -value
+}
+```
+
+This parameterizes a two-model simplex through an unconstrained real vector.
+
+## 12. Diagnostics And Pitfalls
+
+### Using Bayes factors with weakly justified priors
+
+If the prior is chosen only for “noninformativeness,” the resulting evidence calculation is often not stable enough for high-stakes model comparison.
+
+### Confusing prediction and explanation
+
+A model can have superior predictive performance while having poorer marginal likelihood, or vice versa. They answer different questions.
+
+### Treating posterior model probability as absolute truth
+
+Posterior model probabilities are conditional on the model list. If the list omits important alternatives, the probabilities can look far more decisive than the scientific situation warrants.
+
+### Ignoring pointwise diagnostics in stacking
+
+Stacking can hide a small number of observations for which all candidate models perform badly. One should still inspect observation-level predictive failures.
+
+## 13. Exercises
+
+1. Derive the posterior model probability formula for a finite model list with prior weights $w_k$.
+2. Show that posterior odds equal prior odds times a Bayes factor.
+3. Prove the bridge-sampling identity
+   $$
+   Z
+   =
+   \frac{E_g[h(\theta)\tilde p(\theta)]}
+   {E_{p(\theta \mid y)}[h(\theta)g(\theta)]}.
+   $$
+4. Explain why improper priors invalidate Bayes factors.
+5. Compare the optimization targets of BMA and stacking.
+6. In the Gaussian regression example, derive the exact marginal covariance matrix of $y$ after integrating out $\beta$.
+
+## 14. Summary
+
+Advanced Bayesian model comparison requires separating several ideas:
+
+- marginal likelihood measures prior-weighted explanatory evidence;
+- Bayes factors update prior model odds;
+- BMA integrates over model uncertainty inside a closed model list;
+- PSIS-LOO and WAIC target predictive performance;
+- stacking optimizes ensemble prediction under misspecification;
+- projection predictive selection simplifies a strong reference model while controlling predictive loss.
+
+The central discipline is not choosing one universal criterion, but matching the comparison tool to the inferential goal.
+
+## References
+
+Key references are @robert2007, @kass1995, @meng1996, @vehtari2017, @yao2018, and @piironen2020.

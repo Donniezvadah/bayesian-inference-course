@@ -107,6 +107,11 @@ website:
       - section: "Part VII"
         contents:
           - parts/part-vii-advanced-topics.qmd
+          - chapters/advanced/model-selection-and-averaging.qmd
+          - chapters/advanced/robust-bayesian-methods.qmd
+          - chapters/advanced/bayesian-experimental-design.qmd
+          - chapters/advanced/communication-and-interpretation.qmd
+          - chapters/advanced/capstone-projects.qmd
       - section: "Course Assets"
         contents:
           - exercises.qmd
@@ -115,6 +120,8 @@ website:
           - appendix/notation.qmd
           - appendix/measure-probability-review.qmd
           - appendix/software-setup.qmd
+          - templates/project-proposal-template.qmd
+          - templates/final-project-report-template.qmd
           - references.qmd
 
 bibliography: bibliography/references.bib
