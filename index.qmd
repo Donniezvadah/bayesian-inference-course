@@ -8,12 +8,14 @@ page-layout: full
 ::: {.hero}
 # Bayesian Inference and Bayesian Statistics
 
-This website is designed as a serious university-level course in Bayesian statistics for advanced undergraduates, MSc students, PhD students, and quantitatively mature self-learners. The emphasis is unapologetically mathematical, but the pedagogy is computationally grounded: every major theme is connected to executable implementations in `R`, `Stan`, and `JAX`, with careful attention to diagnostics, tuning, model criticism, and reproducibility.
+This website is designed as a serious university-level course in Bayesian statistics for advanced undergraduates, MSc students, PhD students, and quantitatively mature self-learners. It is written as a real course rather than a blog: structured modules, detailed chapters, executable labs, references, project work, and a clear path from foundations to advanced Bayesian workflow.
 
 The organizing principle is that Bayesian statistics is not merely a formula for updating beliefs. It is a coherent workflow that begins with probability models, proceeds through prior design and posterior computation, and ends with decision-relevant summaries, predictive performance, and model criticism [@bernardo1994; @gelman2013; @betancourt2017].
+
+[Teaching philosophy](teaching-philosophy.qmd) · [Instructor & Credits](instructor-and-credits.qmd) · [Schedule](syllabus.qmd) · [Tools and Setup](appendix/software-setup.qmd) · [Evaluation](evaluation.qmd)
 :::
 
-## Course Purpose
+## Goals Of This Course
 
 This course has four simultaneous goals:
 
@@ -22,7 +24,19 @@ This course has four simultaneous goals:
 3. Build modern computational competence, from Monte Carlo integration and MCMC to HMC, variational inference, state-space methods, and gradient-based inference.
 4. Train a disciplined Bayesian workflow in `R`, `Stan`, and `JAX`, including prior predictive checks, posterior predictive checks, diagnostics, sensitivity analysis, and reproducible reporting.
 
-## What The Course Covers
+## About This Course
+
+Use the front-matter pages as the course orientation block:
+
+- [Teaching Philosophy](teaching-philosophy.qmd)
+- [Instructor & Credits](instructor-and-credits.qmd)
+- [Course Blueprint](course-blueprint.qmd)
+- [Schedule and Recommended Pacing](syllabus.qmd)
+- [Tools and Setup](appendix/software-setup.qmd)
+- [Evaluation](evaluation.qmd)
+- [Chapter Expansion Map](chapter-outline.qmd)
+
+## Course Structure
 
 ::: {.grid-cards}
 ::: {.course-card}
@@ -61,6 +75,10 @@ Model selection, stacking, robustness, experimental design, communication, and c
 :::
 :::
 
+## About The Instructor
+
+Donald Zvada is a PhD student in Statistics at Trinity College Dublin whose research focuses on longitudinal dietary patterns, health outcomes, statistical modeling, and machine learning. A fuller profile is available on [Instructor & Credits](instructor-and-credits.qmd).
+
 ## Audience And Prerequisites
 
 The intended audience should already be comfortable with:
@@ -74,7 +92,7 @@ The appendices provide a compact review of notation, measure-theoretic probabili
 
 - [Notation and assumptions](appendix/notation.qmd)
 - [Measure-probability review](appendix/measure-probability-review.qmd)
-- [Software setup](appendix/software-setup.qmd)
+- [Tools and setup](appendix/software-setup.qmd)
 
 ## Course Design Principles
 

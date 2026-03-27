@@ -1,0 +1,108 @@
+---
+title: "Evaluation"
+---
+
+## Evaluation Philosophy
+
+This course evaluates understanding at three levels:
+
+1. **Derivation competence**  
+   Can you derive the model, algorithm, or approximation correctly?
+2. **Computational competence**  
+   Can you implement it, diagnose it, and reproduce it?
+3. **Interpretive competence**  
+   Can you explain what the result means, what assumptions drive it, and where it could fail?
+
+The third level is the one most often missing from technically polished work.
+
+## Recommended Assessment Mix
+
+### Derivation Sets
+
+Short problem sets should cover:
+
+- conjugate posterior derivations;
+- posterior predictive calculations;
+- likelihood curvature and information;
+- Metropolis-Hastings acceptance ratios;
+- HMC and VI derivations;
+- filtering and state-space recursions.
+
+### Computational Labs
+
+Labs should require students to:
+
+- run provided code;
+- modify the model or prior;
+- check diagnostics;
+- summarize what changed and why.
+
+Relevant lab materials are indexed in [Tools and Setup](appendix/software-setup.qmd).
+
+### Reading And Critique Memos
+
+Short memos are useful for:
+
+- comparing two model classes;
+- critiquing a prior specification;
+- interpreting diagnostics;
+- translating posterior summaries for nontechnical audiences.
+
+### Capstone Project
+
+The capstone should include:
+
+- a proposal;
+- a reproducible analysis;
+- prior predictive checks;
+- posterior diagnostics;
+- model criticism;
+- sensitivity analysis;
+- a final written report.
+
+See [Projects](projects.qmd) for the project bank and [Capstone Projects](chapters/advanced/capstone-projects.qmd) for the full workflow standard.
+
+## Suggested Weighting
+
+| Component | Recommended weight | What it should measure |
+|---|---:|---|
+| Derivation sets | 25% | Mathematical control of core results |
+| Computational labs | 25% | Implementation quality and diagnostics |
+| Reading / critique memos | 10% | Interpretation and model criticism |
+| Mid-course assessment | 10% | Integration of theory and computation |
+| Capstone project | 30% | End-to-end Bayesian workflow maturity |
+
+## What A High-Quality Submission Looks Like
+
+Strong work in this course usually has five properties:
+
+- notation is explicit and consistent;
+- assumptions are stated before formulas are used;
+- code is readable and reproducible;
+- diagnostics are interpreted rather than pasted;
+- conclusions are uncertainty-aware and modest in scope.
+
+## Evaluation Rubric For Projects
+
+| Criterion | Weight | High-standard evidence |
+|---|---:|---|
+| Scientific framing | 15 | Clear question, estimand, and modeling purpose |
+| Prior design | 15 | Plausible and justified prior structure |
+| Computation | 20 | Stable implementation with transparent tuning |
+| Diagnostics | 20 | PPC, chain diagnostics, and sensitivity used seriously |
+| Interpretation | 20 | Clear substantive explanation with uncertainty |
+| Reproducibility | 10 | Clean project structure and runnable code |
+
+## Academic Standard
+
+This course rewards clarity over theatrical complexity. A simpler model with excellent derivation, diagnostics, and interpretation is stronger than a fashionable model that only barely runs.
+
+## Recommended Student Checklist
+
+Before submitting work, ask:
+
+1. Have I written the model clearly?
+2. Have I shown the key derivation or approximation step?
+3. Have I verified the computation?
+4. Have I checked whether the model fits the data in the ways that matter?
+5. Have I stated what remains uncertain or fragile?

@@ -1,0 +1,70 @@
+---
+title: "Instructor & Credits"
+---
+
+## About The Instructor
+
+Donald Zvada is a PhD student in Statistics at [Trinity College Dublin](https://www.tcd.ie/), where he is developing novel statistical methods for the analysis of longitudinal dietary patterns and their association with health outcomes. His work sits at the intersection of statistical modeling, machine learning, longitudinal data analysis, and decision-oriented data science.
+
+### Current Research Interests
+
+- Bayesian statistics and probabilistic modeling
+- longitudinal dietary patterns and health outcomes
+- nutritional epidemiology
+- machine learning for structured and sequential problems
+- large language models for sequential decision-making
+
+### Academic Background
+
+- **PhD in Statistics, Trinity College Dublin**  
+  T-DIET: developing novel statistical methods for longitudinal dietary patterns analysis.
+- **MSc in Mathematical Sciences, AIMS South Africa / Stellenbosch University**
+- **BSc Honours in Operations Research and Statistics, National University of Science and Technology**
+
+### Professional And Research Experience
+
+- **Doctoral Researcher, Trinity College Dublin**  
+  Longitudinal dietary patterns analysis and statistical methodology development.
+- **Quantitative Risk Analyst, EY Zimbabwe**  
+  Credit risk model development and validation for IFRS 9 workflows.
+- **Research projects** in large language models for sequential decision-making, quantum key distribution protocol design, and customer churn prediction using deep learning.
+
+### Awards And Honours
+
+- T-DIET fully funded PhD scholarship
+- MasterCard Foundation scholarship
+- Chancellor's Award for overall best graduating male student
+- Vice Chancellor's Award in Operations Research and Statistics
+- multiple departmental and faculty academic awards
+
+### Teaching And Leadership
+
+- statistics and mathematics tutoring
+- scholarship student representation
+- outreach and tutoring leadership roles
+
+## Contact
+
+- Email: [zvadad@tcd.ie](mailto:zvadad@tcd.ie)
+- GitHub: [github.com/Donniezvadah](https://github.com/Donniezvadah)
+
+## Course Credits
+
+This course website is authored in Quarto and draws on the Bayesian statistics, computation, and workflow literature listed throughout the site. The structure of the site is intentionally course-like rather than blog-like: modular navigation, part overviews, executable labs, and a dedicated references workflow are all deliberate design choices.
+
+## Software Credits
+
+The course relies especially on:
+
+- [Quarto](https://quarto.org/)
+- [R](https://www.r-project.org/)
+- [Stan](https://mc-stan.org/)
+- [CmdStanR](https://mc-stan.org/cmdstanr/)
+- [posterior](https://mc-stan.org/posterior/)
+- [bayesplot](https://mc-stan.org/bayesplot/)
+- [loo](https://mc-stan.org/loo/)
+- [JAX](https://github.com/google/jax)
+
+## Notes On Source Material
+
+Biographical details on this page were adapted from the CV provided for this project.

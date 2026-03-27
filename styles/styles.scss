@@ -1,45 +1,56 @@
 /*-- scss:defaults --*/
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap");
 
-$body-bg: #f7f5ef;
-$body-color: #18212b;
-$link-color: #0c5c74;
-$navbar-bg: rgba(247, 245, 239, 0.92);
-$primary: #0c5c74;
-$secondary: #54687a;
-$success: #116149;
-$warning: #8b5a00;
+$body-bg: #fbfbf8;
+$body-color: #21303f;
+$link-color: #1b5ea9;
+$navbar-bg: rgba(251, 251, 248, 0.95);
+$primary: #1b5ea9;
+$secondary: #5b6e82;
+$success: #146c43;
+$warning: #8a5a00;
 
 /*-- scss:rules --*/
 body {
-  font-family: "Source Serif 4", Georgia, serif;
-  line-height: 1.75;
+  font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
+  line-height: 1.72;
 }
 
 .navbar,
 .sidebar,
 .quarto-title-block .quarto-title-banner {
-  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+  font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
 }
 
 .navbar {
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(24, 33, 43, 0.08);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(33, 48, 63, 0.08);
+}
+
+.sidebar {
+  background: #f5f7fb;
+  border-right: 1px solid rgba(33, 48, 63, 0.08);
 }
 
 .sidebar nav[role="doc-toc"] a,
 .sidebar .sidebar-item-text {
-  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+  font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
 }
 
 h1, h2, h3, h4, h5 {
-  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+  font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
   letter-spacing: -0.02em;
-  color: #10202f;
+  color: #152435;
 }
 
 h1.title {
-  font-size: 2.65rem;
+  font-size: 2.55rem;
+}
+
+.quarto-title-meta,
+.quarto-title-meta-heading,
+.sidebar-title {
+  font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
 }
 
 code,
@@ -48,28 +59,27 @@ pre {
 }
 
 pre.sourceCode {
-  border: 1px solid rgba(16, 32, 47, 0.08);
-  border-radius: 10px;
-  background: #fbfaf6;
+  border: 1px solid rgba(21, 36, 53, 0.08);
+  border-radius: 8px;
+  background: #fcfcfa;
 }
 
 .callout {
-  border-radius: 12px;
+  border-radius: 10px;
   border-left-width: 0.45rem;
 }
 
 .callout.callout-style-simple {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .hero {
-  padding: 2.2rem 2rem 1.6rem 2rem;
-  border-radius: 18px;
+  padding: 1.75rem 1.8rem 1.35rem 1.8rem;
+  border-radius: 12px;
   background:
-    radial-gradient(circle at top right, rgba(12, 92, 116, 0.16), transparent 30%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(236, 241, 245, 0.88));
-  border: 1px solid rgba(16, 32, 47, 0.08);
-  box-shadow: 0 18px 40px rgba(16, 32, 47, 0.08);
+    linear-gradient(180deg, rgba(245, 248, 252, 0.96), rgba(255, 255, 255, 0.96));
+  border: 1px solid rgba(21, 36, 53, 0.08);
+  box-shadow: 0 8px 24px rgba(21, 36, 53, 0.05);
   margin-bottom: 1.5rem;
 }
 
@@ -86,15 +96,20 @@ pre.sourceCode {
 .grid-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  gap: 0.85rem;
   margin: 1.25rem 0 1.75rem 0;
 }
 
 .course-card {
-  padding: 1rem 1rem 0.9rem 1rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(16, 32, 47, 0.08);
+  padding: 0.95rem 1rem 0.9rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(21, 36, 53, 0.08);
+}
+
+.course-card p:last-child,
+.course-card ul:last-child {
+  margin-bottom: 0;
 }
 
 .course-card h3,
@@ -103,12 +118,19 @@ pre.sourceCode {
   margin-bottom: 0.5rem;
 }
 
+.sidebar .sidebar-section .sidebar-section-text {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.76rem;
+  color: #5b6e82;
+}
+
 .formula-box {
   margin: 1.25rem 0;
   padding: 1rem 1.15rem;
-  border-left: 0.35rem solid #0c5c74;
-  background: rgba(12, 92, 116, 0.06);
-  border-radius: 10px;
+  border-left: 0.35rem solid #1b5ea9;
+  background: rgba(27, 94, 169, 0.06);
+  border-radius: 8px;
 }
 
 .syllabus-table table,
@@ -122,15 +144,29 @@ table {
 }
 
 .theorem, .lemma, .proposition, .definition, .corollary {
-  border-left: 0.35rem solid #0c5c74;
+  border-left: 0.35rem solid #1b5ea9;
   padding: 0.85rem 1rem;
   margin: 1rem 0;
-  background: rgba(12, 92, 116, 0.05);
+  background: rgba(27, 94, 169, 0.05);
   border-radius: 8px;
 }
 
 .page-columns .column-margin .aside {
   font-size: 0.84rem;
+}
+
+.sidebar .sidebar-item-container .active,
+.sidebar .sidebar-item-container a:hover {
+  color: #1b5ea9;
+}
+
+a {
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+
+.table th {
+  font-weight: 600;
 }
 
 .smallcaps {

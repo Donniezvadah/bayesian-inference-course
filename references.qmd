@@ -13,6 +13,37 @@ The course cites sources for four distinct purposes:
 3. **Modeling references** for hierarchical models, Gaussian processes, nonparametrics, and predictive evaluation.
 4. **Software references** for `R`, `Stan`, `cmdstanr`, `posterior`, `bayesplot`, `loo`, and `JAX`.
 
+## Linked Reference Guide
+
+The bibliography below remains the formal citation record. This section is the practical reading guide: each item links to a publisher page, official documentation page, DOI landing page, or open-access version where possible.
+
+### Core Texts
+
+- [Bayesian Data Analysis](https://www.routledge.com/Bayesian-Data-Analysis-Third-Edition/Gelman-Carlin-Stern-Dunson-Vehtari-Rubin/p/book/9781439840955)
+- [Monte Carlo Statistical Methods](https://link.springer.com/book/10.1007/978-1-4757-4145-2)
+- [Probabilistic Machine Learning: Advanced Topics](https://mitpress.mit.edu/9780262048439/probabilistic-machine-learning)
+
+### Core Method Papers
+
+- [The No-U-Turn Sampler](https://jmlr.org/papers/v15/hoffman14a.html)
+- [A Conceptual Introduction to Hamiltonian Monte Carlo](https://arxiv.org/abs/1701.02434)
+- [Variational Inference: A Review for Statisticians](https://doi.org/10.1080/01621459.2017.1285773)
+- [Practical Bayesian Model Evaluation Using Leave-One-Out Cross-Validation and WAIC](https://doi.org/10.1007/s11222-016-9696-4)
+- [Rank-Normalization, Folding, and Localization: An Improved R-hat](https://doi.org/10.1214/20-BA1221)
+- [Visualization in Bayesian Workflow](https://doi.org/10.1111/rssa.12378)
+
+### Software And Documentation
+
+- [R Project](https://www.r-project.org/)
+- [Stan](https://mc-stan.org/)
+- [CmdStanR](https://mc-stan.org/cmdstanr/)
+- [posterior](https://mc-stan.org/posterior/)
+- [bayesplot](https://mc-stan.org/bayesplot/)
+- [loo](https://mc-stan.org/loo/)
+- [JAX](https://github.com/google/jax)
+- [NumPyro](https://num.pyro.ai/en/stable/)
+- [Quarto](https://quarto.org/)
+
 ## Canonical Textbooks
 
 The most important book-length references for the course are:

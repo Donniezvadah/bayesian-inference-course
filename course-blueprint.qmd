@@ -21,14 +21,22 @@ The course is built to satisfy six requirements simultaneously:
 
 ```text
 Home
-├── Course Blueprint
-├── Syllabus and Pacing
-├── Chapter Expansion Map
+├── About This Course
+│   ├── Teaching Philosophy
+│   ├── Instructor & Credits
+│   ├── Course Blueprint
+│   ├── Schedule and Pacing
+│   ├── Tools and Setup
+│   ├── Evaluation
+│   └── Chapter Expansion Map
 ├── Part I. Foundations
-│   └── Sample chapter: Bayes' theorem and updating
+│   ├── Probability foundations
+│   ├── Likelihood theory
+│   └── Bayes' theorem and updating
 ├── Part II. Core Bayesian Inference
 ├── Part III. Computational Methods
-│   └── Sample chapter: Markov chain Monte Carlo
+│   ├── Monte Carlo methods
+│   └── Markov chain Monte Carlo
 ├── Part IV. Bayesian Models
 ├── Part V. Optimization, Tuning, Diagnostics
 ├── Part VI. Software Workflows
@@ -196,8 +204,11 @@ The course is organized to make authoring and future expansion straightforward:
 .
 ├── _quarto.yml
 ├── index.qmd
+├── teaching-philosophy.qmd
+├── instructor-and-credits.qmd
 ├── course-blueprint.qmd
 ├── syllabus.qmd
+├── evaluation.qmd
 ├── chapter-outline.qmd
 ├── parts/
 ├── chapters/

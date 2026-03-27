@@ -1,0 +1,87 @@
+---
+title: "Teaching Philosophy"
+---
+
+## Why This Course Is Structured This Way
+
+This course treats Bayesian statistics as a discipline of reasoning, not as a collection of isolated formulas. The core teaching idea is simple:
+
+1. write the probabilistic object carefully;
+2. derive the inferential quantity explicitly;
+3. implement the computation transparently;
+4. diagnose the result before interpreting it.
+
+That sequence is repeated throughout the site because it is the shortest path to genuine mastery.
+
+## Core Principles
+
+### Mathematical seriousness
+
+Definitions, assumptions, and derivations are stated carefully. The course is written for readers who want to understand where results come from, not only how to call software.
+
+### Computation as explanation
+
+`R`, `Stan`, and `JAX` are used as intellectual tools, not decorative add-ons. Code exists to clarify geometry, posterior structure, diagnostics, and workflow.
+
+### Reproducibility
+
+Every major chapter is tied to source files in `labs/` or to directly reproducible workflows. A serious Bayesian analysis should be inspectable line by line.
+
+### Comparison over slogan
+
+The course repeatedly compares:
+
+- likelihood versus posterior inference;
+- exact conjugacy versus approximation;
+- MCMC versus variational inference;
+- prediction versus explanation versus decision;
+- model fit versus model adequacy.
+
+### Independent learning
+
+The final goal is not just solving provided exercises. It is building the ability to read a new paper, derive what matters, test an implementation, and explain the result clearly.
+
+## How A Chapter Should Be Read
+
+Each chapter is designed to support four passes:
+
+1. **Conceptual pass.** Read the motivation and notation until the inferential target is clear.
+2. **Derivation pass.** Work through the algebra by hand.
+3. **Computational pass.** Run the lab or reimplement the main result.
+4. **Critical pass.** Study diagnostics, failure modes, and sensitivity.
+
+Skipping the fourth pass is where many technically strong students go wrong.
+
+## What Students Should Produce
+
+A strong learner in this course should be able to produce:
+
+- explicit model factorizations;
+- clean derivations with assumptions stated;
+- executable code with interpretable outputs;
+- posterior checks and sensitivity analysis;
+- short written explanations of what the model does and does not support.
+
+## Expectations For Projects
+
+Capstone-level work should show:
+
+- scientific framing before model complexity;
+- prior predictive reasoning before posterior computation;
+- computation diagnostics before interpretation;
+- predictive or decision evaluation before final claims.
+
+That is the standard used throughout the site and in the project templates.
+
+## Suggested Workflow Norm
+
+For every serious model, ask:
+
+1. What is the generative story?
+2. What is the estimand?
+3. What assumptions are doing the work?
+4. How is posterior computation being approximated?
+5. What diagnostics could falsify my current comfort?
+6. How sensitive is the substantive conclusion?
+
+If those questions cannot be answered cleanly, the analysis is not finished.

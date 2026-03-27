@@ -24,10 +24,20 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: course-blueprint.qmd
-        text: Blueprint
-      - href: syllabus.qmd
-        text: Syllabus
+      - text: About This Course
+        menu:
+          - href: teaching-philosophy.qmd
+            text: Teaching Philosophy
+          - href: instructor-and-credits.qmd
+            text: Instructor & Credits
+          - href: course-blueprint.qmd
+            text: Course Blueprint
+          - href: syllabus.qmd
+            text: Schedule
+          - href: appendix/software-setup.qmd
+            text: Tools and Setup
+          - href: evaluation.qmd
+            text: Evaluation
       - text: Parts
         menu:
           - href: parts/part-i-foundations.qmd
@@ -48,8 +58,6 @@ website:
         text: Exercises
       - href: projects.qmd
         text: Projects
-      - href: deployment.qmd
-        text: Deployment
       - href: references.qmd
         text: References
   sidebar:
@@ -57,11 +65,15 @@ website:
     collapse-level: 1
     search: true
     contents:
-      - section: "Course Design"
+      - section: "About This Course"
         contents:
           - index.qmd
+          - teaching-philosophy.qmd
+          - instructor-and-credits.qmd
           - course-blueprint.qmd
           - syllabus.qmd
+          - appendix/software-setup.qmd
+          - evaluation.qmd
           - chapter-outline.qmd
       - section: "Part I"
         contents:
@@ -122,7 +134,6 @@ website:
           - deployment.qmd
           - appendix/notation.qmd
           - appendix/measure-probability-review.qmd
-          - appendix/software-setup.qmd
           - templates/project-proposal-template.qmd
           - templates/final-project-report-template.qmd
           - references.qmd
