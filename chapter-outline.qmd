@@ -27,11 +27,11 @@ Each part page is written as an expansion-ready authoring brief. For every chapt
 
 | Chapter | Status in this repository | Location |
 |---|---|---|
-| 1-2 | Detailed outline | Part I overview |
+| 1-2 | Fully written chapters | [Part I chapters](parts/part-i-foundations.qmd) |
 | 3 | Fully written sample chapter | [Bayes theorem chapter](chapters/foundations/bayes-theorem-and-updating.qmd) |
 | 4-6 | Fully written chapters | [Part II chapters](parts/part-ii-core-bayesian-inference.qmd) |
 | 7 | Fully written chapter | [Numerical integration chapter](chapters/computation/numerical-integration-and-approximation.qmd) |
-| 8 | Detailed outline | Part III overview |
+| 8 | Fully written chapter | [Monte Carlo chapter](chapters/computation/monte-carlo-methods.qmd) |
 | 9 | Fully written sample chapter | [MCMC chapter](chapters/computation/markov-chain-monte-carlo.qmd) |
 | 10-12 | Fully written chapters | [Part III chapters](parts/part-iii-computation.qmd) |
 | 13-20 | Fully written chapters | [Part IV chapters](parts/part-iv-models.qmd) |
@@ -41,7 +41,7 @@ Each part page is written as an expansion-ready authoring brief. For every chapt
 
 ## Authoring Convention
 
-To expand the remaining outline chapters into full textbook-style chapters, retain the following section order whenever it fits the material:
+To extend existing chapters or add future textbook-style chapters, retain the following section order whenever it fits the material:
 
 1. Chapter introduction and learning outcomes.
 2. Motivation and intuition.

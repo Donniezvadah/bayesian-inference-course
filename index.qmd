@@ -96,8 +96,11 @@ This repeated structure is intentional. Bayesian statistics becomes much easier 
 
 The site includes several fully written exemplar chapters that demonstrate the intended level of mathematical and computational detail for the rest of the course:
 
+- [Probability foundations](chapters/foundations/probability-foundations.qmd)
+- [Likelihood theory](chapters/foundations/likelihood-theory.qmd)
 - [Bayes' theorem, sequential updating, and posterior prediction](chapters/foundations/bayes-theorem-and-updating.qmd)
 - [Numerical integration and approximation](chapters/computation/numerical-integration-and-approximation.qmd)
+- [Monte Carlo methods: integration, error analysis, and variance reduction](chapters/computation/monte-carlo-methods.qmd)
 - [Markov chain Monte Carlo: derivation, tuning, and diagnostics](chapters/computation/markov-chain-monte-carlo.qmd)
 - [Advanced MCMC: HMC, NUTS, geometry, and diagnostics](chapters/computation/advanced-mcmc-hmc.qmd)
 - [Variational inference: ELBO and coordinate ascent](chapters/computation/variational-inference.qmd)

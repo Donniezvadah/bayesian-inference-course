@@ -55,9 +55,12 @@ Recommended cloud pathways:
 
 | Language | Path | Purpose |
 |---|---|---|
+| `R` | `labs/r/probability_foundations_demo.R` | LLN, CLT, dependence, and Jacobian demonstrations |
+| `R` | `labs/r/likelihood_geometry.R` | Likelihood curvature, MLEs, profile likelihood, and posterior comparison |
 | `R` | `labs/r/beta_binomial.R` | Conjugate updating and posterior prediction |
 | `R` | `labs/r/conjugate_families.R` | Exact posterior updates across conjugate families |
 | `R` | `labs/r/laplace_importance_sampling.R` | Laplace approximation and importance sampling |
+| `R` | `labs/r/monte_carlo_variance_reduction.R` | Crude Monte Carlo, antithetic variables, control variates, and weighted ESS |
 | `R` | `labs/r/mh_sampler.R` | Random-walk Metropolis implementation |
 | `R` | `labs/r/decision_rules.R` | Posterior risk and Bayes estimators |
 | `R` | `labs/r/prior_predictive_logistic.R` | Prior predictive simulation for logistic regression |

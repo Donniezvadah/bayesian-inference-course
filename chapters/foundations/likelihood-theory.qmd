@@ -1,0 +1,593 @@
+---
+title: "Likelihood Theory: Score, Fisher Information, MLE, Profile Likelihood, and Comparison with Posterior Inference"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- define the likelihood function and explain how it differs from probability and posterior density;
+- derive score functions and Fisher information in standard parametric models;
+- compute MLEs and profile likelihoods in common examples;
+- derive the local asymptotic normality heuristic behind MLE asymptotics;
+- compare likelihood-based and Bayesian inferential summaries precisely.
+
+## 1. Probability Versus Likelihood
+
+Given a model
+
+$$
+p(y \mid \theta),
+$$
+
+probability treats $\theta$ as fixed and $y$ as varying. Likelihood treats the observed data $y$ as fixed and studies the function of $\theta$
+
+$$
+L(\theta; y)=p(y \mid \theta).
+$$
+
+Two important facts follow immediately:
+
+1. the likelihood is not generally a probability distribution over $\theta$;
+2. multiplying the likelihood by a positive constant does not change inferential content.
+
+Bayesian inference will later turn the likelihood into part of a probability distribution by multiplying it with a prior and normalizing. Likelihood theory stops before that step.
+
+## 2. Formal Setup
+
+Suppose
+
+$$
+Y_1,\dots,Y_n \overset{\text{i.i.d.}}{\sim} p(y \mid \theta),
+\qquad
+\theta \in \Theta \subseteq \mathbb{R}^d.
+$$
+
+Then
+
+$$
+L(\theta; y_{1:n})
+=
+\prod_{i=1}^n p(y_i \mid \theta),
+$$
+
+and the log likelihood is
+
+$$
+\ell(\theta)
+=
+\log L(\theta; y_{1:n})
+=
+\sum_{i=1}^n \log p(y_i \mid \theta).
+$$
+
+The log form is preferred because products become sums and curvature becomes visible.
+
+## 3. Score And Fisher Information
+
+:::{.definition}
+For scalar $\theta$, the score is
+
+$$
+U(\theta)=\frac{\partial}{\partial \theta}\ell(\theta).
+$$
+
+The observed information is
+
+$$
+J(\theta)=-\frac{\partial^2}{\partial \theta^2}\ell(\theta),
+$$
+
+and the Fisher information is
+
+$$
+I(\theta)=\mathbb{E}_\theta[J(\theta)].
+$$
+:::
+
+For vector parameters, replace derivatives by gradients and Hessians.
+
+### Mean-zero score
+
+Under standard regularity conditions that justify differentiation under the integral sign,
+
+$$
+\mathbb{E}_\theta[U(\theta)] = 0.
+$$
+
+### Derivation
+
+Because
+
+$$
+\int p(y \mid \theta)\, dy = 1,
+$$
+
+differentiate both sides:
+
+$$
+\int \frac{\partial}{\partial \theta}p(y \mid \theta)\, dy = 0.
+$$
+
+Now
+
+$$
+\frac{\partial}{\partial \theta}p(y \mid \theta)
+=
+p(y \mid \theta)\frac{\partial}{\partial \theta}\log p(y \mid \theta),
+$$
+
+so
+
+$$
+0
+=
+\int p(y \mid \theta)\frac{\partial}{\partial \theta}\log p(y \mid \theta)\, dy
+=
+\mathbb{E}_\theta[U_1(\theta)],
+$$
+
+for one observation. Summing over $n$ observations preserves zero mean.
+
+### Information identity
+
+Again under regularity conditions,
+
+$$
+I(\theta)=\operatorname{Var}_\theta(U_1(\theta))
+=
+-\mathbb{E}_\theta\left[\frac{\partial^2}{\partial \theta^2}\log p(Y \mid \theta)\right].
+$$
+
+This identity links local curvature to inferential precision.
+
+## 4. Standard Examples
+
+### Bernoulli / Binomial
+
+If
+
+$$
+Y \sim \operatorname{Binomial}(n,\theta),
+\qquad 0<\theta<1,
+$$
+
+then
+
+$$
+\ell(\theta)
+=
+y\log \theta + (n-y)\log(1-\theta) + \text{const}.
+$$
+
+Hence
+
+$$
+U(\theta)=\frac{y}{\theta}-\frac{n-y}{1-\theta}
+=
+\frac{y-n\theta}{\theta(1-\theta)}.
+$$
+
+The second derivative is
+
+$$
+\ell''(\theta)
+=
+-\frac{y}{\theta^2}
+-\frac{n-y}{(1-\theta)^2}.
+$$
+
+Taking expectation under $Y \sim \operatorname{Binomial}(n,\theta)$ gives
+
+$$
+I(\theta)=\frac{n}{\theta(1-\theta)}.
+$$
+
+### Poisson
+
+If
+
+$$
+Y_1,\dots,Y_n \overset{\text{i.i.d.}}{\sim} \operatorname{Poisson}(\lambda),
+$$
+
+then
+
+$$
+\ell(\lambda)
+=
+\sum_{i=1}^n y_i \log \lambda - n\lambda + \text{const},
+$$
+
+so
+
+$$
+U(\lambda)
+=
+\frac{\sum_i y_i}{\lambda} - n
+$$
+
+and
+
+$$
+J(\lambda)=\frac{\sum_i y_i}{\lambda^2}.
+$$
+
+Therefore
+
+$$
+I(\lambda)=\frac{n}{\lambda}.
+$$
+
+### Gaussian mean with known variance
+
+If
+
+$$
+Y_i \sim \mathcal{N}(\mu,\sigma^2),
+\qquad
+\sigma^2 \text{ known},
+$$
+
+then
+
+$$
+\ell(\mu)
+=
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mu)^2 + \text{const},
+$$
+
+so
+
+$$
+U(\mu)=\frac{1}{\sigma^2}\sum_{i=1}^n (y_i-\mu),
+\qquad
+I(\mu)=\frac{n}{\sigma^2}.
+$$
+
+## 5. Maximum Likelihood Estimation
+
+An MLE is any maximizer
+
+$$
+\hat \theta_{\mathrm{MLE}} \in \arg\max_{\theta \in \Theta} L(\theta;y).
+$$
+
+Because $\log$ is monotone, this is equivalent to maximizing $\ell(\theta)$.
+
+### Binomial MLE
+
+Set the score to zero:
+
+$$
+\frac{y}{\theta}-\frac{n-y}{1-\theta}=0.
+$$
+
+Multiply through by $\theta(1-\theta)$:
+
+$$
+y(1-\theta)-(n-y)\theta=0.
+$$
+
+Therefore
+
+$$
+y-n\theta=0,
+\qquad
+\hat \theta = \frac{y}{n}.
+$$
+
+### Poisson MLE
+
+Set
+
+$$
+\frac{\sum_i y_i}{\lambda}-n=0.
+$$
+
+Then
+
+$$
+\hat \lambda = \bar y.
+$$
+
+### Normal MLE for mean and variance
+
+For
+
+$$
+Y_i \sim \mathcal{N}(\mu,\sigma^2),
+$$
+
+the log likelihood is
+
+$$
+\ell(\mu,\sigma^2)
+=
+-\frac{n}{2}\log(2\pi\sigma^2)
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mu)^2.
+$$
+
+Differentiate with respect to $\mu$:
+
+$$
+\frac{\partial \ell}{\partial \mu}
+=
+\frac{1}{\sigma^2}\sum_{i=1}^n (y_i-\mu).
+$$
+
+Hence
+
+$$
+\hat \mu = \bar y.
+$$
+
+Differentiate with respect to $\sigma^2$:
+
+$$
+\frac{\partial \ell}{\partial \sigma^2}
+=
+-\frac{n}{2\sigma^2}
++ \frac{1}{2(\sigma^2)^2}\sum_{i=1}^n (y_i-\mu)^2.
+$$
+
+Substitute $\hat \mu = \bar y$ and set equal to zero:
+
+$$
+\hat \sigma^2_{\mathrm{MLE}}
+=
+\frac{1}{n}\sum_{i=1}^n (y_i-\bar y)^2.
+$$
+
+This is not the unbiased sample variance. Likelihood and unbiasedness are distinct criteria.
+
+## 6. Invariance And Reparameterization
+
+If $\hat \theta$ is the MLE of $\theta$ and $\phi=g(\theta)$ for a one-to-one transformation $g$, then the MLE of $\phi$ is
+
+$$
+\hat \phi = g(\hat \theta).
+$$
+
+This follows because maximizing $L(\theta;y)$ over $\theta$ is equivalent to maximizing $L(g^{-1}(\phi);y)$ over $\phi$.
+
+### Important caveat
+
+Likelihood curvature is not invariant in the same way. Reparameterization can make the same inferential content look numerically very different. This matters for asymptotic approximations and for comparing likelihood and posterior geometry.
+
+## 7. Identifiability
+
+:::{.definition}
+A parametric family is identifiable if
+
+$$
+p(y \mid \theta_1)=p(y \mid \theta_2)
+\quad \text{for all } y
+\quad \Longrightarrow \quad
+\theta_1=\theta_2.
+$$
+:::
+
+Without identifiability, the likelihood cannot isolate a unique parameter value even with infinite data.
+
+Mixture models, latent-variable models, and weakly separated hierarchical structures often exhibit partial or practical nonidentifiability. In such settings:
+
+- MLEs can be unstable or nonunique;
+- asymptotic approximations can mislead;
+- posterior inference may still be coherent, but interpretation must respect symmetries and weak information.
+
+## 8. Nuisance Parameters And Profile Likelihood
+
+Suppose the parameter is split as
+
+$$
+\theta=(\psi,\lambda),
+$$
+
+where $\psi$ is the target and $\lambda$ is nuisance. The profile likelihood for $\psi$ is
+
+$$
+L_p(\psi)=\sup_{\lambda} L(\psi,\lambda).
+$$
+
+### Example: normal mean with unknown variance
+
+For fixed $\mu$,
+
+$$
+\ell(\mu,\sigma^2)
+=
+-\frac{n}{2}\log \sigma^2
+-\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mu)^2
++ \text{const}.
+$$
+
+Differentiate with respect to $\sigma^2$ while holding $\mu$ fixed:
+
+$$
+\frac{\partial \ell}{\partial \sigma^2}
+=
+-\frac{n}{2\sigma^2}
++ \frac{1}{2(\sigma^2)^2}\sum_{i=1}^n (y_i-\mu)^2.
+$$
+
+Hence
+
+$$
+\hat \sigma^2(\mu)=\frac{1}{n}\sum_{i=1}^n (y_i-\mu)^2.
+$$
+
+Substituting back gives the profile log likelihood
+
+$$
+\ell_p(\mu)
+=
+-\frac{n}{2}\log\left(
+\frac{1}{n}\sum_{i=1}^n (y_i-\mu)^2
+\right)
++ \text{const}.
+$$
+
+The maximizer is again $\bar y$, but now the nuisance scale has been removed explicitly.
+
+## 9. Local Asymptotic Normality Heuristic
+
+Likelihood asymptotics begin with the score equation
+
+$$
+U(\hat \theta)=0.
+$$
+
+Take a first-order Taylor expansion around the true parameter $\theta_0$:
+
+$$
+0
+=
+U(\theta_0)
++ U'(\tilde \theta)(\hat \theta-\theta_0),
+$$
+
+where $\tilde \theta$ lies between $\hat \theta$ and $\theta_0$.
+
+Therefore
+
+$$
+\sqrt{n}(\hat \theta-\theta_0)
+=
+\left[
+-\frac{1}{n}U'(\tilde \theta)
+\right]^{-1}
+\frac{1}{\sqrt{n}}U(\theta_0).
+$$
+
+Under regularity conditions:
+
+- by the LLN,
+  $$
+  -\frac{1}{n}U'(\tilde \theta) \xrightarrow{p} I(\theta_0);
+  $$
+- by the CLT,
+  $$
+  \frac{1}{\sqrt{n}}U(\theta_0) \xrightarrow{d} \mathcal{N}(0,I(\theta_0)).
+  $$
+
+Hence
+
+$$
+\sqrt{n}(\hat \theta-\theta_0)
+\xrightarrow{d}
+\mathcal{N}\left(0, I(\theta_0)^{-1}\right).
+$$
+
+This is the standard asymptotic normality result for regular scalar MLEs [@vandervaart1998].
+
+### Log-likelihood quadratic approximation
+
+Near $\hat \theta$,
+
+$$
+\ell(\theta)
+\approx
+\ell(\hat \theta)
+- \frac{1}{2}(\theta-\hat \theta)^\top J(\hat \theta)(\theta-\hat \theta).
+$$
+
+This local quadratic form explains why curvature-based intervals and Laplace approximations work in regular settings.
+
+## 10. Likelihood And Posterior Inference
+
+Likelihood theory and Bayesian inference often agree locally but differ conceptually.
+
+### Likelihood-based uncertainty
+
+Curvature of the log likelihood yields approximate standard errors:
+
+$$
+\widehat{\operatorname{Var}}(\hat \theta)
+\approx
+J(\hat \theta)^{-1}.
+$$
+
+### Bayesian uncertainty
+
+With prior $\pi(\theta)$, the posterior is
+
+$$
+p(\theta \mid y) \propto L(\theta;y)\pi(\theta).
+$$
+
+Near a regular mode, the log posterior is
+
+$$
+\log p(\theta \mid y)
+=
+\ell(\theta)+\log \pi(\theta)+\text{const}.
+$$
+
+Thus the prior adds curvature and location information.
+
+### Large-sample agreement
+
+In regular models with well-behaved priors, posterior distributions often become approximately Gaussian around the MLE or MAP. But in weakly identified, constrained, multimodal, or small-sample settings, the differences can be material.
+
+## 11. `R` Implementation
+
+The companion lab is [likelihood_geometry.R](../../labs/r/likelihood_geometry.R). It:
+
+- computes and plots Binomial and Poisson log likelihoods;
+- evaluates observed information numerically;
+- constructs a profile likelihood for the normal mean with nuisance variance;
+- compares an approximate likelihood interval with a Bayesian credible interval.
+
+The Binomial log likelihood is short enough to write directly:
+
+```r
+loglik_binomial <- function(theta, y, n) {
+  ifelse(theta > 0 & theta < 1,
+         y * log(theta) + (n - y) * log(1 - theta),
+         -Inf)
+}
+```
+
+## 12. Diagnostics And Pitfalls
+
+### Treating the likelihood as a posterior
+
+Likelihoods need not integrate to one over parameter space and cannot encode prior constraints on their own.
+
+### Overtrusting asymptotic normality
+
+Small samples, boundaries, mixtures, and weak identification can break the quadratic approximation badly.
+
+### Ignoring identifiability
+
+A sharply peaked optimizer output is not meaningful if multiple parameter settings generate the same model.
+
+### Forgetting nuisance structure
+
+Profiling can clarify one parameter of interest, but it can also hide uncertainty if used mechanically.
+
+## 13. Exercises
+
+1. Derive the score and Fisher information for a Binomial model.
+2. Show that the MLE for a Poisson mean is the sample mean.
+3. Derive the profile log likelihood for the normal mean with unknown variance.
+4. Use the score expansion to explain heuristically why the MLE is asymptotically normal.
+5. Compare the MLE and posterior mode in a Binomial model with a weak Beta prior.
+
+## 14. Summary
+
+Likelihood theory studies information in the sampling model before prior information is added:
+
+- the likelihood is a function of the parameter with the data fixed;
+- the score and Fisher information quantify local sensitivity and curvature;
+- MLEs arise by maximizing the log likelihood;
+- profile likelihood handles nuisance parameters by optimization;
+- asymptotic normality follows from score CLT plus curvature convergence;
+- posterior inference modifies this geometry through the prior and normalization.
+
+This chapter provides the frequentist local geometry that later Bayesian chapters will reuse and critique.
+
+## References
+
+Key references are @casella2002, @vandervaart1998, and @berger1985.

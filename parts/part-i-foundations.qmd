@@ -16,6 +16,12 @@ By the end of Part I, learners should be able to:
 - explain exchangeability as a Bayesian structural assumption;
 - connect sequential updating to recursive learning.
 
+## Fully Written Chapters In This Repository
+
+- [Probability foundations](../chapters/foundations/probability-foundations.qmd)
+- [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
+- [Bayes' theorem, sequential updating, and posterior prediction](../chapters/foundations/bayes-theorem-and-updating.qmd)
+
 ## Chapter 1. Probability Foundations
 
 ### Core question
@@ -69,6 +75,10 @@ What probabilistic language is required to express Bayesian models rigorously an
 - @durrett2019
 - @casella2002
 
+### Full chapter
+
+- [Probability foundations](../chapters/foundations/probability-foundations.qmd)
+
 ## Chapter 2. Likelihood Theory
 
 ### Core question
@@ -115,6 +125,10 @@ How does the likelihood summarize information in the sampling model, and how doe
 - @casella2002
 - @vandervaart1998
 - @berger1985
+
+### Full chapter
+
+- [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
 
 ## Chapter 3. Bayes' Theorem and the Bayesian Paradigm
 

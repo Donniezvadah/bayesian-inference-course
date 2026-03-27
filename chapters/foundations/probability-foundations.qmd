@@ -1,0 +1,489 @@
+---
+title: "Probability Foundations: Measure Spaces, Conditional Expectation, Limit Theorems, and Transformations"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- state the formal ingredients of a probability model and explain why measurability matters;
+- derive expectation, variance, and covariance identities from first principles;
+- define conditional expectation both computationally and structurally;
+- distinguish independence, conditional independence, and zero covariance;
+- apply LLN, CLT, and change-of-variables arguments correctly in Bayesian settings.
+
+## 1. Why Probability Language Matters
+
+Bayesian statistics is written in the language of probability. Every posterior, predictive distribution, and Monte Carlo approximation depends on objects that must be defined clearly:
+
+- events;
+- probability measures;
+- random variables;
+- expectations;
+- conditional distributions.
+
+If those objects are used imprecisely, later Bayesian formulas are easy to manipulate symbolically but easy to misunderstand conceptually. The purpose of this chapter is therefore foundational rather than ornamental: it fixes the probabilistic grammar used throughout the course [@kolmogorov1956; @durrett2019].
+
+## 2. Probability Spaces
+
+:::{.definition}
+A probability space is a triple
+
+$$
+(\Omega,\mathcal{F},\mathbb{P}),
+$$
+
+where:
+
+- $\Omega$ is the sample space;
+- $\mathcal{F}$ is a $\sigma$-algebra of events;
+- $\mathbb{P}:\mathcal{F}\to[0,1]$ is a probability measure with
+  $$
+  \mathbb{P}(\Omega)=1.
+  $$
+:::
+
+The $\sigma$-algebra is needed because not every subset of $\Omega$ is guaranteed to be measurable in rich sample spaces. The minimal properties are:
+
+1. $\Omega \in \mathcal{F}$;
+2. if $A \in \mathcal{F}$ then $A^c \in \mathcal{F}$;
+3. if $A_1,A_2,\dots \in \mathcal{F}$ then $\bigcup_{i=1}^\infty A_i \in \mathcal{F}$.
+
+From these, closure under countable intersections follows by De Morgan's laws.
+
+### Why Bayesians should care
+
+In Bayesian statistics one constantly conditions on data, transforms parameters, and builds hierarchical random objects. Measurability is what makes those operations probabilistically meaningful rather than merely symbolic.
+
+## 3. Random Variables And Distributions
+
+:::{.definition}
+A random variable is a measurable map
+
+$$
+X:\Omega \to \mathbb{R}.
+$$
+:::
+
+Measurability means that for every Borel set $B \subseteq \mathbb{R}$,
+
+$$
+\{\omega \in \Omega : X(\omega) \in B\} \in \mathcal{F}.
+$$
+
+The distribution of $X$ is the pushforward measure
+
+$$
+\mu_X(B)=\mathbb{P}(X \in B).
+$$
+
+If $\mu_X$ admits a density $f_X$ with respect to Lebesgue measure, then
+
+$$
+\mathbb{P}(X \in B)=\int_B f_X(x)\, dx.
+$$
+
+### Densities are not probabilities
+
+For continuous random variables,
+
+$$
+\mathbb{P}(X=x)=0
+$$
+
+for any fixed $x$, even though $f_X(x)$ can be large. A density is a Radon-Nikodym derivative, not a point probability.
+
+## 4. Expectation, Variance, And Covariance
+
+Expectation is integration with respect to the distribution of the random variable:
+
+$$
+\mathbb{E}[X]=\int_\Omega X(\omega)\, d\mathbb{P}(\omega).
+$$
+
+If $X$ has density $f_X$,
+
+$$
+\mathbb{E}[X]=\int_{-\infty}^{\infty} x f_X(x)\, dx.
+$$
+
+Variance is
+
+$$
+\operatorname{Var}(X)=\mathbb{E}\left[(X-\mathbb{E}[X])^2\right]
+=
+\mathbb{E}[X^2]-\mathbb{E}[X]^2.
+$$
+
+Covariance is
+
+$$
+\operatorname{Cov}(X,Y)=\mathbb{E}\left[(X-\mathbb{E}[X])(Y-\mathbb{E}[Y])\right].
+$$
+
+### Law of the unconscious statistician
+
+:::{.proposition}
+If $g$ is measurable and $\mathbb{E}[|g(X)|] < \infty$, then
+
+$$
+\mathbb{E}[g(X)] = \int g(x)\, d\mu_X(x).
+$$
+
+If $X$ has density $f_X$, then
+
+$$
+\mathbb{E}[g(X)] = \int g(x)f_X(x)\, dx.
+$$
+:::
+
+### Derivation
+
+By definition, the distribution $\mu_X$ of $X$ is the measure induced on the state space. Integrating $g$ against $\mu_X$ is exactly integrating $g(X(\omega))$ against $\mathbb{P}$. This theorem is what licenses computations such as
+
+$$
+\mathbb{E}[X^2] = \int x^2 f_X(x)\, dx
+$$
+
+without explicitly referring to $\omega$.
+
+## 5. Conditional Probability And Conditional Expectation
+
+For an event $B$ with $\mathbb{P}(B)>0$,
+
+$$
+\mathbb{P}(A \mid B)=\frac{\mathbb{P}(A \cap B)}{\mathbb{P}(B)}.
+$$
+
+But for serious Bayesian work, the more important object is conditional expectation.
+
+:::{.definition}
+For an integrable random variable $X$ and sub-$\sigma$-algebra $\mathcal{G} \subseteq \mathcal{F}$, the conditional expectation $\mathbb{E}[X \mid \mathcal{G}]$ is any $\mathcal{G}$-measurable random variable $Z$ such that
+
+$$
+\int_G Z\, d\mathbb{P}
+=
+\int_G X\, d\mathbb{P}
+\qquad
+\text{for all } G \in \mathcal{G}.
+$$
+:::
+
+Thus $\mathbb{E}[X \mid \mathcal{G}]$ is the best $\mathcal{G}$-measurable summary of $X$ in an integral sense.
+
+### Tower property
+
+:::{.proposition}
+If $\mathcal{H} \subseteq \mathcal{G} \subseteq \mathcal{F}$ and $X$ is integrable, then
+
+$$
+\mathbb{E}\left[\mathbb{E}[X \mid \mathcal{G}] \mid \mathcal{H}\right]
+=
+\mathbb{E}[X \mid \mathcal{H}].
+$$
+:::
+
+### Derivation
+
+Let
+
+$$
+Z = \mathbb{E}[X \mid \mathcal{G}].
+$$
+
+Then $Z$ is integrable and $\mathcal{G}$-measurable. For any $H \in \mathcal{H}$, since $\mathcal{H} \subseteq \mathcal{G}$, we also have $H \in \mathcal{G}$. Therefore
+
+$$
+\int_H Z\, d\mathbb{P}=\int_H X\, d\mathbb{P}.
+$$
+
+But $\mathbb{E}[Z \mid \mathcal{H}]$ is by definition the $\mathcal{H}$-measurable random variable whose integral over every $H \in \mathcal{H}$ matches $\int_H Z\, d\mathbb{P}$. Hence it matches $\int_H X\, d\mathbb{P}$ and so must equal $\mathbb{E}[X \mid \mathcal{H}]$ almost surely.
+
+### Law of total expectation
+
+Taking $\mathcal{H}=\{\emptyset,\Omega\}$ gives
+
+$$
+\mathbb{E}\left[\mathbb{E}[X \mid Y]\right] = \mathbb{E}[X].
+$$
+
+This identity drives posterior predictive and hierarchical calculations throughout Bayesian statistics.
+
+## 6. Law Of Total Variance
+
+One of the most useful decompositions in statistics is:
+
+:::{.proposition}
+If $X \in L^2$, then
+
+$$
+\operatorname{Var}(X)
+=
+\mathbb{E}\!\left[\operatorname{Var}(X \mid Y)\right]
++ \operatorname{Var}\!\left(\mathbb{E}[X \mid Y]\right).
+$$
+:::
+
+### Derivation
+
+Start from
+
+$$
+X-\mathbb{E}[X]
+=
+\left(X-\mathbb{E}[X \mid Y]\right)
++ \left(\mathbb{E}[X \mid Y]-\mathbb{E}[X]\right).
+$$
+
+Square both sides:
+
+$$
+(X-\mathbb{E}[X])^2
+=
+(X-\mathbb{E}[X \mid Y])^2
++ (\mathbb{E}[X \mid Y]-\mathbb{E}[X])^2
++ 2(X-\mathbb{E}[X \mid Y])(\mathbb{E}[X \mid Y]-\mathbb{E}[X]).
+$$
+
+Take expectations. The cross term vanishes because
+
+$$
+\mathbb{E}\left[
+(X-\mathbb{E}[X \mid Y])(\mathbb{E}[X \mid Y]-\mathbb{E}[X])
+\mid Y
+\right]
+=
+(\mathbb{E}[X \mid Y]-\mathbb{E}[X])
+\mathbb{E}[X-\mathbb{E}[X \mid Y]\mid Y]
+=
+0.
+$$
+
+Hence
+
+$$
+\operatorname{Var}(X)
+=
+\mathbb{E}\left[(X-\mathbb{E}[X \mid Y])^2\right]
++ \mathbb{E}\left[(\mathbb{E}[X \mid Y]-\mathbb{E}[X])^2\right],
+$$
+
+which is exactly the stated result.
+
+### Bayesian relevance
+
+This decomposition becomes the distinction between:
+
+- intrinsic data noise;
+- uncertainty due to unknown parameters.
+
+It reappears later as posterior predictive variance decomposition.
+
+## 7. Independence And Conditional Independence
+
+Random variables $X$ and $Y$ are independent if for all measurable sets $A,B$,
+
+$$
+\mathbb{P}(X \in A, Y \in B)=\mathbb{P}(X \in A)\mathbb{P}(Y \in B).
+$$
+
+If densities exist, this becomes factorization:
+
+$$
+f_{X,Y}(x,y)=f_X(x)f_Y(y).
+$$
+
+Conditional independence given $Z$ means
+
+$$
+p(x,y \mid z)=p(x \mid z)p(y \mid z).
+$$
+
+This is the structural assumption that makes likelihood factorizations and hierarchical models tractable.
+
+### Zero covariance is weaker than independence
+
+Let
+
+$$
+X \sim \operatorname{Unif}(-1,1),
+\qquad
+Y=X^2.
+$$
+
+Then
+
+$$
+\mathbb{E}[X]=0,
+\qquad
+\mathbb{E}[XY]=\mathbb{E}[X^3]=0,
+$$
+
+so
+
+$$
+\operatorname{Cov}(X,Y)=0.
+$$
+
+But $Y$ is a deterministic function of $X$, so independence is impossible. This example matters because posterior summaries sometimes look weakly related marginally while still being strongly dependent jointly.
+
+## 8. Limit Theorems
+
+### Law of large numbers
+
+If $X_1,X_2,\dots$ are i.i.d. with finite mean $\mu$, then
+
+$$
+\bar X_n = \frac{1}{n}\sum_{i=1}^n X_i \xrightarrow{\text{a.s.}} \mu.
+$$
+
+The LLN justifies simulation averages, empirical frequencies, and Monte Carlo estimators.
+
+### Central limit theorem
+
+If $X_1,X_2,\dots$ are i.i.d. with mean $\mu$ and variance $\sigma^2 < \infty$, then
+
+$$
+\sqrt{n}\,\frac{\bar X_n-\mu}{\sigma}
+\xrightarrow{d}
+\mathcal{N}(0,1).
+$$
+
+The CLT justifies approximate standard errors for Monte Carlo and asymptotic estimators.
+
+### Bayesian relevance
+
+These theorems support:
+
+- Monte Carlo integration;
+- asymptotic likelihood theory;
+- approximate Gaussian posteriors under regularity.
+
+They do not mean small samples are automatically Gaussian, and they do not excuse weak diagnostics.
+
+## 9. Transformations And Jacobians
+
+Suppose $X$ has density $f_X$ and $Y=g(X)$ where $g$ is one-to-one and differentiable.
+
+:::{.proposition}
+If $g$ is strictly monotone, then the density of $Y$ is
+
+$$
+f_Y(y)=f_X(g^{-1}(y))
+\left|\frac{d}{dy}g^{-1}(y)\right|.
+$$
+:::
+
+### Derivation in one dimension
+
+For increasing $g$,
+
+$$
+F_Y(y)=\mathbb{P}(Y \le y)=\mathbb{P}(X \le g^{-1}(y))=F_X(g^{-1}(y)).
+$$
+
+Differentiate:
+
+$$
+f_Y(y)=f_X(g^{-1}(y))
+\frac{d}{dy}g^{-1}(y).
+$$
+
+For decreasing $g$, the sign flips, hence the absolute value.
+
+### Multivariate form
+
+If $Y=g(X)$ with differentiable inverse, then
+
+$$
+f_Y(y)=f_X(g^{-1}(y))
+\left|
+\det Dg^{-1}(y)
+\right|,
+$$
+
+where $Dg^{-1}(y)$ is the Jacobian matrix.
+
+### Why Bayesians care
+
+If a model is written on a transformed parameter scale, priors must be transformed correctly. Failing to include the Jacobian yields a different prior than intended.
+
+## 10. Common Distributions As Modeling Building Blocks
+
+The following families recur throughout the course:
+
+- Bernoulli and Binomial for binary outcomes and counts of successes;
+- Poisson and Negative Binomial for counts;
+- Gamma and Exponential for positive scales and waiting times;
+- Beta and Dirichlet for simplex-valued parameters;
+- Normal and multivariate Normal for unconstrained continuous quantities;
+- Student-$t$ for heavy-tailed modeling;
+- Cauchy as an extreme heavy-tailed special case.
+
+The deeper point is not memorization of formulas. It is understanding support, moments, conjugacy relations, and transformation behavior.
+
+## 11. `R` Implementation
+
+The companion lab is [probability_foundations_demo.R](../../labs/r/probability_foundations_demo.R). It illustrates:
+
+- LLN and CLT behavior under skewed sampling;
+- the distinction between independence and zero covariance;
+- a change-of-variables calculation for a transformed random variable.
+
+The covariance-zero-but-dependent example is direct in `R`:
+
+```r
+set.seed(20260327)
+x <- runif(50000, min = -1, max = 1)
+y <- x^2
+c(cor = cor(x, y), mean_x = mean(x), mean_y = mean(y))
+```
+
+The empirical correlation is near zero even though $y$ is determined completely by $x$.
+
+## 12. Diagnostics And Pitfalls
+
+### Treating densities as probabilities
+
+This leads directly to incorrect reasoning about continuous parameters and posterior ordinates.
+
+### Forgetting sigma-algebras in conditioning
+
+Conditional expectation is a random variable, not merely a plug-in number.
+
+### Equating zero covariance with independence
+
+This is false outside special distribution families such as the multivariate Gaussian.
+
+### Applying Jacobian formulas carelessly
+
+Support and one-to-one assumptions matter. A transformation formula without domain checking is often wrong.
+
+## 13. Exercises
+
+1. Prove the tower property in a finite discrete probability space.
+2. Derive the law of total variance from the decomposition
+   $$
+   X-\mathbb{E}[X]
+   =
+   (X-\mathbb{E}[X \mid Y]) + (\mathbb{E}[X \mid Y]-\mathbb{E}[X]).
+   $$
+3. Let $X \sim \operatorname{Exp}(\lambda)$ and $Y=\log X$. Derive the density of $Y$.
+4. Construct a pair of dependent variables with zero covariance and verify the claim analytically.
+5. Explain why the LLN justifies Monte Carlo integration but does not, by itself, provide a Monte Carlo standard error.
+
+## 14. Summary
+
+Probability foundations are not background decoration. They are the structural rules of Bayesian analysis:
+
+- probability spaces determine what events and variables are measurable;
+- expectation is integration, and LOTUS transfers integration to the state space of the variable;
+- conditional expectation is the central operator behind hierarchical and predictive reasoning;
+- variance decomposition separates irreducible randomness from uncertainty due to incomplete information;
+- independence, conditional independence, and transformations determine model factorization and prior correctness.
+
+These ideas are used repeatedly in every later chapter.
+
+## References
+
+Key references are @kolmogorov1956, @durrett2019, and @casella2002.

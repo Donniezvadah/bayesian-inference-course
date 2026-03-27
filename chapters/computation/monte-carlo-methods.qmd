@@ -1,0 +1,405 @@
+---
+title: "Monte Carlo Methods: Integration, Monte Carlo Error, Variance Reduction, and Weighted ESS"
+---
+
+## Learning Outcomes
+
+After this chapter, you should be able to:
+
+- define Monte Carlo estimators for posterior expectations and quantify their error;
+- derive unbiasedness, variance, and a Monte Carlo CLT for simple simulation estimators;
+- implement and compare antithetic variables, control variates, and stratification;
+- explain the effective sample size heuristic for weighted samples;
+- distinguish Monte Carlo error from model uncertainty and from MCMC dependence.
+
+## 1. Why Monte Carlo Comes Before MCMC
+
+Before introducing dependent simulation, one should understand the independent case. Suppose the posterior quantity of interest is
+
+$$
+\mu = \mathbb{E}_p[h(\theta)]
+=
+\int h(\theta)p(\theta)\, d\theta.
+$$
+
+If independent draws
+
+$$
+\theta^{(1)},\dots,\theta^{(S)} \overset{\text{i.i.d.}}{\sim} p
+$$
+
+are available, then the natural estimator is
+
+$$
+\hat \mu_S
+=
+\frac{1}{S}\sum_{s=1}^S h(\theta^{(s)}).
+$$
+
+This is the basic Monte Carlo estimator. Everything in MCMC, SMC, VI evaluation, and posterior predictive simulation is easier to understand after this case.
+
+## 2. Unbiasedness And Variance
+
+Let
+
+$$
+Z_s = h(\theta^{(s)}).
+$$
+
+Then the estimator is the sample mean of i.i.d. random variables.
+
+:::{.proposition}
+If $\mathbb{E}[|h(\theta)|] < \infty$, then
+
+$$
+\mathbb{E}[\hat \mu_S] = \mu.
+$$
+
+If additionally $\operatorname{Var}(h(\theta))=\sigma_h^2 < \infty$, then
+
+$$
+\operatorname{Var}(\hat \mu_S)=\frac{\sigma_h^2}{S}.
+$$
+:::
+
+### Derivation
+
+Linearity of expectation gives
+
+$$
+\mathbb{E}[\hat \mu_S]
+=
+\frac{1}{S}\sum_{s=1}^S \mathbb{E}[Z_s]
+=
+\mu.
+$$
+
+For the variance, independence implies
+
+$$
+\operatorname{Var}(\hat \mu_S)
+=
+\operatorname{Var}\left(
+\frac{1}{S}\sum_{s=1}^S Z_s
+\right)
+=
+\frac{1}{S^2}\sum_{s=1}^S \operatorname{Var}(Z_s)
+=
+\frac{\sigma_h^2}{S}.
+$$
+
+This is the mathematical origin of the familiar $S^{-1/2}$ error rate.
+
+## 3. Monte Carlo LLN And CLT
+
+By the LLN,
+
+$$
+\hat \mu_S \xrightarrow{\text{a.s.}} \mu.
+$$
+
+By the CLT,
+
+$$
+\sqrt{S}(\hat \mu_S-\mu)
+\xrightarrow{d}
+\mathcal{N}(0,\sigma_h^2).
+$$
+
+Therefore a Monte Carlo standard error is
+
+$$
+\operatorname{MCSE}(\hat \mu_S)
+\approx
+\sqrt{\frac{\widehat{\sigma}_h^2}{S}},
+$$
+
+where
+
+$$
+\widehat{\sigma}_h^2
+=
+\frac{1}{S-1}\sum_{s=1}^S (Z_s-\bar Z)^2.
+$$
+
+### Important distinction
+
+Monte Carlo error is the numerical error due to finite simulation. It is not:
+
+- posterior uncertainty;
+- model uncertainty;
+- data uncertainty.
+
+One should report it separately whenever simulation error is non-negligible relative to the posterior quantity of interest.
+
+## 4. Worked Example: Direct Posterior Simulation
+
+Suppose
+
+$$
+\theta \mid y \sim \operatorname{Beta}(\alpha,\beta).
+$$
+
+Then the posterior mean of $h(\theta)=\theta^2$ is
+
+$$
+\mu = \mathbb{E}[\theta^2 \mid y]
+=
+\frac{\alpha(\alpha+1)}{(\alpha+\beta)(\alpha+\beta+1)}.
+$$
+
+Monte Carlo uses draws
+
+$$
+\theta^{(s)} \sim \operatorname{Beta}(\alpha,\beta)
+$$
+
+and computes
+
+$$
+\hat \mu_S = \frac{1}{S}\sum_{s=1}^S (\theta^{(s)})^2.
+$$
+
+This simple example is not about difficulty. It is about making the error decomposition concrete: analytic truth exists, so the simulation error can be seen directly.
+
+## 5. Antithetic Variables
+
+Variance reduction works by keeping the same expectation but lowering variance. One strategy is antithetic coupling.
+
+Let
+
+$$
+U \sim \operatorname{Unif}(0,1),
+\qquad
+X=h(U),
+\qquad
+X^\star=h(1-U).
+$$
+
+Then the antithetic estimator based on one pair is
+
+$$
+\tilde \mu = \frac{1}{2}(X+X^\star).
+$$
+
+Its variance is
+
+$$
+\operatorname{Var}(\tilde \mu)
+=
+\frac{1}{4}
+\left[
+\operatorname{Var}(X)+\operatorname{Var}(X^\star)
++2\operatorname{Cov}(X,X^\star)
+\right].
+$$
+
+If $X$ and $X^\star$ have the same variance,
+
+$$
+\operatorname{Var}(\tilde \mu)
+=
+\frac{1}{2}\operatorname{Var}(X)
++ \frac{1}{2}\operatorname{Cov}(X,X^\star).
+$$
+
+Thus negative covariance lowers variance. For monotone $h$, the pair $(U,1-U)$ often induces negative dependence.
+
+## 6. Control Variates
+
+Suppose we want $\mu=\mathbb{E}[X]$ and also have a variable $C$ with known mean $\nu=\mathbb{E}[C]$. Consider
+
+$$
+\hat \mu_{\mathrm{cv}}
+=
+\bar X - a(\bar C - \nu).
+$$
+
+It remains unbiased because
+
+$$
+\mathbb{E}[\bar C-\nu]=0.
+$$
+
+### Variance derivation
+
+Let one-draw versions be $X$ and $C$. Then
+
+$$
+\operatorname{Var}(\hat \mu_{\mathrm{cv}})
+=
+\frac{1}{S}
+\operatorname{Var}(X-a(C-\nu)).
+$$
+
+Expand:
+
+$$
+\operatorname{Var}(X-a(C-\nu))
+=
+\operatorname{Var}(X)
+-2a\operatorname{Cov}(X,C)
++a^2\operatorname{Var}(C).
+$$
+
+Differentiate with respect to $a$ and set to zero:
+
+$$
+a^\star
+=
+\frac{\operatorname{Cov}(X,C)}{\operatorname{Var}(C)}.
+$$
+
+Substituting back yields
+
+$$
+\operatorname{Var}(X-a^\star(C-\nu))
+=
+\operatorname{Var}(X)\left(1-\rho_{XC}^2\right),
+$$
+
+where $\rho_{XC}$ is the correlation between $X$ and $C$.
+
+Hence a strongly correlated control variate can produce large variance reduction.
+
+## 7. Stratification
+
+Suppose the sample space is partitioned into strata $A_1,\dots,A_K$ with probabilities $p_k$. Then
+
+$$
+\mu = \sum_{k=1}^K p_k \mu_k,
+\qquad
+\mu_k = \mathbb{E}[h(\theta)\mid \theta \in A_k].
+$$
+
+If we estimate each $\mu_k$ separately and combine them, the estimator can be more stable because within-stratum variability is often smaller than overall variability.
+
+Stratification uses known structure in the sampling space to reduce variance. It is conceptually simple and often underused.
+
+## 8. Weighted Sampling And ESS
+
+Suppose draws come from a proposal $q$ rather than the target $p$. Then
+
+$$
+\mu=\mathbb{E}_p[h(\theta)]
+=
+\frac{\mathbb{E}_q[h(\theta)w(\theta)]}{\mathbb{E}_q[w(\theta)]},
+\qquad
+w(\theta)=\frac{p(\theta)}{q(\theta)}.
+$$
+
+With self-normalized weights
+
+$$
+\tilde w_s=\frac{w_s}{\sum_{r=1}^S w_r},
+$$
+
+the estimator is
+
+$$
+\hat \mu_{\mathrm{SNIS}}
+=
+\sum_{s=1}^S \tilde w_s h(\theta^{(s)}).
+$$
+
+### Weighted effective sample size
+
+A common heuristic is
+
+$$
+\operatorname{ESS}
+=
+\frac{(\sum_{s=1}^S w_s)^2}{\sum_{s=1}^S w_s^2}
+=
+\frac{1}{\sum_{s=1}^S \tilde w_s^2}.
+$$
+
+### Interpretation
+
+If all normalized weights are equal, then
+
+$$
+\tilde w_s = \frac{1}{S}
+$$
+
+and
+
+$$
+\operatorname{ESS}=S.
+$$
+
+If one weight dominates, ESS is close to 1. Thus ESS measures weight concentration, not generic inferential quality.
+
+### Why this matters
+
+Weighted ESS appears in importance sampling, particle filtering, and PSIS-style diagnostics. It is not the same object as MCMC ESS, which is driven by autocorrelation.
+
+## 9. Monte Carlo Cost And Error Scaling
+
+To reduce Monte Carlo standard error by a factor of two, one needs roughly four times as many independent draws. This harsh scaling is why variance reduction is not optional in serious computation.
+
+The engineering question is always:
+
+> Is it cheaper to draw more samples, or to reduce variance per sample?
+
+That question recurs later in HMC tuning, SMC resampling, and nested Monte Carlo design problems.
+
+## 10. `R` Implementation
+
+The companion lab is [monte_carlo_variance_reduction.R](../../labs/r/monte_carlo_variance_reduction.R). It:
+
+- estimates a known integral by crude Monte Carlo;
+- compares antithetic and control-variate estimators;
+- computes Monte Carlo standard errors empirically;
+- evaluates importance-sampling ESS under a simple proposal mismatch.
+
+The control-variate form is short and explicit:
+
+```r
+estimate_with_cv <- function(x, cvar, c_mean) {
+  a_star <- cov(x, cvar) / var(cvar)
+  mean(x - a_star * (cvar - c_mean))
+}
+```
+
+## 11. Diagnostics And Pitfalls
+
+### Reporting Monte Carlo means without MCSE
+
+A posterior summary should not be presented more precisely than the simulation supports.
+
+### Confusing independent and dependent ESS
+
+Weighted ESS and MCMC ESS answer different numerical questions.
+
+### Using weak control variates
+
+If the control is poorly correlated with the integrand, variance reduction may be negligible.
+
+### Ignoring tail mismatch in importance weighting
+
+If $q$ undercovers important tails of $p$, weight variance can explode and ESS can collapse.
+
+## 12. Exercises
+
+1. Derive unbiasedness and variance of the simple Monte Carlo estimator.
+2. Derive the optimal control-variate coefficient.
+3. Show how the antithetic variance depends on $\operatorname{Cov}(X,X^\star)$.
+4. Prove that the weighted ESS formula equals $1/\sum \tilde w_s^2$.
+5. Explain why MCSE scales like $S^{-1/2}$ rather than $S^{-1}$.
+
+## 13. Summary
+
+Monte Carlo methods provide the numerical backbone for Bayesian computation:
+
+- posterior expectations become simulation averages;
+- unbiasedness and $S^{-1/2}$ error scaling come from elementary probability;
+- antithetic variables, control variates, and stratification reduce variance without changing the target;
+- weighted ESS diagnoses degeneracy in weighted simulation;
+- Monte Carlo error must be separated from inferential uncertainty.
+
+With these ideas in place, dependent simulation in MCMC becomes much easier to interpret.
+
+## References
+
+Key references are @robert2004, @casella2002, and @mackay2003.

@@ -66,6 +66,8 @@ website:
       - section: "Part I"
         contents:
           - parts/part-i-foundations.qmd
+          - chapters/foundations/probability-foundations.qmd
+          - chapters/foundations/likelihood-theory.qmd
           - chapters/foundations/bayes-theorem-and-updating.qmd
       - section: "Part II"
         contents:
@@ -77,6 +79,7 @@ website:
         contents:
           - parts/part-iii-computation.qmd
           - chapters/computation/numerical-integration-and-approximation.qmd
+          - chapters/computation/monte-carlo-methods.qmd
           - chapters/computation/markov-chain-monte-carlo.qmd
           - chapters/computation/advanced-mcmc-hmc.qmd
           - chapters/computation/variational-inference.qmd
