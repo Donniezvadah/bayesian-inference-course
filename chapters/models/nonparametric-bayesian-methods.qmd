@@ -1,18 +1,18 @@
 ---
-title: "Nonparametric Bayesian Methods: Dirichlet Processes, Gaussian Processes, and Flexible Priors"
+title: "Nonparametric Bayesian methods: Dirichlet processes, Gaussian processes, and flexible priors"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - explain why Bayesian nonparametrics means flexible stochastic-process priors rather than “no assumptions”;
 - state the Dirichlet process through its finite-dimensional marginal definition;
 - derive the Chinese restaurant process predictive intuition;
 - explain stick-breaking conceptually;
 - derive Gaussian-process posterior mean and covariance formulas.
+:::
 
-## 1. What Bayesian Nonparametrics Means
+## What Bayesian nonparametrics means
 
 Bayesian nonparametric methods do not remove modeling assumptions. They replace fixed finite-dimensional parameterizations with stochastic objects rich enough to adapt complexity to the data.
 
@@ -23,7 +23,7 @@ Two canonical examples are:
 
 Both are deeply Bayesian because they place priors on infinite-dimensional objects while keeping inference probabilistically coherent [@ferguson1973; @rasmussen2006].
 
-## 2. Dirichlet Process
+## Dirichlet process
 
 A random probability measure $G$ is a Dirichlet process with concentration $\alpha$ and base measure $G_0$ if for every measurable partition $(A_1,\dots,A_m)$,
 
@@ -45,7 +45,7 @@ $$
 - $\alpha$ controls concentration around $G_0$;
 - larger $\alpha$ means less clustering and more diffuse draws around $G_0$.
 
-## 3. Predictive Distribution And CRP Intuition
+## Predictive distribution and CRP intuition
 
 If
 
@@ -74,7 +74,7 @@ This means:
 
 This is the Chinese restaurant process intuition.
 
-## 4. Stick-Breaking
+## Stick-breaking
 
 Another constructive view is Sethuraman-style stick breaking:
 
@@ -103,7 +103,7 @@ $$
 
 This makes clear that DP draws are almost surely discrete, which is why DP mixtures are often used instead of raw DP priors when modeling continuous densities.
 
-## 5. Dirichlet Process Mixtures
+## Dirichlet process mixtures
 
 If
 
@@ -117,7 +117,7 @@ $$
 
 then the induced marginal density is a random mixture over infinitely many possible atoms. This allows clustering and density adaptation without fixing the number of mixture components in advance.
 
-## 6. Gaussian Processes
+## Gaussian processes
 
 A Gaussian process is a prior over functions:
 
@@ -133,7 +133,7 @@ $$
 
 is multivariate normal with mean vector $m(x_i)$ and covariance matrix $k(x_i,x_j)$.
 
-## 7. GP Regression
+## GP regression
 
 Suppose
 
@@ -176,7 +176,7 @@ $$
 
 This is one of the most elegant exact posterior formulas in Bayesian statistics.
 
-## 8. Kernel Choice As Prior Design
+## Kernel choice as prior design
 
 In GP modeling, the covariance kernel is the prior. It encodes assumptions about:
 
@@ -193,17 +193,17 @@ For example:
 
 Thus GP modeling is prior design in function space.
 
-## 9. BART Overview
+## BART overview
 
 Bayesian additive regression trees place a prior over ensembles of shallow trees and produce flexible nonlinear regression surfaces. Conceptually, BART is another nonparametric Bayesian device for adaptive function learning, though its mathematical representation differs sharply from GP priors.
 
 In this course, BART is best understood as part of the broader nonparametric theme: priors that let complexity grow with the data while retaining regularization.
 
-## 10. `R` Workflow
+## `R` workflow
 
 The companion lab is [gaussian_process_regression.R](../../labs/r/gaussian_process_regression.R). It implements exact GP posterior prediction on a one-dimensional regression problem.
 
-## 11. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Thinking nonparametric means assumption-free
 
@@ -221,7 +221,7 @@ A DP mixture is not a magic estimator of the “true number of clusters.”
 
 Exact GP regression scales cubically in the number of observations.
 
-## 12. Exercises
+## Exercises
 
 1. State the Dirichlet process through its finite-partition definition and explain the roles of $\alpha$ and $G_0$.
 2. Derive the predictive CRP form after integrating out $G$.
@@ -229,7 +229,7 @@ Exact GP regression scales cubically in the number of observations.
 4. Explain why DP draws are almost surely discrete.
 5. Compare the prior meaning of a GP kernel choice with the prior meaning of regression coefficient priors.
 
-## 13. Summary
+## Summary
 
 Bayesian nonparametrics extends prior modeling to flexible stochastic objects:
 
@@ -237,6 +237,10 @@ Bayesian nonparametrics extends prior modeling to flexible stochastic objects:
 - GP priors are priors on functions and induce exact Gaussian conditioning formulas;
 - flexibility is gained by moving to richer prior objects, not by abandoning assumptions.
 
-## References
+## Further reading
 
-Key references are @ferguson1973, @neal2000, @rasmussen2006, and @murphy2023.
+@ferguson1973 introduced the Dirichlet process and is still the clearest statement of what the prior is and why it is conjugate. @sethuraman1994 gives the stick-breaking construction that makes it usable computationally, and @antoniak1974 develops the mixture-model version.
+
+@neal2000 is the practical reference for sampling in Dirichlet process mixtures and works through the conjugate and non-conjugate algorithms carefully; @jain2004 adds the split-merge moves needed when incremental Gibbs updates mix badly. The finite-$K$ counterpart, and the sense in which it converges to the Dirichlet process, is developed in [the telescoping sampler](../computation/telescoping-sampler.qmd).
+
+For Gaussian processes, @rasmussen2006 is the standard text and is freely available; chapters 2 and 5 cover regression and covariance-function choice. @murphy2023 chapters 17 and 31 give a current survey of both strands.

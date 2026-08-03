@@ -1,8 +1,9 @@
 ---
-title: "Chapter-By-Chapter Expansion Map"
+title: "Chapter-by-chapter expansion map"
+number-sections: false
 ---
 
-## How To Read This Map
+## How to read this map
 
 The detailed chapter expansion outlines are organized by course part:
 
@@ -23,7 +24,7 @@ Each part page is written as an expansion-ready authoring brief. For every chapt
 - diagnostics and common pitfalls;
 - exercises and reading suggestions.
 
-## Status Of Content In This Repository
+## Status of content in this repository
 
 | Chapter | Status in this repository | Location |
 |---|---|---|
@@ -39,7 +40,7 @@ Each part page is written as an expansion-ready authoring brief. For every chapt
 | 24-26 | Fully written chapters | [Part VI chapters](parts/part-vi-software-workflows.qmd) |
 | 27-31 | Fully written chapters | [Part VII chapters](parts/part-vii-advanced-topics.qmd) |
 
-## Authoring Convention
+## Authoring convention
 
 To extend existing chapters or add future textbook-style chapters, retain the following section order whenever it fits the material:
 
@@ -54,7 +55,7 @@ To extend existing chapters or add future textbook-style chapters, retain the fo
 9. Exercises with solution sketches.
 10. References and further reading.
 
-## Cross-Cutting Themes To Preserve
+## Cross-cutting themes to preserve
 
 As the site grows, every chapter should remain aligned with five global themes:
 
@@ -96,7 +97,7 @@ Students should repeatedly compare:
 - exact conjugate inference vs numerical approximation;
 - prediction vs explanation vs decision.
 
-## Immediate Reading Paths
+## Immediate reading paths
 
 Different audiences can enter the material through different routes.
 

@@ -1,18 +1,18 @@
 ---
-title: "Bayesian Generalized Linear Models: Logistic, Count, Ordinal, and Multinomial Regression"
+title: "Bayesian generalized linear models: logistic, count, ordinal, and multinomial regression"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - write Bayesian GLMs through exponential-family likelihoods and link functions;
 - derive the log posterior, gradient, and Hessian for Bayesian logistic regression;
 - explain overdispersion and the role of negative binomial models;
 - connect ordinal and multinomial models to latent-variable or softmax formulations;
 - diagnose prior-scale and separation issues in Bayesian classification.
+:::
 
-## 1. From Linear Models To GLMs
+## From linear models to GLMs
 
 Bayesian linear regression is limited by Gaussian responses and additive homoskedastic noise. Generalized linear models retain the linear predictor
 
@@ -26,7 +26,7 @@ but relate it to the mean of the response through a link function. In Bayesian f
 - prior scale matters much more because nonlinear links amplify large coefficients;
 - prediction and interpretation must be expressed on both the linear predictor scale and the outcome scale [@gelman2013; @mcelreath2020].
 
-## 2. Logistic Regression
+## Logistic regression
 
 Suppose
 
@@ -42,7 +42,7 @@ $$
 p_i=\frac{1}{1+\exp(-x_i^\top \beta)}.
 $$
 
-### 2.1 Likelihood and log posterior
+### Likelihood and log posterior
 
 The likelihood is
 
@@ -78,7 +78,7 @@ $$
 -\frac12(\beta-b_0)^\top B_0^{-1}(\beta-b_0).
 $$
 
-### 2.2 Gradient
+### Gradient
 
 Let $p=(p_1,\dots,p_n)^\top$. Then
 
@@ -94,7 +94,7 @@ $$
 X^\top(y-p) - B_0^{-1}(\beta-b_0).
 $$
 
-### 2.3 Hessian
+### Hessian
 
 Let
 
@@ -118,7 +118,7 @@ $$
 
 This negative definiteness is one reason logistic regression is favorable for MAP optimization and Laplace approximations.
 
-## 3. Separation And Priors
+## Separation and priors
 
 Classical logistic regression can break under complete or quasi-complete separation: a linear combination of predictors perfectly separates the two outcome classes, driving the MLE to infinity.
 
@@ -139,7 +139,7 @@ The core principle is:
 - weak priors on a nonlinear link can still imply absurd probabilities;
 - predictor standardization is not optional if coefficient priors are to be interpretable.
 
-## 4. Probit Regression
+## Probit regression
 
 In probit regression,
 
@@ -163,7 +163,7 @@ $$
 
 This latent Gaussian view generalizes naturally to ordinal models and certain Gibbs-sampling constructions.
 
-## 5. Poisson Regression
+## Poisson regression
 
 For count data,
 
@@ -190,7 +190,7 @@ With Gaussian priors, the posterior is again nonconjugate but smooth.
 
 A coefficient $\beta_j$ shifts the log intensity. Thus $\exp(\beta_j)$ is the multiplicative effect on the expected count for a one-unit change in predictor $x_j$, holding other predictors fixed.
 
-## 6. Negative Binomial Regression
+## Negative Binomial regression
 
 Poisson regression assumes equality of mean and variance:
 
@@ -212,7 +212,7 @@ which induces a negative binomial marginal distribution.
 
 This is structurally important: overdispersion can be interpreted as latent heterogeneity in the Poisson intensity.
 
-## 7. Ordinal Models
+## Ordinal models
 
 Suppose $y_i \in \{1,\dots,K\}$ is ordered. A cumulative logit model writes
 
@@ -248,7 +248,7 @@ This makes clear that:
 - cutpoints partition the score axis;
 - identifiability requires a location/scale convention on $\varepsilon_i$.
 
-## 8. Multinomial Models
+## Multinomial models
 
 For categories $1,\dots,K$, choose a baseline category $K$ and write
 
@@ -275,7 +275,7 @@ This is the softmax or multinomial logit model.
 
 Independent Gaussian priors on category-specific coefficient vectors are common, but hierarchical priors across categories often regularize better when $K$ is large or the categories are sparse.
 
-## 9. Hierarchical GLMs
+## Hierarchical GLMs
 
 All GLMs can be embedded in multilevel structures. For example, a hierarchical logistic regression with varying intercepts takes the form
 
@@ -295,7 +295,7 @@ $$
 
 The resulting posterior combines nonlinearity with partial pooling. This is one of the main reasons HMC and Stan matter: the geometry is rich, the inferential stakes are high, and exact conjugacy disappears.
 
-## 10. `R` And Stan Workflow
+## `R` and Stan workflow
 
 The companion regression lab is [glm_logistic_poisson.R](../../labs/r/glm_logistic_poisson.R), and the hierarchical Stan workflow connects naturally to [stan-hierarchical-models.qmd](../software/stan-hierarchical-models.qmd).
 
@@ -315,7 +315,7 @@ This basic log posterior is enough for:
 - custom Metropolis proposals;
 - gradient-based JAX implementations.
 
-## 11. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Predictor scaling
 
@@ -333,7 +333,7 @@ A Poisson model that systematically misses variance structure needs redesign, no
 
 Posterior intervals on coefficients are often less interpretable than posterior intervals on probabilities, odds ratios, rates, or category probabilities.
 
-## 12. Exercises
+## Exercises
 
 1. Derive the gradient and Hessian of the Bayesian logistic regression log posterior.
 2. Show how overdispersion arises from a Gamma-Poisson mixture.
@@ -341,7 +341,7 @@ Posterior intervals on coefficients are often less interpretable than posterior 
 4. Compare logistic and probit links in terms of interpretation and computation.
 5. Describe why weakly informative priors are especially important in Bayesian GLMs.
 
-## 13. Summary
+## Summary
 
 Bayesian GLMs extend linear modeling to binary, count, ordered, and categorical data:
 
@@ -350,6 +350,10 @@ Bayesian GLMs extend linear modeling to binary, count, ordered, and categorical 
 - interpretation must move between linear predictor scale and outcome scale;
 - multilevel structure and diagnostics become central quickly.
 
-## References
+## Further reading
 
-Key references are @gelman2013, @mcelreath2020, @murphy2023, and @hoff2009.
+@mcelreath2020 chapters 10 to 12 are the best applied introduction to Bayesian GLMs, and are particularly good on link functions, on prior choice for coefficients on the log and logit scales, and on why weakly informative priors matter more here than in linear regression.
+
+@gelman2013 chapter 16 gives the formal treatment, including the computational consequences of non-conjugacy. @hoff2009 chapter 10 works the Metropolis-Hastings implementation for logistic and Poisson regression in detail.
+
+@murphy2023 chapter 15 covers the wider family, including ordinal and multinomial links and the latent-variable representations that make some of them easier to sample. Overdispersion and the move to hierarchical formulations are picked up in [hierarchical and multilevel models](hierarchical-and-multilevel-models.qmd).

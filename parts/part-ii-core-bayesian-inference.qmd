@@ -1,5 +1,6 @@
 ---
-title: "Part II. Core Bayesian Inference"
+title: "Part II. Core Bayesian inference"
+number-sections: false
 ---
 
 ::: {.part-hero}
@@ -8,11 +9,11 @@ title: "Part II. Core Bayesian Inference"
 This part turns the posterior identity into an inferential toolkit: exact conjugate analysis, decision theory, prior design, and sensitivity-aware Bayesian reasoning.
 :::
 
-## Part Overview
+## Part overview
 
 Part II moves from the basic posterior identity to the standard inferential toolkit: conjugate models, decision theory, and prior design. This is where Bayesian analysis becomes concrete and operational.
 
-## Part Learning Goals
+## Part learning goals
 
 By the end of Part II, learners should be able to:
 
@@ -21,13 +22,13 @@ By the end of Part II, learners should be able to:
 - justify prior choices scientifically and computationally;
 - evaluate prior consequences using predictive simulation and sensitivity analysis.
 
-## Fully Written Chapters In This Repository
+## Fully written chapters in this repository
 
 - [Conjugate analysis](../chapters/core/conjugate-analysis.qmd)
 - [Loss functions and decision theory](../chapters/core/loss-functions-and-decision-theory.qmd)
 - [Prior design](../chapters/core/prior-design.qmd)
 
-## Reading Path
+## Reading path
 
 Recommended order:
 
@@ -35,7 +36,7 @@ Recommended order:
 2. [Loss functions and decision theory](../chapters/core/loss-functions-and-decision-theory.qmd)
 3. [Prior design](../chapters/core/prior-design.qmd)
 
-## Chapter 4. Conjugate Analysis
+## Chapter 4. Conjugate analysis
 
 ### Core question
 
@@ -85,7 +86,7 @@ When can posterior inference be derived analytically, and what does conjugacy te
 - @gelman2013
 - @bernardo1994
 
-## Chapter 5. Loss Functions and Decision Theory
+## Chapter 5. Loss functions and decision theory
 
 ### Core question
 
@@ -132,7 +133,7 @@ How do posterior distributions become decisions, actions, classifications, and s
 - @bernardo1994
 - @robert2007
 
-## Chapter 6. Prior Design
+## Chapter 6. Prior design
 
 ### Core question
 

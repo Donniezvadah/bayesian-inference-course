@@ -1,18 +1,18 @@
 ---
-title: "Model Selection and Averaging: Marginal Likelihood, Predictive Utility, Stacking, and Projection"
+title: "Model selection and averaging: marginal likelihood, predictive utility, stacking, and projection"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - derive posterior model probabilities from prior model weights and marginal likelihoods;
 - explain why Bayes factors are sensitive to prior mass in low-likelihood regions;
 - distinguish explanatory evidence criteria from predictive utility criteria;
 - formulate Bayesian model averaging, stacking, and projection predictive selection precisely;
 - implement a simple model-comparison workflow from pointwise predictive densities.
+:::
 
-## 1. Why Model Uncertainty Must Be Modeled
+## Why model uncertainty must be modeled
 
 In elementary examples one often acts as if a single model $M$ were fixed in advance. Serious practice is different. Analysts routinely face:
 
@@ -32,7 +32,7 @@ Let $\mathcal{M}=\{M_1,\dots,M_K\}$ be a finite model list. Each model $M_k$ car
 
 The Bayesian object is then the joint posterior over both model index and model-specific parameters.
 
-## 2. Posterior Model Probabilities
+## Posterior model probabilities
 
 The joint prior factorizes as
 
@@ -97,7 +97,7 @@ Posterior model probabilities are posterior odds built from two ingredients:
 
 This is coherent closed-world learning: probability mass is redistributed only among the models in $\mathcal{M}$.
 
-## 3. Marginal Likelihood And The Occam Effect
+## Marginal likelihood and the Occam effect
 
 The marginal likelihood averages the likelihood over the entire prior:
 
@@ -135,7 +135,7 @@ A flexible model can fit many data sets well after tuning parameters, but if its
 
 That penalty is real, but it is entirely prior-dependent. If the prior is not substantively meaningful, the resulting Bayes factor is often not substantively meaningful either [@kass1995; @robert2007].
 
-## 4. Bayes Factors
+## Bayes factors
 
 For two models $M_1$ and $M_2$, the Bayes factor is
 
@@ -165,7 +165,7 @@ Suppose a model has a diffuse prior over a parameter region where likelihood is 
 
 That is a strong and sometimes fragile question.
 
-## 5. Bridge Sampling For Marginal Likelihood
+## Bridge sampling for marginal likelihood
 
 Except in conjugate models, the evidence integral is rarely available in closed form. Bridge sampling is one stable strategy for estimating it [@meng1996].
 
@@ -218,7 +218,7 @@ The bridge function is chosen to control Monte Carlo variance. In practice one u
 
 Naive harmonic-mean estimators rely too strongly on low-density tails and are typically unstable. Bridge sampling is preferred because it uses overlap between two distributions more symmetrically.
 
-## 6. Predictive Criteria: WAIC And PSIS-LOO
+## Predictive criteria: WAIC and PSIS-LOO
 
 Closed-world evidence is not the only goal. Often the real target is predictive performance on future observations.
 
@@ -242,7 +242,7 @@ This targets out-of-sample prediction more directly than the marginal likelihood
 
 These are different inferential questions. They should not be expected to agree.
 
-## 7. Bayesian Model Averaging
+## Bayesian model averaging
 
 Instead of selecting one model, Bayesian model averaging integrates over model uncertainty:
 
@@ -262,7 +262,7 @@ Under logarithmic scoring, averaging can improve predictive performance by accou
 
 If all models are wrong and one still receives nearly all posterior model mass, BMA can become overconfident because it treats the model list as exhaustive. This is one reason predictive aggregation methods such as stacking are attractive.
 
-## 8. Stacking Of Predictive Distributions
+## Stacking of predictive distributions
 
 Stacking chooses weights
 
@@ -301,7 +301,7 @@ For each held-out observation, the ensemble predictive density is a convex combi
 - BMA assumes the model list is the full inferential universe.
 - Stacking is more tolerant of misspecification and overlapping model classes.
 
-## 9. Projection Predictive Selection
+## Projection predictive selection
 
 Projection predictive selection begins with a rich reference model $M_{\mathrm{ref}}$ intended to capture the main posterior structure. Simpler submodels are then chosen to mimic the reference model's predictive distribution rather than to refit the original response directly [@piironen2020].
 
@@ -327,7 +327,7 @@ The submodel is then assessed by the predictive loss it incurs relative to the r
 
 This avoids some of the instability of searching across many small models directly.
 
-## 10. Worked Gaussian Example
+## Worked Gaussian example
 
 Suppose under model $M_k$,
 
@@ -361,7 +361,7 @@ $$
 
 This makes clear that exact marginal likelihoods can be computed in conjugate Gaussian model comparison.
 
-## 11. `R` Implementation
+## `R` implementation
 
 The companion lab is [model_averaging_weights.R](../../labs/r/model_averaging_weights.R). It:
 
@@ -386,7 +386,7 @@ stack_objective <- function(eta, log_pred_matrix) {
 
 This parameterizes a two-model simplex through an unconstrained real vector.
 
-## 12. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Using Bayes factors with weakly justified priors
 
@@ -404,7 +404,7 @@ Posterior model probabilities are conditional on the model list. If the list omi
 
 Stacking can hide a small number of observations for which all candidate models perform badly. One should still inspect observation-level predictive failures.
 
-## 13. Exercises
+## Exercises
 
 1. Derive the posterior model probability formula for a finite model list with prior weights $w_k$.
 2. Show that posterior odds equal prior odds times a Bayes factor.
@@ -419,7 +419,7 @@ Stacking can hide a small number of observations for which all candidate models 
 5. Compare the optimization targets of BMA and stacking.
 6. In the Gaussian regression example, derive the exact marginal covariance matrix of $y$ after integrating out $\beta$.
 
-## 14. Summary
+## Summary
 
 Advanced Bayesian model comparison requires separating several ideas:
 
@@ -432,6 +432,10 @@ Advanced Bayesian model comparison requires separating several ideas:
 
 The central discipline is not choosing one universal criterion, but matching the comparison tool to the inferential goal.
 
-## References
+## Further reading
 
-Key references are @robert2007, @kass1995, @meng1996, @vehtari2017, @yao2018, and @piironen2020.
+@kass1995 is the standard reference on Bayes factors and is unusually honest about their sensitivity to prior choice — the property that makes them unreliable under vague priors. @robert2007 gives the decision-theoretic framing that explains what a Bayes factor is actually optimal for.
+
+@meng1996 covers bridge sampling, still the most reliable general method for estimating marginal likelihoods when they are needed.
+
+For the predictive alternative, @vehtari2017 develops approximate leave-one-out cross-validation and argues the case for predictive utility over marginal likelihood. @yao2018 gives stacking of predictive distributions, which usually outperforms Bayesian model averaging when the true model is not in the candidate set — the common situation. @piironen2020 covers projection predictive variable selection, which separates the question of which model predicts well from which variables to keep.

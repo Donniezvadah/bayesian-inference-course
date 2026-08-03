@@ -1,38 +1,49 @@
 ---
-title: "Part III. Computational Bayesian Methods"
+title: "Part III. Computational Bayesian methods"
+number-sections: false
 ---
 
 ::: {.part-hero}
 ## Part III
 
-This part develops the numerical machinery of Bayesian inference: integration, Monte Carlo error, MCMC, HMC, variational methods, and sequential updating.
+The numerical machinery that turns a posterior you can write down into one you can actually use: integration, Monte Carlo error, MCMC, Hamiltonian methods, variational approximation, and sequential updating.
 :::
 
-## Part Overview
+## Part overview
 
-Part III covers the numerical machinery that turns formal posterior distributions into usable approximations. The emphasis is on both mathematical justification and practical workflow.
+Outside conjugate families, a posterior is defined by an integral nobody can evaluate. Part III is about the ways round that, and about the fact that every one of them is an approximation with its own failure mode.
 
-## Part Learning Goals
+The order is deliberate. Deterministic approximation comes first, because it is cheap and because knowing when a Laplace approximation suffices saves a great deal of sampling. Independent Monte Carlo comes next, since its error analysis is the baseline against which dependent sampling is judged. Only then does MCMC arrive, followed by the gradient-based methods that exploit posterior geometry, the optimisation-based alternative in variational inference, and the sequential methods for data that arrive over time.
 
-By the end of Part III, learners should be able to:
+The part closes with a case where the difficulty is structural rather than numerical: a model whose parameter vector changes length as the sampler runs.
 
-- explain what posterior quantity is being approximated and by which numerical mechanism;
-- implement basic Monte Carlo and MCMC procedures;
-- tune and diagnose Metropolis-Hastings and HMC-type samplers;
-- compare MCMC, variational, and sequential methods critically.
+## Part learning goals
 
-## Fully Written Chapters In This Repository
+By the end of Part III you should be able to:
 
-- [Numerical integration and approximation](../chapters/computation/numerical-integration-and-approximation.qmd)
-- [Monte Carlo methods](../chapters/computation/monte-carlo-methods.qmd)
-- [Markov chain Monte Carlo](../chapters/computation/markov-chain-monte-carlo.qmd)
-- [Advanced MCMC: HMC and NUTS](../chapters/computation/advanced-mcmc-hmc.qmd)
-- [Variational inference](../chapters/computation/variational-inference.qmd)
-- [Sequential and online Bayes](../chapters/computation/sequential-and-online-bayes.qmd)
+- say which posterior quantity is being approximated, by what mechanism, and with what error;
+- implement Monte Carlo, Metropolis-Hastings, and Gibbs samplers from scratch;
+- tune and diagnose random-walk and HMC-type samplers, and tell a geometric problem from a tuning problem;
+- choose between MCMC, variational, and sequential methods on the basis of what each one sacrifices;
+- handle a model in which the number of parameters is itself unknown.
 
-## Reading Path
+## Chapters
 
-Recommended order:
+| Chapter | What it covers |
+|:---|:---|
+| [Numerical integration and approximation](../chapters/computation/numerical-integration-and-approximation.qmd) | Quadrature, Laplace approximation, importance sampling, bridge sampling |
+| [Monte Carlo methods](../chapters/computation/monte-carlo-methods.qmd) | Monte Carlo error, the CLT, variance reduction, weighted ESS |
+| [Markov chain Monte Carlo](../chapters/computation/markov-chain-monte-carlo.qmd) | Detailed balance, Metropolis-Hastings, Gibbs, autocorrelation, diagnostics |
+| [Advanced MCMC](../chapters/computation/advanced-mcmc-hmc.qmd) | Hamiltonian dynamics, leapfrog, NUTS, adaptation, divergences |
+| [Variational inference](../chapters/computation/variational-inference.qmd) | ELBO, mean-field factorisation, coordinate ascent, ADVI |
+| [Sequential and online Bayes](../chapters/computation/sequential-and-online-bayes.qmd) | Recursive filtering, particle methods, degeneracy, state-space models |
+| [The telescoping sampler](../chapters/computation/telescoping-sampler.qmd) | Mixtures with unknown $K$, transdimensional sampling without reversible jump |
+
+: Chapters in Part III {#tbl-part-iii}
+
+## Reading path
+
+Work through them in order. The first two are short and the payoff comes later: the error analysis in Monte Carlo methods is what makes the MCMC diagnostics interpretable rather than ritual.
 
 1. [Numerical integration and approximation](../chapters/computation/numerical-integration-and-approximation.qmd)
 2. [Monte Carlo methods](../chapters/computation/monte-carlo-methods.qmd)
@@ -40,8 +51,11 @@ Recommended order:
 4. [Advanced MCMC: HMC and NUTS](../chapters/computation/advanced-mcmc-hmc.qmd)
 5. [Variational inference](../chapters/computation/variational-inference.qmd)
 6. [Sequential and online Bayes](../chapters/computation/sequential-and-online-bayes.qmd)
+7. [The telescoping sampler](../chapters/computation/telescoping-sampler.qmd)
 
-## Chapter 7. Numerical Integration and Approximation
+The last chapter depends on [mixture models](../chapters/models/mixture-models-and-latent-variable-models.qmd) from Part IV. Read that first, or take the mixture model on trust and come back.
+
+## Chapter 7. Numerical integration and approximation
 
 ### Core question
 
@@ -85,7 +99,7 @@ What can be done before MCMC, and when are deterministic or semi-deterministic a
 - @mackay2003
 - @gelman2013
 
-## Chapter 8. Monte Carlo Methods
+## Chapter 8. Monte Carlo methods
 
 ### Core question
 
@@ -133,7 +147,7 @@ How does simple sampling approximate posterior expectations, and how should Mont
 
 - [Monte Carlo methods](../chapters/computation/monte-carlo-methods.qmd)
 
-## Chapter 9. Markov Chain Monte Carlo
+## Chapter 9. Markov chain Monte Carlo
 
 ### Core question
 
@@ -236,7 +250,7 @@ How do gradient-informed samplers exploit geometry to explore high-dimensional p
 - @hoffman2014
 - @betancourt2017
 
-## Chapter 11. Variational Inference
+## Chapter 11. Variational inference
 
 ### Core question
 
@@ -282,7 +296,7 @@ How can posterior inference be reframed as an optimization problem over tractabl
 - @blei2017
 - @kucukelbir2017
 
-## Chapter 12. Sequential and Online Bayesian Computation
+## Chapter 12. Sequential and online Bayesian computation
 
 ### Core question
 
@@ -330,3 +344,57 @@ How can posterior inference be updated over time when data arrive sequentially o
 - @doucet2001
 - @delmoral2004
 - @gelman2013
+
+## Chapter 13. The telescoping sampler
+
+### Core question
+
+How can a sampler explore a model whose parameter vector changes length, without the bespoke machinery that reversible jump demands?
+
+### Section blueprint
+
+- Components versus clusters: $K$ against $K_+$.
+- The generalised mixture of finite mixtures.
+- Static and dynamic specifications, and the Dirichlet process limit.
+- Priors on the number of components.
+- The partition marginal and the conditional posterior of $K$.
+- The telescoping step and refilling from the prior.
+- Summarising posteriors over partitions.
+
+### Derivations that must appear
+
+- The allocation marginal, integrating the Dirichlet weights out.
+- The combinatorial factor $K!/(K-K_+)!$ relating labelled allocations to partitions.
+- The conditional posterior $p(K \mid \mathcal{C})$, and why the component parameters and the data drop out of it.
+- Why the dimension-changing move needs no Jacobian and no Metropolis correction.
+
+### Computational lab
+
+- Implement the telescoping sampler for a univariate normal mixture.
+- Compare the posteriors of $K$ and $K_+$ on simulated data with known structure.
+- Study prior sensitivity across Poisson and beta-negative-binomial priors on $K$.
+- Compute a posterior similarity matrix and summarise the partition.
+
+### Common pitfalls
+
+- Reporting $K$ when the clustering question calls for $K_+$.
+- Cancelling $\Gamma(\gamma_K)^{-K_+}$ as a constant under the dynamic specification, where it is not.
+- Treating the prior on $K$ as innocuous when the data are weakly informative about it.
+- Averaging component-specific parameters across draws.
+
+### Exercises
+
+- Derive the partition marginal and verify that empty components contribute a factor of one.
+- Compute $p(K \mid \mathcal{C})$ by hand for a small partition under both specifications.
+- Adapt the sampler to Poisson components and confirm that only the allocation and parameter updates change.
+
+### Core references
+
+- @fruhwirth2021
+- @fruhwirth2024
+- @miller2018
+- @richardson1997
+
+### Full chapter
+
+- [The telescoping sampler](../chapters/computation/telescoping-sampler.qmd)

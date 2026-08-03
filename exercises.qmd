@@ -1,8 +1,9 @@
 ---
-title: "Exercises and Problem Set Design"
+title: "Exercises and problem set design"
+number-sections: false
 ---
 
-## Exercise Philosophy
+## Exercise philosophy
 
 The exercise system is designed to train five distinct skills:
 
@@ -14,7 +15,7 @@ The exercise system is designed to train five distinct skills:
 
 Every substantial problem set should include at least one exercise from each category. A Bayesian curriculum becomes shallow when it tests only calculation or only coding.
 
-## Exercise Types
+## Exercise types
 
 ### Derivation exercises
 
@@ -62,7 +63,7 @@ Typical prompts:
 - produce a one-page model criticism memo;
 - justify a prior on scientific rather than computational grounds.
 
-## Suggested Problem Set Sequence
+## Suggested problem set sequence
 
 | Set | Coverage | Main skills |
 |---|---|---|
@@ -75,7 +76,7 @@ Typical prompts:
 | 7 | Model criticism and comparison | PPC, LOO, SBC, sensitivity |
 | 8 | Advanced topics or project prep | Specialized modeling and communication |
 
-## Representative Exercises
+## Representative exercises
 
 ### Conjugate analysis
 
@@ -106,7 +107,7 @@ Typical prompts:
 3. Implement Newton updates for the MAP estimate and compare with simple gradient ascent.
 4. Approximate the posterior by a Laplace approximation and compare that approximation with a small custom HMC run.
 
-## Solution Sketch Policy
+## Solution sketch policy
 
 For a university offering, I recommend publishing:
 
@@ -114,7 +115,7 @@ For a university offering, I recommend publishing:
 - computational hints rather than full code for algorithmic exercises;
 - full worked solutions only after submission deadlines.
 
-## Rubric Dimensions
+## Rubric dimensions
 
 Each exercise can be graded on four axes:
 
@@ -125,7 +126,7 @@ Each exercise can be graded on four axes:
 | Diagnostics | Does the solution assess model or algorithm quality? |
 | Interpretation | Does the student explain what the result means? |
 
-## Further Development
+## Further development
 
 As the course expands, each part page should eventually contain a full exercise bank with:
 

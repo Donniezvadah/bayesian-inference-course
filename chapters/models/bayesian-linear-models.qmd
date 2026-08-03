@@ -1,18 +1,18 @@
 ---
-title: "Bayesian Linear Models: Exact Posterior Structure, Shrinkage, and Prediction"
+title: "Bayesian linear models: exact posterior structure, shrinkage, and prediction"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - derive the posterior of Bayesian linear regression with Gaussian priors;
 - derive the Normal-Inverse-Gamma posterior when variance is unknown;
 - compute posterior predictive distributions for new covariates;
 - explain the connection between Gaussian priors and ridge regularization;
 - interpret $g$-priors and shrinkage in geometric terms.
+:::
 
-## 1. Why Bayesian Linear Models Matter
+## Why Bayesian linear models matter
 
 Bayesian linear regression is the first model family in which prior specification, posterior uncertainty, prediction, shrinkage, and computation come together in a mathematically transparent way. It is not merely a Bayesian version of least squares. It is the prototype for:
 
@@ -21,7 +21,7 @@ Bayesian linear regression is the first model family in which prior specificatio
 - regularization through prior scale;
 - multilevel and generalized extensions later in the course [@gelman2013; @hoff2009].
 
-## 2. Model Setup
+## Model setup
 
 Let
 
@@ -48,7 +48,7 @@ $$
 
 The Bayesian task is to put a prior on $(\beta,\sigma^2)$ and update it.
 
-## 3. Known Variance, Gaussian Prior
+## Known variance, Gaussian prior
 
 Suppose $\sigma^2$ is known and
 
@@ -58,7 +58,7 @@ $$
 
 with positive definite covariance $B_0$.
 
-### 3.1 Posterior derivation
+### Posterior derivation
 
 The prior kernel is
 
@@ -123,7 +123,7 @@ $$
 \beta \mid y,\sigma^2 \sim \mathcal{N}(b_n,B_n).
 $$
 
-### 3.2 Precision interpretation
+### Precision interpretation
 
 This posterior is easiest to interpret in precision form:
 
@@ -133,7 +133,7 @@ $$
 
 Posterior precision equals prior precision plus data precision. Bayesian updating is additive in information.
 
-### 3.3 Posterior mean as shrinkage
+### Posterior mean as shrinkage
 
 The posterior mean satisfies
 
@@ -157,7 +157,7 @@ $$
 
 when $X^\top X$ is invertible. Thus the posterior mean is a matrix-weighted compromise between the prior center and the least-squares estimator.
 
-## 4. Unknown Variance: Normal-Inverse-Gamma Prior
+## Unknown variance: Normal-Inverse-Gamma prior
 
 Now assume
 
@@ -173,7 +173,7 @@ $$
 (\sigma^2)^{-(\nu_0/2+1)}\exp\!\left(-\frac{s_0}{2\sigma^2}\right).
 $$
 
-### 4.1 Joint posterior
+### Joint posterior
 
 The joint posterior kernel is
 
@@ -235,7 +235,7 @@ $$
 
 This is the multivariate analogue of the scalar Normal-Inverse-Gamma conjugate update.
 
-## 5. Posterior Predictive Distribution
+## Posterior predictive distribution
 
 Let $\tilde y$ be a new response at covariate vector $\tilde x \in \mathbb{R}^p$. Conditional on parameters,
 
@@ -243,7 +243,7 @@ $$
 \tilde y \mid \beta,\sigma^2 \sim \mathcal{N}(\tilde x^\top \beta,\sigma^2).
 $$
 
-### 5.1 Known variance
+### Known variance
 
 When $\sigma^2$ is known,
 
@@ -261,7 +261,7 @@ The predictive variance separates into:
 - observation noise $\sigma^2$;
 - parameter uncertainty $\tilde x^\top B_n \tilde x$.
 
-### 5.2 Unknown variance
+### Unknown variance
 
 Under the Normal-Inverse-Gamma prior, integrating out $\sigma^2$ yields a Student-$t$ predictive distribution. The exact scale depends on parameterization, but structurally
 
@@ -278,7 +278,7 @@ $$
 
 This heavier-tailed predictive distribution reflects uncertainty in both the coefficients and the variance.
 
-## 6. $g$-Priors
+## $g$-priors
 
 Zellner's $g$-prior chooses
 
@@ -288,13 +288,13 @@ $$
 
 This prior is aligned with the design geometry.
 
-### 6.1 Why it is attractive
+### Why it is attractive
 
 - scale adapts automatically to the design matrix;
 - prior variance is large in weakly identified directions and smaller in well-identified ones;
 - posterior formulas simplify dramatically.
 
-### 6.2 Posterior mean under the $g$-prior
+### Posterior mean under the $g$-prior
 
 If the prior mean is zero, then
 
@@ -309,11 +309,11 @@ This is explicit shrinkage toward zero. The parameter $g$ controls how much prio
 - large $g$ means weak shrinkage;
 - small $g$ means stronger shrinkage.
 
-### 6.3 Caution
+### Caution
 
 $g$-priors are elegant but not universally appropriate. They depend on the design matrix and can be sensitive in high dimensions or when predictors are not well behaved.
 
-## 7. Bayesian Ridge And Lasso Analogues
+## Bayesian ridge and lasso analogues
 
 Priors and regularization are two languages for the same object.
 
@@ -365,7 +365,7 @@ The Bayesian perspective matters because the full posterior distinguishes:
 - shrinkage induced by the prior;
 - uncertainty in regularization strength when hyperpriors are used.
 
-## 8. `R` Implementation
+## `R` implementation
 
 The companion lab is [bayesian_linear_regression.R](../../labs/r/bayesian_linear_regression.R).
 
@@ -384,7 +384,7 @@ The point of this lab is to compare:
 - OLS versus Bayesian shrinkage;
 - sensitivity to prior scale.
 
-## 9. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Poor predictor scaling
 
@@ -402,7 +402,7 @@ Shrinkage changes inference, not just numerical behavior.
 
 Analytic tractability is useful, but it is not a sufficient reason to accept a prior.
 
-## 10. Exercises
+## Exercises
 
 1. Derive the posterior mean and covariance for the known-variance Gaussian prior model in full detail.
 2. Show that the $g$-prior posterior mean equals $(g/(g+1))\hat\beta_{\text{OLS}}$ when the prior mean is zero.
@@ -410,7 +410,7 @@ Analytic tractability is useful, but it is not a sufficient reason to accept a p
 4. Show algebraically how a Gaussian prior induces ridge regularization in the MAP objective.
 5. Explain how posterior predictive uncertainty differs from confidence intervals for fitted means.
 
-## 11. Summary
+## Summary
 
 Bayesian linear models are fundamental because they exhibit the entire logic of Bayesian modeling in a tractable setting:
 
@@ -419,6 +419,10 @@ Bayesian linear models are fundamental because they exhibit the entire logic of 
 - predictive distributions integrate over parameter uncertainty;
 - shrinkage is geometric and inferential, not merely computational.
 
-## References
+## Further reading
 
-Key references are @gelman2013, @hoff2009, @mackay2003, and @murphy2023.
+@hoff2009 chapter 9 derives the conjugate normal linear model in full and is the closest match to the algebra used here. @gelman2013 chapter 14 covers the same model with more attention to prior choice, to what the coefficients mean, and to the failure modes of the flat-prior default.
+
+@mackay2003 chapters 27 and 28 give the evidence-based reading of Bayesian regression, in which the marginal likelihood selects the regularisation strength rather than cross-validation doing it. @murphy2023 chapter 15 is the most current treatment and connects ridge and lasso penalties to their prior counterparts, which is developed further in [prior design](../core/prior-design.qmd).
+
+The extension to non-Gaussian responses is taken up in [generalized linear models](generalized-linear-models.qmd), and the grouped-data extension in [hierarchical and multilevel models](hierarchical-and-multilevel-models.qmd).

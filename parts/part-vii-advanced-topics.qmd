@@ -1,5 +1,6 @@
 ---
-title: "Part VII. Advanced Topics"
+title: "Part VII. Advanced topics"
+number-sections: false
 ---
 
 ::: {.part-hero}
@@ -8,11 +9,11 @@ title: "Part VII. Advanced Topics"
 This part covers the mature edges of Bayesian workflow: model uncertainty, robustification, design under uncertainty, communication, and capstone-level synthesis.
 :::
 
-## Part Overview
+## Part overview
 
 Part VII extends the core workflow into the topics that distinguish mature Bayesian practice from elementary posterior calculation: model uncertainty, robustness, experimental design, communication, and open-ended projects.
 
-## Part Learning Goals
+## Part learning goals
 
 By the end of Part VII, learners should be able to:
 
@@ -21,7 +22,7 @@ By the end of Part VII, learners should be able to:
 - reason about design under uncertainty and utility;
 - communicate Bayesian results responsibly to scientific collaborators.
 
-## Fully Written Chapters In This Repository
+## Fully written chapters in this repository
 
 - [Model selection and averaging](../chapters/advanced/model-selection-and-averaging.qmd)
 - [Robust Bayesian methods](../chapters/advanced/robust-bayesian-methods.qmd)
@@ -29,7 +30,7 @@ By the end of Part VII, learners should be able to:
 - [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
 - [Capstone projects](../chapters/advanced/capstone-projects.qmd)
 
-## Reading Path
+## Reading path
 
 Recommended order:
 
@@ -39,7 +40,7 @@ Recommended order:
 4. [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
 5. [Capstone projects](../chapters/advanced/capstone-projects.qmd)
 
-## Chapter 27. Model Selection and Averaging
+## Chapter 27. Model selection and averaging
 
 ### Core question
 
@@ -84,7 +85,7 @@ How should we compare or combine models when model uncertainty itself matters?
 
 - [Model selection and averaging](../chapters/advanced/model-selection-and-averaging.qmd)
 
-## Chapter 28. Robust Bayesian Methods
+## Chapter 28. Robust Bayesian methods
 
 ### Core question
 
@@ -128,7 +129,7 @@ How can Bayesian models remain useful when data contain outliers or the likeliho
 
 - [Robust Bayesian methods](../chapters/advanced/robust-bayesian-methods.qmd)
 
-## Chapter 29. Bayesian Experimental Design
+## Chapter 29. Bayesian experimental design
 
 ### Core question
 
@@ -172,7 +173,7 @@ How should one choose data collection strategies when uncertainty and utility ar
 
 - [Bayesian experimental design](../chapters/advanced/bayesian-experimental-design.qmd)
 
-## Chapter 30. Communication and Interpretation
+## Chapter 30. Communication and interpretation
 
 ### Core question
 
@@ -218,7 +219,7 @@ How should Bayesian conclusions be reported so that uncertainty, model assumptio
 
 - [Communication and interpretation](../chapters/advanced/communication-and-interpretation.qmd)
 
-## Chapter 31. Capstone Projects
+## Chapter 31. Capstone projects
 
 ### Core question
 

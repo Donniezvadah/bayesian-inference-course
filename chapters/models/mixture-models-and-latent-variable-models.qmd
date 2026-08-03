@@ -1,18 +1,18 @@
 ---
-title: "Mixture Models and Latent Variable Models: Heterogeneity, Allocation, and Label Switching"
+title: "Mixture models and latent variable models: heterogeneity, allocation, and label switching"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - write finite mixture models as latent allocation models;
 - derive complete-data likelihoods and conditional updates for simple mixtures;
 - explain label switching and why naive posterior summaries fail;
 - distinguish identifiable predictive summaries from component-labeled summaries;
 - connect HMMs and switching regressions to the broader latent-variable framework.
+:::
 
-## 1. Why Mixtures
+## Why mixtures
 
 Mixture models represent heterogeneity by assuming observations arise from one of several latent subpopulations. They are useful for:
 
@@ -25,7 +25,7 @@ Mixture models represent heterogeneity by assuming observations arise from one o
 
 Their flexibility comes with inferential complications: multimodality, weak identifiability, and label switching [@neal2000; @murphy2023].
 
-## 2. Finite Mixture Model
+## Finite mixture model
 
 For $K$ components,
 
@@ -54,7 +54,7 @@ $$
 
 Then the observed-data likelihood is recovered by marginalizing over $z_i$.
 
-## 3. Complete-Data Likelihood
+## Complete-data likelihood
 
 With latent indicators,
 
@@ -67,7 +67,7 @@ $$
 
 This factorization is the basis of Gibbs sampling, EM algorithms, and many variational approximations.
 
-## 4. Gaussian Mixture Example
+## Gaussian mixture example
 
 Suppose
 
@@ -83,7 +83,7 @@ $$
 
 and conditionally conjugate priors on $(\mu_k,\sigma_k^2)$.
 
-### 4.1 Allocation conditional
+### Allocation conditional
 
 The full conditional for $z_i$ is
 
@@ -104,7 +104,7 @@ $$
 
 This is the Bayesian soft assignment rule.
 
-### 4.2 Mixing weights conditional
+### Mixing weights conditional
 
 If $n_k=\sum_i \mathbf{1}(z_i=k)$, then
 
@@ -112,11 +112,11 @@ $$
 \pi \mid z \sim \operatorname{Dirichlet}(\alpha_1+n_1,\dots,\alpha_K+n_K).
 $$
 
-### 4.3 Component parameter conditionals
+### Component parameter conditionals
 
 Under conjugate normal-inverse-gamma priors within each component, the conditional updates reduce to the same formulas seen in ordinary Gaussian conjugate analysis, but now computed separately within each cluster using the observations currently assigned to that component.
 
-## 5. Label Switching
+## Label switching
 
 If the prior is symmetric across components, then the posterior is invariant to relabeling:
 
@@ -142,7 +142,7 @@ $$
 
 mixture distribution summaries, and cluster-coassignment probabilities can remain meaningful even when component labels themselves are not.
 
-## 6. Identifiability Strategies
+## Identifiability strategies
 
 Several strategies exist, each with tradeoffs:
 
@@ -153,7 +153,7 @@ Several strategies exist, each with tradeoffs:
 
 In teaching and practice, label-invariant summaries are often the safest default because they respect the actual symmetry of the model.
 
-## 7. Hidden Markov Models And Switching Regressions
+## Hidden Markov models and switching regressions
 
 Mixture ideas extend naturally to dependent latent states.
 
@@ -177,7 +177,7 @@ $$
 
 Thus each latent state carries its own regression surface. This is a dynamic extension of finite mixtures.
 
-## 8. Mixture Of Experts
+## Mixture of experts
 
 A mixture-of-experts model replaces constant mixing weights with covariate-dependent gating probabilities:
 
@@ -187,13 +187,13 @@ $$
 
 This is powerful, but it magnifies identifiability and computational complexity because both the expert models and the gating network are learned jointly.
 
-## 9. `R` Implementation
+## `R` implementation
 
 The companion lab is [mixture_label_switching.R](../../labs/r/mixture_label_switching.R).
 
 It is deliberately simple: a two-component Gaussian mixture with fixed variances and a Gibbs update for allocations. The point is to show how easily label switching appears, even in tiny examples.
 
-## 10. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Mistaking multimodality for nonconvergence
 
@@ -205,13 +205,13 @@ Component labels are often arbitrary without explicit identifying structure.
 
 ### Overfitting component count
 
-More mixture components can fit noise, not just structure.
+More mixture components can fit noise, not just structure. Everything in this chapter has assumed $K$ is known, which it rarely is. Treating $K$ as a parameter rather than a setting requires a sampler that can change the length of the parameter vector; [the telescoping sampler](../computation/telescoping-sampler.qmd) develops that case in full, along with the distinction between the number of components and the number of components the data actually occupy.
 
 ### Ignoring predictive goals
 
 For density estimation or clustering, the most meaningful posterior summaries are often predictive or partition-based rather than parameter-label based.
 
-## 11. Exercises
+## Exercises
 
 1. Derive the allocation full conditional for a finite mixture.
 2. Show why a symmetric prior implies label-switching invariance.
@@ -219,7 +219,7 @@ For density estimation or clustering, the most meaningful posterior summaries ar
 4. Compare identifiable and non-identifiable summaries in a two-component Gaussian mixture.
 5. Describe how an HMM differs from an i.i.d. mixture in conditional independence structure.
 
-## 12. Summary
+## Summary
 
 Mixture and latent-variable models are flexible but subtle:
 
@@ -228,6 +228,12 @@ Mixture and latent-variable models are flexible but subtle:
 - symmetry leads naturally to multimodality and label switching;
 - predictive and partition summaries are often more meaningful than naive component averages.
 
-## References
+## Further reading
 
-Key references are @neal2000, @gelman2013, and @murphy2023.
+@fruhwirth2006 is the standard book-length treatment of finite mixtures and Markov switching models, and covers identifiability, label switching, and prior choice more thoroughly than any general text.
+
+@gelman2013 chapter 22 gives a compact account of mixture modelling within a Bayesian workflow, including the practical advice on identifiability constraints. @murphy2023 chapters 21 and 22 place mixtures in the wider latent-variable setting alongside factor models and EM.
+
+On label switching specifically, @stephens2000 is the reference for principled relabelling, and @wade2018 for summarising the posterior over partitions without relabelling at all — usually the better approach.
+
+When the number of components is itself unknown, the model becomes a mixture of finite mixtures; @neal2000 covers the Dirichlet process route and [the telescoping sampler](../computation/telescoping-sampler.qmd) develops the finite-$K$ alternative in full.

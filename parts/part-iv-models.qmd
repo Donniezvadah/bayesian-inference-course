@@ -1,5 +1,6 @@
 ---
-title: "Part IV. Bayesian Models"
+title: "Part IV. Bayesian models"
+number-sections: false
 ---
 
 ::: {.part-hero}
@@ -8,11 +9,11 @@ title: "Part IV. Bayesian Models"
 This part is the modeling core of the course: regression, multilevel structure, latent variables, time dependence, nonparametrics, spatial structure, and causal perspectives.
 :::
 
-## Part Overview
+## Part overview
 
 Part IV is the modeling core of the course. The goal is not to present disconnected model families, but to show how Bayesian modeling principles recur across regression, multilevel structure, latent variables, temporal dependence, nonparametrics, and causal reasoning.
 
-## Part Learning Goals
+## Part learning goals
 
 By the end of Part IV, learners should be able to:
 
@@ -21,7 +22,7 @@ By the end of Part IV, learners should be able to:
 - interpret posterior structure in terms of shrinkage, dependence, and latent heterogeneity;
 - anticipate computational and identifiability issues for each model family.
 
-## Fully Written Chapters In This Repository
+## Fully written chapters in this repository
 
 - [Bayesian linear models](../chapters/models/bayesian-linear-models.qmd)
 - [Generalized linear models](../chapters/models/generalized-linear-models.qmd)
@@ -32,7 +33,7 @@ By the end of Part IV, learners should be able to:
 - [Spatial and graphical Bayesian models](../chapters/models/spatial-and-graphical-bayesian-models.qmd)
 - [Bayesian causal inference](../chapters/models/bayesian-causal-inference.qmd)
 
-## Reading Path
+## Reading path
 
 Recommended order:
 
@@ -45,7 +46,7 @@ Recommended order:
 7. [Spatial and graphical Bayesian models](../chapters/models/spatial-and-graphical-bayesian-models.qmd)
 8. [Bayesian causal inference](../chapters/models/bayesian-causal-inference.qmd)
 
-## Chapter 13. Bayesian Linear Models
+## Chapter 13. Bayesian linear models
 
 ### Core question
 
@@ -90,7 +91,7 @@ How does Bayesian regression extend classical least squares into a full posterio
 - @hoff2009
 - @mackay2003
 
-## Chapter 14. Generalized Linear Models
+## Chapter 14. Generalized linear models
 
 ### Core question
 
@@ -135,7 +136,7 @@ How do Bayesian methods generalize regression when responses are binary, counts,
 - @mcelreath2020
 - @murphy2023
 
-## Chapter 15. Hierarchical and Multilevel Models
+## Chapter 15. Hierarchical and multilevel models
 
 ### Core question
 
@@ -143,43 +144,61 @@ How does partial pooling emerge from exchangeability assumptions and hierarchica
 
 ### Section blueprint
 
-- Partial pooling intuition.
-- Random intercept and random slope models.
-- Nested and crossed effects.
-- Hyperpriors and exchangeability.
-- Funnel geometry and centered versus non-centered parameterizations.
+- Complete pooling, no pooling, and partial pooling as points on one spectrum.
+- Exchangeability and de Finetti's representation theorem.
+- The normal-normal model and the shrinkage factor.
+- Stein's inadmissibility result and the James-Stein estimator.
+- The marginal posterior of the group-level scale.
+- Neal's funnel, and centred versus non-centred parameterisation.
+- Random intercepts, random slopes, and group-level predictors.
+- Hyperpriors for variance components.
+- Prediction for observed and for new groups.
 
 ### Derivations that must appear
 
-- Hierarchical factorization of the joint posterior.
-- Shrinkage decomposition in a normal-normal hierarchical model.
-- Posterior predictive distribution for a new group.
-- Centered and non-centered parameterization algebra.
+- Hierarchical factorisation of the joint posterior.
+- The normal-normal posterior by completing the square.
+- The shrinkage decomposition, and its four limiting cases.
+- The marginal likelihood for $\tau$ with the group effects integrated out.
+- The posterior predictive distribution for a new group.
+- The non-centring map and its effect on posterior geometry.
 
 ### Computational lab
 
-- Eight schools and hierarchical regression examples in Stan.
-- Compare pooling regimes visually.
-- Diagnose funnel pathologies with HMC diagnostics.
+- Eight schools in Stan under both parameterisations.
+- Plot the marginal posterior of $\tau$ and the eight shrinkage paths.
+- Diagnose funnel pathologies and locate divergences in $(\theta_j, \log\tau)$ space.
+- Simulate implied prior pooling under competing hyperpriors.
 
 ### Common pitfalls
 
-- Treating group-level effects as fixed when partial pooling is the inferential target.
-- Choosing hyperpriors without considering scale.
-- Interpreting convergence pathologies as mere tuning problems.
+- Reading shrinkage as distortion rather than as variance reduction.
+- Inverse-gamma hyperpriors on variance components.
+- Raising `adapt_delta` instead of reparameterising.
+- Assuming non-centred is always the right choice.
+- Confusing observed-group with new-group prediction.
 
 ### Exercises
 
-- Derive the posterior mean in a normal-normal hierarchical model and interpret shrinkage.
-- Compare centered and non-centered parameterizations analytically.
+- Derive the posterior mean in the normal-normal model and interpret the shrinkage weight.
+- Derive the marginal posterior of $\tau$ and plot it for the eight schools data.
+- Compare centred and non-centred parameterisations analytically and empirically.
+- Show why the better parameterisation reverses as the groups become data-rich.
 
 ### Core references
 
 - @gelman2013
 - @gelman2006
-- @betancourt2017
+- @stein1956
+- @efron1975
+- @papaspiliopoulos2007
+- @betancourt2015
 
-## Chapter 16. Mixture Models and Latent Variable Models
+### Full chapter
+
+- [Hierarchical and multilevel models](../chapters/models/hierarchical-and-multilevel-models.qmd)
+
+## Chapter 16. Mixture models and latent variable models
 
 ### Core question
 
@@ -225,7 +244,7 @@ How do latent allocations create flexible models, and what new inferential patho
 - @neal2000
 - @murphy2023
 
-## Chapter 17. Time Series and State-Space Models
+## Chapter 17. Time series and state-space models
 
 ### Core question
 
@@ -269,7 +288,7 @@ How can Bayesian models represent evolving latent states and temporal dependence
 - @gelman2013
 - @doucet2001
 
-## Chapter 18. Nonparametric Bayesian Methods
+## Chapter 18. Nonparametric Bayesian methods
 
 ### Core question
 
@@ -315,7 +334,7 @@ How can Bayesian models increase flexibility without fixing parameter dimension 
 - @rasmussen2006
 - @murphy2023
 
-## Chapter 19. Spatial and Graphical Bayesian Models
+## Chapter 19. Spatial and graphical Bayesian models
 
 ### Core question
 
@@ -358,7 +377,7 @@ How do conditional independence structures encode spatial and network dependence
 - @murphy2023
 - @gelman2013
 
-## Chapter 20. Causal Inference and Bayesian Perspectives
+## Chapter 20. Causal inference and Bayesian perspectives
 
 ### Core question
 

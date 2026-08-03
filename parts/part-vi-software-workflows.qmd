@@ -1,5 +1,6 @@
 ---
-title: "Part VI. Software Workflows in R, Stan, and JAX"
+title: "Part VI. Software workflows in R, Stan, and JAX"
+number-sections: false
 ---
 
 ::: {.part-hero}
@@ -8,11 +9,11 @@ title: "Part VI. Software Workflows in R, Stan, and JAX"
 This part translates the theory and computation into concrete workflows in `R`, `Stan`, and `JAX`, with emphasis on reproducibility, diagnostics, and implementation discipline.
 :::
 
-## Part Overview
+## Part overview
 
 Part VI translates the earlier theory into real computational workflow. The emphasis is not on software for its own sake, but on the disciplined use of tools to make Bayesian reasoning reproducible and diagnostically sound.
 
-## Part Learning Goals
+## Part learning goals
 
 By the end of Part VI, learners should be able to:
 
@@ -20,13 +21,13 @@ By the end of Part VI, learners should be able to:
 - write and diagnose Stan programs for nontrivial posterior inference;
 - use JAX for autodiff-based objectives, gradients, Hessians, and custom gradient-based Bayesian algorithms.
 
-## Fully Written Chapters In This Repository
+## Fully written chapters in this repository
 
 - [Bayesian workflow in R](../chapters/software/bayesian-workflow-in-r.qmd)
 - [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
 - [JAX for gradient-based Bayesian computation](../chapters/software/jax-gradient-based-bayes.qmd)
 
-## Reading Path
+## Reading path
 
 Recommended order:
 
@@ -34,7 +35,7 @@ Recommended order:
 2. [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
 3. [JAX for gradient-based Bayesian computation](../chapters/software/jax-gradient-based-bayes.qmd)
 
-## Chapter 24. Bayesian Workflow in `R`
+## Chapter 24. Bayesian workflow in `R`
 
 ### Core question
 
@@ -80,7 +81,7 @@ How can `R` serve as the central orchestration language for Bayesian simulation,
 - @bayesplot2024
 - @loo2024
 
-## Chapter 25. Bayesian Workflow in Stan
+## Chapter 25. Bayesian workflow in Stan
 
 ### Core question
 
@@ -130,7 +131,7 @@ How should a serious Bayesian analyst write, fit, diagnose, and revise Stan mode
 
 - [Stan workflow for hierarchical models and HMC diagnostics](../chapters/software/stan-hierarchical-models.qmd)
 
-## Chapter 26. Bayesian Workflow in JAX
+## Chapter 26. Bayesian workflow in JAX
 
 ### Core question
 

@@ -1,18 +1,18 @@
 ---
-title: "Tuning and Calibration: Proposal Scales, Warmup, Chain Length, and Practical Control"
+title: "Tuning and calibration: proposal scales, warmup, chain length, and practical control"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - tune proposal scales in random-walk MCMC deliberately;
 - explain the roles of warmup, chain count, and chain length;
 - interpret `adapt_delta`, `max_treedepth`, and initialization in Stan;
 - tune learning rates and schedules in gradient-based optimization;
 - distinguish computational tuning from model specification.
+:::
 
-## 1. Why Tuning Matters
+## Why tuning matters
 
 Every Bayesian algorithm contains control parameters:
 
@@ -25,7 +25,7 @@ Every Bayesian algorithm contains control parameters:
 
 These choices do not change the target posterior, but they strongly affect whether the approximation to that target is trustworthy and efficient.
 
-## 2. Tuning Random-Walk Metropolis
+## Tuning random-walk Metropolis
 
 For proposal
 
@@ -49,7 +49,7 @@ the scale $\sigma_q$ determines the exploration pattern.
 
 The right tuning criterion is not acceptance rate in isolation. It is Monte Carlo efficiency, often approximated by ESS per second or similar diagnostics.
 
-## 3. Chain Count, Chain Length, And Warmup
+## Chain count, chain length, and warmup
 
 ### Chain count
 
@@ -68,7 +68,7 @@ Warmup serves two roles:
 
 Warmup is not wasted computation if adaptation is actually learning useful geometry.
 
-## 4. Stan Controls
+## Stan controls
 
 ### `adapt_delta`
 
@@ -99,7 +99,7 @@ Initialization can affect:
 
 Reasonable initializations matter especially in hierarchical and weakly identified models.
 
-## 5. Tuning Variational Methods
+## Tuning variational methods
 
 Variational approximations introduce their own control parameters:
 
@@ -110,7 +110,7 @@ Variational approximations introduce their own control parameters:
 
 Fast optimization is not enough. One must still ask whether the resulting approximation captures the posterior features that matter for the inferential goal.
 
-## 6. Tuning Optimization In JAX
+## Tuning optimization in JAX
 
 For gradient-based optimization, the central control parameter is the learning rate $\eta_t$.
 
@@ -126,7 +126,7 @@ For gradient-based optimization, the central control parameter is the learning r
 
 Schedules such as step decay, cosine decay, or adaptive methods can help, but they do not eliminate the need to reason about objective curvature.
 
-## 7. Initialization Strategies
+## Initialization strategies
 
 Good initial values often come from:
 
@@ -141,7 +141,7 @@ Bad initial values can lead to:
 - numerical overflows in nonlinear models;
 - misleading early diagnostics.
 
-## 8. Calibration Beyond Tuning
+## Calibration beyond tuning
 
 Tuning asks whether the algorithm is operating efficiently. Calibration asks whether the overall workflow is inferentially valid.
 
@@ -154,11 +154,11 @@ Examples:
 
 Calibration therefore sits one level above tuning: it checks whether the tuned algorithm and the full workflow behave correctly on known problems.
 
-## 9. `R` Workflow
+## `R` workflow
 
 The companion tuning lab is [mcmc_tuning_grid.R](../../labs/r/mcmc_tuning_grid.R). It runs a random-walk Metropolis sampler across a grid of proposal scales and compares acceptance, autocorrelation, and ESS heuristics.
 
-## 10. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Using longer runs to hide poor tuning
 
@@ -176,7 +176,7 @@ Algorithm settings should generalize to similar problems, not only the current r
 
 Adaptation is part of the computational procedure, not part of the model itself.
 
-## 11. Exercises
+## Exercises
 
 1. Explain how proposal scale affects acceptance rate and autocorrelation in random-walk Metropolis.
 2. Describe the distinct roles of warmup and post-warmup iterations.
@@ -184,7 +184,7 @@ Adaptation is part of the computational procedure, not part of the model itself.
 4. Describe one principled initialization strategy for a hierarchical model.
 5. Explain the difference between tuning an algorithm and calibrating a Bayesian workflow.
 
-## 12. Summary
+## Summary
 
 Tuning is unavoidable in practical Bayesian computation:
 
@@ -193,6 +193,10 @@ Tuning is unavoidable in practical Bayesian computation:
 - good tuning must be separated from model redesign;
 - calibration asks a broader question than tuning alone.
 
-## References
+## Further reading
 
-Key references are @hoffman2014, @betancourt2017, @vehtari2021, and @murphy2023.
+@roberts1997 is the source of the optimal-scaling results that the acceptance-rate rules of thumb come from, including the $0.234$ asymptotic figure for random-walk Metropolis in high dimensions. Knowing where the number comes from also makes clear how narrow its assumptions are.
+
+@hoffman2014 covers the dual-averaging scheme that adapts HMC's step size to a target acceptance rate, and @betancourt2017 explains why raising that target is not a substitute for fixing bad geometry — the theme of the funnel discussion in [hierarchical and multilevel models](../models/hierarchical-and-multilevel-models.qmd).
+
+@vehtari2021 is the reference for deciding when a chain has run long enough, and @talts2018 for checking that a sampler is correct in the first place. @gelman2020 sets tuning in the context of the wider workflow, where it is usually the last thing to adjust rather than the first.

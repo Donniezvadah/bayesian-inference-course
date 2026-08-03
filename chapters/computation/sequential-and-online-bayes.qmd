@@ -1,18 +1,18 @@
 ---
-title: "Sequential and Online Bayesian Computation: Filtering, Particle Methods, and Hidden-State Models"
+title: "Sequential and online Bayesian computation: filtering, particle methods, and hidden-state models"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - derive recursive Bayesian filtering equations;
 - derive the Kalman filter for a linear Gaussian state-space model;
 - explain bootstrap particle filtering and weight degeneracy;
 - compute particle ESS and resampling steps;
 - write the forward recursion for a hidden Markov model.
+:::
 
-## 1. Why Sequential Bayes
+## Why sequential Bayes
 
 In many problems data do not arrive as a single static batch. Instead they arrive over time, and the latent state of the system also evolves over time:
 
@@ -25,7 +25,7 @@ In many problems data do not arrive as a single static batch. Instead they arriv
 
 Bayesian filtering addresses these problems by updating the posterior for the latent state as each new observation arrives [@doucet2001; @delmoral2004].
 
-## 2. Recursive Filtering Identity
+## Recursive filtering identity
 
 Let $x_t$ be the latent state at time $t$ and $y_t$ the observation. Under a state-space factorization,
 
@@ -41,7 +41,7 @@ $$
 p(x_t \mid y_{1:t}).
 $$
 
-### 2.1 Prediction step
+### Prediction step
 
 Given the filtering distribution at time $t-1$,
 
@@ -57,7 +57,7 @@ p(x_t \mid y_{1:t-1})
 \int p(x_t \mid x_{t-1}) p(x_{t-1} \mid y_{1:t-1})\, dx_{t-1}.
 $$
 
-### 2.2 Update step
+### Update step
 
 After observing $y_t$,
 
@@ -78,7 +78,7 @@ $$
 
 These two equations are the core recursion of Bayesian filtering.
 
-## 3. Linear Gaussian State-Space Models And The Kalman Filter
+## Linear Gaussian state-space models and the Kalman filter
 
 Consider the local-level model
 
@@ -96,7 +96,7 @@ $$
 x_{t-1} \mid y_{1:t-1} \sim \mathcal{N}(m_{t-1}, C_{t-1}).
 $$
 
-### 3.1 Prediction
+### Prediction
 
 Because the transition is linear Gaussian,
 
@@ -114,7 +114,7 @@ a_t = m_{t-1},
 R_t = C_{t-1} + W.
 $$
 
-### 3.2 Forecast
+### Forecast
 
 The predictive distribution for $y_t$ is
 
@@ -132,7 +132,7 @@ f_t = a_t,
 Q_t = R_t + V.
 $$
 
-### 3.3 Update
+### Update
 
 Using Gaussian conditioning,
 
@@ -156,7 +156,7 @@ $$
 C_t = R_t - A_t Q_t A_t = (1-A_t)R_t.
 $$
 
-### 3.4 Interpretation
+### Interpretation
 
 The Kalman gain $A_t$ weights the forecast error:
 
@@ -165,13 +165,13 @@ The Kalman gain $A_t$ weights the forecast error:
 
 The filter is therefore a sequential precision-weighted average, exactly analogous in spirit to conjugate Bayesian updating.
 
-## 4. Particle Filtering
+## Particle filtering
 
 Linear Gaussian models are special. In nonlinear or non-Gaussian state-space models, the filtering recursion is generally intractable. Particle filtering approximates it with weighted samples.
 
 Let $\{x_t^{(i)}, w_t^{(i)}\}_{i=1}^N$ approximate $p(x_t \mid y_{1:t})$.
 
-### 4.1 Generic sequential importance sampling
+### Generic sequential importance sampling
 
 Suppose particles are propagated from a proposal
 
@@ -193,7 +193,7 @@ w_{t-1}^{(i)}
 }.
 $$
 
-### 4.2 Bootstrap particle filter
+### Bootstrap particle filter
 
 If the proposal is the transition density itself,
 
@@ -209,7 +209,7 @@ $$
 
 This is the bootstrap particle filter.
 
-## 5. Weight Degeneracy And ESS
+## Weight degeneracy and ESS
 
 Particle filters suffer from weight degeneracy: after enough time steps, a few particles can carry most of the weight.
 
@@ -229,7 +229,7 @@ If ESS falls below a threshold, resampling is usually triggered.
 
 Resampling replaces weighted particles by an approximately equally weighted sample from the empirical particle distribution. This reduces weight degeneracy but increases path degeneracy, since many trajectories may share common ancestors.
 
-## 6. Hidden Markov Models And The Forward Algorithm
+## Hidden Markov models and the forward algorithm
 
 For a finite-state HMM with latent state $s_t \in \{1,\dots,K\}$,
 
@@ -269,7 +269,7 @@ $$
 
 This is the discrete-state analogue of Bayesian filtering.
 
-## 7. Online Bayesian Learning
+## Online Bayesian learning
 
 Sequential Bayes also supports online parameter learning in approximate form:
 
@@ -288,7 +288,7 @@ $$
 
 What changes is the computational mechanism used to approximate the recursion.
 
-## 8. `R` Implementation
+## `R` implementation
 
 The companion lab is [particle_filter_local_level.R](../../labs/r/particle_filter_local_level.R). It implements a bootstrap particle filter for a local-level model.
 
@@ -311,7 +311,7 @@ This is the correct level of abstraction for teaching:
 - explicit ESS calculation;
 - explicit resampling.
 
-## 9. Common Pitfalls
+## Common pitfalls
 
 ### Confusing prediction, filtering, and smoothing
 
@@ -334,7 +334,7 @@ At each step one must ask whether the algorithm approximates:
 - $p(\theta \mid y_{1:t})$,
 - or a joint posterior over states and parameters.
 
-## 10. Exercises
+## Exercises
 
 1. Derive the recursive filtering identity from the state-space factorization.
 2. Derive the Kalman filter update equations for the scalar local-level model.
@@ -342,7 +342,7 @@ At each step one must ask whether the algorithm approximates:
 4. Explain the trade-off between weight degeneracy and path degeneracy.
 5. Write the forward recursion for a 3-state HMM and explain how normalization should be handled numerically.
 
-## 11. Summary
+## Summary
 
 Sequential Bayesian computation unifies several important ideas:
 
@@ -353,6 +353,10 @@ Sequential Bayesian computation unifies several important ideas:
 
 This material is foundational for time series, online inference, and state-space modeling later in the course.
 
-## References
+## Further reading
 
-Key references are @doucet2001, @delmoral2004, @gelman2013, and @murphy2023.
+@doucet2001 is the standard edited volume on sequential Monte Carlo and covers the practical questions this chapter raises: resampling schemes, degeneracy diagnostics, and the choice of proposal.
+
+@delmoral2004 provides the theoretical foundation through Feynman-Kac formulae, and is where to look for the convergence results and error bounds that the applied literature cites.
+
+@murphy2023 chapters 8 and 13 give a modern treatment linking filtering, smoothing, and state-space models to the wider probabilistic modelling literature. @gelman2013 chapter 21 is shorter and situates these methods within a Bayesian workflow. The models themselves are developed further in [time series and state-space models](../models/time-series-and-state-space-models.qmd).

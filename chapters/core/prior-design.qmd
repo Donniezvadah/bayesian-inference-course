@@ -1,18 +1,18 @@
 ---
-title: "Prior Design: Information, Regularization, Predictive Checks, and Sensitivity"
+title: "Prior design: information, regularization, predictive checks, and sensitivity"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - distinguish informative, weakly informative, reference-style, and improper priors;
 - derive Jeffreys priors in standard examples;
 - explain posterior propriety and why improper priors require care;
 - connect priors to regularization and shrinkage;
 - perform prior predictive checks and sensitivity analysis systematically.
+:::
 
-## 1. Priors Are Model Components, Not Decorative Add-Ons
+## Priors are model components, not decorative add-ons
 
 A prior does at least four jobs in Bayesian analysis.
 
@@ -23,7 +23,7 @@ A prior does at least four jobs in Bayesian analysis.
 
 Because priors do all four jobs simultaneously, prior design is one of the most important stages of Bayesian workflow [@gelman2013; @simpson2017].
 
-## 2. A Taxonomy Of Priors
+## A taxonomy of priors
 
 ### Informative priors
 
@@ -45,7 +45,7 @@ These are functions that do not integrate to one. They can still yield proper po
 
 These priors actively regularize parameters toward zero or toward shared structure, often to stabilize high-dimensional models or multilevel effects.
 
-## 3. Posterior Propriety
+## Posterior propriety
 
 If a prior is improper, the posterior may or may not be proper. This is not a technical footnote. A posterior that does not integrate to one is not a valid posterior.
 
@@ -71,7 +71,7 @@ This kernel is integrable in $\mu$, so the posterior is proper for $n \ge 1$.
 
 In more complicated hierarchical or sparse-data models, improper priors can produce improper posteriors. One must verify propriety rather than assume it.
 
-## 4. Jeffreys Priors
+## Jeffreys priors
 
 Jeffreys proposed a general rule based on Fisher information:
 
@@ -91,7 +91,7 @@ $$
 
 The attraction of this rule is invariance under smooth one-to-one reparameterization.
 
-### 4.1 Bernoulli example
+### Bernoulli example
 
 Let
 
@@ -136,7 +136,7 @@ $$
 
 which is the Beta$(1/2,1/2)$ prior.
 
-### 4.2 Normal scale example
+### Normal scale example
 
 Suppose
 
@@ -166,7 +166,7 @@ $$
 
 This is the classic scale prior. It is improper and must be handled carefully.
 
-## 5. Weakly Informative Priors And Regularization
+## Weakly informative priors and regularization
 
 In many modern models, especially regression and hierarchical models, weakly informative priors are more useful than formally objective priors.
 
@@ -198,7 +198,7 @@ Maximizing the posterior is therefore equivalent to penalized likelihood with an
 
 Likewise, Laplace priors correspond to lasso-like $\ell_1$ penalties.
 
-## 6. Hierarchical, Shrinkage, And Sparsity Priors
+## Hierarchical, shrinkage, and sparsity priors
 
 Priors can also express structure across parameters.
 
@@ -224,7 +224,7 @@ PC priors formalize shrinkage toward a simpler base model using a complexity pen
 
 The broader point is that prior design is often about structural regularization rather than only individual parameters.
 
-## 7. Prior Predictive Checking
+## Prior predictive checking
 
 A prior should be checked before fitting the model. The relevant distribution is
 
@@ -268,7 +268,7 @@ matplot(x, prob_draws, type = "l", lty = 1, col = rgb(0, 0, 0, 0.05),
 
 The point is not the plot itself. The point is to ask whether the implied curves are plausible before seeing outcomes.
 
-## 8. Prior Sensitivity Analysis
+## Prior sensitivity analysis
 
 A principled workflow compares scientifically plausible prior choices and asks whether posterior conclusions change materially.
 
@@ -282,7 +282,7 @@ A principled workflow compares scientifically plausible prior choices and asks w
 
 Sensitivity analysis should focus on inferentially important outputs, not only raw parameter means.
 
-## 9. Stan Prior Predictive Workflow
+## Stan prior predictive workflow
 
 Stan supports prior predictive simulation naturally by generating data from the prior without conditioning on observed outcomes. A simple pattern is:
 
@@ -298,7 +298,7 @@ generated quantities {
 
 When using Stan purely for prior predictive checks, one can omit the likelihood contribution or use `fixed_param` mode for direct simulation. This makes prior design visible in the same software stack later used for posterior fitting.
 
-## 10. Common Pitfalls
+## Common pitfalls
 
 ### Calling a prior “noninformative”
 
@@ -316,7 +316,7 @@ This is one of the most common failures in practice. Weak posterior pathologies 
 
 Bayes factors and marginal likelihoods are usually not meaningful with improper priors.
 
-## 11. Exercises
+## Exercises
 
 1. Derive the Jeffreys prior for a Poisson rate parameter.
 2. Show that a Gaussian prior on regression coefficients induces ridge regularization in the MAP objective.
@@ -324,7 +324,7 @@ Bayes factors and marginal likelihoods are usually not meaningful with improper 
 4. Give an example of an improper prior that yields a proper posterior, and one situation where impropriety is risky.
 5. Explain why prior sensitivity should be assessed on decisions or predictions, not only on coefficient summaries.
 
-## 12. Summary
+## Summary
 
 Good prior design is a combination of mathematical care and scientific judgment:
 
@@ -334,6 +334,10 @@ Good prior design is a combination of mathematical care and scientific judgment:
 - hierarchical and shrinkage priors encode structure rather than only vague uncertainty;
 - prior predictive checking and sensitivity analysis are mandatory parts of Bayesian workflow.
 
-## References
+## Further reading
 
-Key references are @jeffreys1961, @gelman2013, @gelman2006, @simpson2017, @piironen2017, and @bernardo1994.
+@jeffreys1961 is the origin of the invariance argument for objective priors, and @bernardo1994 develops the reference-prior programme that grew out of it. Both are worth knowing even if you never use a formal objective prior, because they clarify what "uninformative" can and cannot mean.
+
+For practice, @gelman2006 is the essential paper on priors for variance parameters and explains why the inverse-gamma defaults of older software behave badly; its recommendations are used throughout [hierarchical and multilevel models](../models/hierarchical-and-multilevel-models.qmd). @simpson2017 gives the penalised-complexity construction, which builds a prior by shrinking toward a simpler base model at a controlled rate and is the most principled general recipe currently available.
+
+@piironen2017 covers regularised horseshoe priors for sparse regression, where the choice of prior does most of the statistical work. @gelman2013 chapter 2 remains the best short overview of weakly informative priors and of prior predictive checking as a design tool.

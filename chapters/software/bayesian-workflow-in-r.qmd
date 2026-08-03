@@ -1,18 +1,18 @@
 ---
-title: "Bayesian Workflow in R: Simulation, Summaries, Diagnostics, and Reproducibility"
+title: "Bayesian workflow in R: simulation, summaries, diagnostics, and reproducibility"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - use `R` as the orchestration layer for Bayesian workflows;
 - write reusable functions for conjugate updating and custom samplers;
 - compute posterior summaries from raw draws rather than only fitted-model printouts;
 - organize posterior predictive checks, diagnostics, and model comparison in `R`;
 - structure Bayesian analysis scripts for reproducibility and extension.
+:::
 
-## 1. Why `R` Matters In This Course
+## Why `R` matters in this course
 
 `R` is not used here merely because it is common in statistics. It plays a specific technical role:
 
@@ -23,7 +23,7 @@ After this chapter, you should be able to:
 
 Even when the final sampler is Stan or JAX-based, `R` remains a highly effective environment for data preparation, posterior summarization, workflow diagnostics, and reporting.
 
-## 2. Minimal Workflow Structure
+## Minimal workflow structure
 
 A serious Bayesian `R` workflow usually has four layers:
 
@@ -34,7 +34,7 @@ A serious Bayesian `R` workflow usually has four layers:
 
 The practical discipline is to keep those layers separable in code.
 
-## 3. Conjugate Functions As Reusable Building Blocks
+## Conjugate functions as reusable building blocks
 
 The fastest route to reproducible Bayesian code is to encapsulate exact model updates as functions.
 
@@ -58,7 +58,7 @@ This style matters because it makes exact calculations:
 
 See [beta_binomial.R](../../labs/r/beta_binomial.R) and [conjugate_families.R](../../labs/r/conjugate_families.R).
 
-## 4. Hand-Coded MCMC In `R`
+## Hand-coded MCMC in `R`
 
 Writing one’s own sampler is educational because it forces clarity about:
 
@@ -93,7 +93,7 @@ rw_metropolis <- function(init, n_iter, proposal_sd, log_target) {
 
 This is obviously not industrial-strength software. Its value lies in transparency.
 
-## 5. Working With Posterior Draws
+## Working with posterior draws
 
 Bayesian analysis should be draw-centric. Once posterior draws exist, many quantities follow by direct transformation.
 
@@ -116,7 +116,7 @@ quantile(g_draws, c(0.05, 0.95))
 
 This draw-based approach avoids deriving new asymptotics for every transformed estimand.
 
-## 6. Posterior Predictive Simulation In `R`
+## Posterior predictive simulation in `R`
 
 Posterior predictive checks become easy once draws are available:
 
@@ -134,7 +134,7 @@ Of course, in actual code one should index cleanly and vectorize where appropria
 
 See [posterior_predictive_checks.R](../../labs/r/posterior_predictive_checks.R).
 
-## 7. Diagnostics With `posterior` And `bayesplot`
+## Diagnostics with `posterior` and `bayesplot`
 
 When draws come from Stan or another modern MCMC backend, the `posterior` package standardizes storage and summaries.
 
@@ -149,9 +149,9 @@ mcmc_trace(draws_object, pars = c("beta[1]", "beta[2]"))
 mcmc_acf(draws_object, pars = "beta[1]")
 ```
 
-The advantage is not just convenience. It is consistency across projects and models.
+The advantage is consistency across projects and models, which matters more than the convenience.
 
-## 8. Model Comparison With `loo`
+## Model comparison with `loo`
 
 If pointwise log likelihood contributions are available, `loo` provides an efficient route to PSIS-LOO:
 
@@ -163,7 +163,7 @@ print(loo_result)
 
 This makes `R` the natural place to compare fitted models, aggregate predictive summaries, and present model criticism cleanly.
 
-## 9. Organizing Scripts Cleanly
+## Organizing scripts cleanly
 
 A strong repository layout usually separates:
 
@@ -179,7 +179,7 @@ Within an analysis, it is usually better to keep:
 - random seeds fixed in teaching examples;
 - plotting code separate from model code.
 
-## 10. Recommended `R` Workflow Pattern
+## Recommended `R` workflow pattern
 
 For a typical Bayesian analysis:
 
@@ -194,7 +194,7 @@ For a typical Bayesian analysis:
 
 This pattern scales from toy conjugate examples to serious Stan workflows.
 
-## 11. Existing Labs In This Repository
+## Existing labs in this repository
 
 The repository now includes a broad `R` lab spine:
 
@@ -214,7 +214,7 @@ The repository now includes a broad `R` lab spine:
 
 This is deliberate: `R` is the backbone of the course’s executable workflow.
 
-## 12. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Treating fitted-model summaries as enough
 
@@ -232,7 +232,7 @@ Stochastic examples should be reproducible by default in a course repository.
 
 If a model quantity is standardized, transformed, or reparameterized, the code should make that explicit.
 
-## 13. Exercises
+## Exercises
 
 1. Write a reusable `R` function for a conjugate posterior update of your choice.
 2. Implement posterior predictive simulation from posterior draws and compare observed versus replicated summaries.
@@ -240,7 +240,7 @@ If a model quantity is standardized, transformed, or reparameterized, the code s
 4. Use posterior draws to estimate a nonlinear functional and a credible interval for it.
 5. Explain why a draw-centric workflow is preferable to a summary-centric workflow.
 
-## 14. Summary
+## Summary
 
 `R` is the course’s operational glue:
 
@@ -250,6 +250,8 @@ If a model quantity is standardized, transformed, or reparameterized, the code s
 - diagnostics and predictive checks are straightforward;
 - Quarto integration makes the workflow reproducible.
 
-## References
+## Further reading
 
-Key references are @r2025, @posterior2024, @bayesplot2024, @loo2024, and @cmdstanr2024.
+The packages used here each have good documentation and it is worth reading it directly: @posterior2024 for draws objects and the current convergence diagnostics, @bayesplot2024 for the diagnostic and posterior predictive graphics, @loo2024 for cross-validation and model comparison, and @cmdstanr2024 for the Stan interface. @r2025 is the base language reference.
+
+The methodological papers behind those packages are the ones to read for understanding rather than usage: @vehtari2021 for the diagnostics in `posterior`, @vehtari2017 for the estimators in `loo`, and @gabry2019 for the visualisations in `bayesplot` and the workflow they belong to. @gelman2020 ties the whole sequence together.

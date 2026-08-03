@@ -1,18 +1,18 @@
 ---
-title: "Monte Carlo Methods: Integration, Monte Carlo Error, Variance Reduction, and Weighted ESS"
+title: "Monte Carlo methods: integration, Monte Carlo error, variance reduction, and weighted ESS"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - define Monte Carlo estimators for posterior expectations and quantify their error;
 - derive unbiasedness, variance, and a Monte Carlo CLT for simple simulation estimators;
 - implement and compare antithetic variables, control variates, and stratification;
 - explain the effective sample size heuristic for weighted samples;
 - distinguish Monte Carlo error from model uncertainty and from MCMC dependence.
+:::
 
-## 1. Why Monte Carlo Comes Before MCMC
+## Why Monte Carlo comes before MCMC
 
 Before introducing dependent simulation, one should understand the independent case. Suppose the posterior quantity of interest is
 
@@ -38,7 +38,7 @@ $$
 
 This is the basic Monte Carlo estimator. Everything in MCMC, SMC, VI evaluation, and posterior predictive simulation is easier to understand after this case.
 
-## 2. Unbiasedness And Variance
+## Unbiasedness and variance
 
 Let
 
@@ -90,7 +90,7 @@ $$
 
 This is the mathematical origin of the familiar $S^{-1/2}$ error rate.
 
-## 3. Monte Carlo LLN And CLT
+## Monte Carlo LLN and CLT
 
 By the LLN,
 
@@ -132,7 +132,7 @@ Monte Carlo error is the numerical error due to finite simulation. It is not:
 
 One should report it separately whenever simulation error is non-negligible relative to the posterior quantity of interest.
 
-## 4. Worked Example: Direct Posterior Simulation
+## Worked example: direct posterior simulation
 
 Suppose
 
@@ -162,7 +162,7 @@ $$
 
 This simple example is not about difficulty. It is about making the error decomposition concrete: analytic truth exists, so the simulation error can be seen directly.
 
-## 5. Antithetic Variables
+## Antithetic variables
 
 Variance reduction works by keeping the same expectation but lowering variance. One strategy is antithetic coupling.
 
@@ -205,7 +205,7 @@ $$
 
 Thus negative covariance lowers variance. For monotone $h$, the pair $(U,1-U)$ often induces negative dependence.
 
-## 6. Control Variates
+## Control variates
 
 Suppose we want $\mu=\mathbb{E}[X]$ and also have a variable $C$ with known mean $\nu=\mathbb{E}[C]$. Consider
 
@@ -262,7 +262,7 @@ where $\rho_{XC}$ is the correlation between $X$ and $C$.
 
 Hence a strongly correlated control variate can produce large variance reduction.
 
-## 7. Stratification
+## Stratification
 
 Suppose the sample space is partitioned into strata $A_1,\dots,A_K$ with probabilities $p_k$. Then
 
@@ -276,7 +276,7 @@ If we estimate each $\mu_k$ separately and combine them, the estimator can be mo
 
 Stratification uses known structure in the sampling space to reduce variance. It is conceptually simple and often underused.
 
-## 8. Weighted Sampling And ESS
+## Weighted sampling and ESS
 
 Suppose draws come from a proposal $q$ rather than the target $p$. Then
 
@@ -334,7 +334,7 @@ If one weight dominates, ESS is close to 1. Thus ESS measures weight concentrati
 
 Weighted ESS appears in importance sampling, particle filtering, and PSIS-style diagnostics. It is not the same object as MCMC ESS, which is driven by autocorrelation.
 
-## 9. Monte Carlo Cost And Error Scaling
+## Monte Carlo cost and error scaling
 
 To reduce Monte Carlo standard error by a factor of two, one needs roughly four times as many independent draws. This harsh scaling is why variance reduction is not optional in serious computation.
 
@@ -344,7 +344,7 @@ The engineering question is always:
 
 That question recurs later in HMC tuning, SMC resampling, and nested Monte Carlo design problems.
 
-## 10. `R` Implementation
+## `R` implementation
 
 The companion lab is [monte_carlo_variance_reduction.R](../../labs/r/monte_carlo_variance_reduction.R). It:
 
@@ -362,7 +362,7 @@ estimate_with_cv <- function(x, cvar, c_mean) {
 }
 ```
 
-## 11. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Reporting Monte Carlo means without MCSE
 
@@ -380,7 +380,7 @@ If the control is poorly correlated with the integrand, variance reduction may b
 
 If $q$ undercovers important tails of $p$, weight variance can explode and ESS can collapse.
 
-## 12. Exercises
+## Exercises
 
 1. Derive unbiasedness and variance of the simple Monte Carlo estimator.
 2. Derive the optimal control-variate coefficient.
@@ -388,7 +388,7 @@ If $q$ undercovers important tails of $p$, weight variance can explode and ESS c
 4. Prove that the weighted ESS formula equals $1/\sum \tilde w_s^2$.
 5. Explain why MCSE scales like $S^{-1/2}$ rather than $S^{-1}$.
 
-## 13. Summary
+## Summary
 
 Monte Carlo methods provide the numerical backbone for Bayesian computation:
 
@@ -400,6 +400,10 @@ Monte Carlo methods provide the numerical backbone for Bayesian computation:
 
 With these ideas in place, dependent simulation in MCMC becomes much easier to interpret.
 
-## References
+## Further reading
 
-Key references are @robert2004, @casella2002, and @mackay2003.
+@robert2004 is the standard reference for Monte Carlo methods in statistics and covers the variance reduction techniques of this chapter in more depth, including the theory behind control variates and Rao-Blackwellisation. Chapters 3 and 4 are the relevant ones.
+
+@casella2002 supplies the underlying convergence theory — the laws of large numbers and the central limit theorem in the forms used here to justify Monte Carlo standard errors.
+
+@mackay2003 chapter 29 is the most intuitive account of why naive sampling fails in high dimensions, and it motivates the move to Markov chain methods in [Markov chain Monte Carlo](markov-chain-monte-carlo.qmd) better than a formal treatment does.

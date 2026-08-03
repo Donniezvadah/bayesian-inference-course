@@ -1,18 +1,18 @@
 ---
-title: "Variational Inference: ELBO, Mean-Field Factorization, Coordinate Ascent, and Approximation Error"
+title: "Variational inference: ELBO, mean-field factorization, coordinate ascent, and approximation error"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - derive the ELBO from the posterior KL divergence;
 - explain the difference between forward and reverse KL behavior;
 - derive mean-field coordinate ascent updates in a conjugate model;
 - implement a simple CAVI procedure;
 - explain why VI is fast and scalable but can underestimate uncertainty.
+:::
 
-## 1. Variational Inference As Optimization
+## Variational inference as optimization
 
 Variational inference replaces posterior integration by an optimization problem. Instead of drawing from $p(\theta \mid y)$ directly, choose a tractable family $\mathcal{Q}$ and solve
 
@@ -27,7 +27,7 @@ This reframes inference as approximation within a restricted family [@blei2017; 
 
 The price is approximation bias. The benefit is computational speed and scalability.
 
-## 2. ELBO Derivation
+## ELBO derivation
 
 Start from the posterior KL divergence:
 
@@ -87,7 +87,7 @@ $$
 
 Maximizing the ELBO is therefore equivalent to minimizing reverse KL to the posterior.
 
-## 3. Why Reverse KL Matters
+## Why reverse KL matters
 
 The choice
 
@@ -105,7 +105,7 @@ This is why mean-field VI often:
 
 This is not a bug in optimization. It is a geometric consequence of the divergence being minimized.
 
-## 4. Mean-Field Factorization
+## Mean-field factorization
 
 Suppose
 
@@ -115,7 +115,7 @@ $$
 
 This mean-field restriction makes optimization tractable but breaks posterior dependence. The resulting family can be much simpler than the true posterior.
 
-### 4.1 Coordinate ascent update
+### Coordinate ascent update
 
 To derive the optimal factor $q_j$, fix all other factors and maximize the ELBO over $q_j$. The standard result is
 
@@ -127,7 +127,7 @@ $$
 
 where $q_{-j}=\prod_{\ell \ne j} q_\ell(\theta_\ell)$ and $C$ is a normalization constant.
 
-### 4.2 Derivation
+### Derivation
 
 Write the ELBO as
 
@@ -148,7 +148,7 @@ $$
 
 which yields the coordinate update above.
 
-## 5. Worked Example: Mean-Field VI For A Normal-Gamma Model
+## Worked example: mean-field VI for a Normal-Gamma model
 
 Consider
 
@@ -172,7 +172,7 @@ $$
 
 to see what VI does.
 
-### 5.1 Joint log density
+### Joint log density
 
 Ignoring constants,
 
@@ -185,7 +185,7 @@ $$
 - \frac{\kappa_0\tau}{2}(\mu-\mu_0)^2.
 $$
 
-### 5.2 Update for $q_\mu$
+### Update for $q_\mu$
 
 Take expectation with respect to $q_\tau$:
 
@@ -221,7 +221,7 @@ $$
 
 Interestingly, the mean $m$ does not depend on $\mathbb{E}[\tau]$ because the shared factor cancels.
 
-### 5.3 Update for $q_\tau$
+### Update for $q_\tau$
 
 Now take expectation with respect to $q_\mu$:
 
@@ -278,7 +278,7 @@ $$
 
 These yield explicit coordinate updates.
 
-## 6. Coordinate Ascent Variational Inference
+## Coordinate ascent variational inference
 
 The resulting CAVI algorithm is:
 
@@ -290,7 +290,7 @@ The resulting CAVI algorithm is:
 
 This is fast because every update is closed form.
 
-## 7. ADVI, Stochastic VI, and Amortization
+## ADVI, stochastic VI, and amortization
 
 The mean-field example above is didactic. Modern VI systems often use:
 
@@ -308,7 +308,7 @@ Inference networks map observations directly to variational parameters, common i
 
 These are scalable, but the same approximation caveats remain.
 
-## 8. `R` Implementation
+## `R` implementation
 
 The companion lab is [meanfield_vi_normal_gamma.R](../../labs/r/meanfield_vi_normal_gamma.R). The core update structure is:
 
@@ -328,7 +328,7 @@ for (iter in seq_len(n_iter)) {
 
 Comparing these variational summaries with the exact Normal-Gamma posterior shows the characteristic variance shrinkage of mean-field VI.
 
-## 9. Common Pitfalls
+## Common pitfalls
 
 ### Treating ELBO optimization success as inference success
 
@@ -346,7 +346,7 @@ VI often understates uncertainty, especially in skewed or correlated posteriors.
 
 ELBO is an objective for a fixed model and variational family. It is not a universal model-comparison metric.
 
-## 10. Exercises
+## Exercises
 
 1. Derive the ELBO identity from the posterior KL divergence in full detail.
 2. Derive the mean-field update
@@ -357,7 +357,7 @@ ELBO is an objective for a fixed model and variational family. It is not a unive
 4. Explain why reverse KL tends to be mode-seeking.
 5. Describe one setting where VI is preferable to MCMC and one where it is likely inadequate.
 
-## 11. Summary
+## Summary
 
 Variational inference turns posterior approximation into optimization:
 
@@ -368,6 +368,10 @@ Variational inference turns posterior approximation into optimization:
 
 The correct use of VI therefore requires both computational skill and epistemic caution.
 
-## References
+## Further reading
 
-Key references are @blei2017, @kucukelbir2017, @murphy2023, and @bishop2006.
+@blei2017 is the review to read first: it derives the ELBO, works the mean-field updates for conjugate exponential-family models, and is candid about what variational approximations get wrong. @bishop2006 chapter 10 covers the same material with more worked algebra and is the better source if you want to see coordinate ascent derived in full for a specific model.
+
+@kucukelbir2017 introduced automatic differentiation variational inference, which is what makes VI usable without deriving updates by hand and is the algorithm behind the `ADVI` implementations in Stan and elsewhere.
+
+@murphy2023 chapters 10 and 11 give the most current treatment, including amortised and normalising-flow variants that relax the mean-field assumption. On the central weakness — underestimated posterior variance — the reverse-KL geometry discussed here is what to keep in mind when comparing against the MCMC results of [advanced MCMC](advanced-mcmc-hmc.qmd).

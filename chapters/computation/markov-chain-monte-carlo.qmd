@@ -1,18 +1,18 @@
 ---
-title: "Markov Chain Monte Carlo: Derivation, Tuning, and Diagnostics"
+title: "Markov chain Monte Carlo: derivation, tuning, and diagnostics"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - explain why MCMC is needed for posterior integration;
 - derive the Metropolis-Hastings acceptance probability;
 - describe Gibbs sampling as exact conditional updating;
 - tune a random-walk proposal intelligently rather than heuristically;
 - interpret autocorrelation, ESS, trace plots, and $\hat{R}$.
+:::
 
-## 1. The Computational Problem
+## The computational problem
 
 In Bayesian inference, the target quantity is often an expectation under the posterior:
 
@@ -32,7 +32,7 @@ $$
 
 The subtlety is that the draws are not independent. Dependence affects Monte Carlo error, which is why diagnostics are central rather than optional.
 
-## 2. Markov Chains And Invariance
+## Markov chains and invariance
 
 A Markov chain with transition kernel $K(\theta, d\theta')$ is a stochastic process in which
 
@@ -76,7 +76,7 @@ because the kernel integrates to one in its second argument.
 
 Detailed balance is stronger than necessary, but it provides an elegant route to MCMC design.
 
-## 3. Metropolis And Metropolis-Hastings
+## Metropolis and Metropolis-Hastings
 
 Suppose the posterior is known up to a normalizing constant:
 
@@ -95,7 +95,7 @@ $$
 
 If the proposal is rejected, stay at $\theta$.
 
-### Derivation Of The Acceptance Ratio
+### Derivation of the acceptance ratio
 
 The transition kernel has two components:
 
@@ -150,7 +150,7 @@ $$
 
 This is the usual random-walk Metropolis rule.
 
-## 4. Gibbs Sampling
+## Gibbs sampling
 
 Gibbs sampling updates components from their exact full conditional distributions. If $\theta=(\theta_1,\dots,\theta_p)$, a one-at-a-time Gibbs sweep draws
 
@@ -170,7 +170,7 @@ Because each step draws from the correct conditional, Gibbs sampling inherits th
 
 Gibbs is powerful when full conditionals are standard. It is limited when they are not.
 
-## 5. Example: Random-Walk Metropolis For A Normal Posterior
+## Example: random-walk Metropolis for a Normal posterior
 
 Consider a simple model with known variance:
 
@@ -254,7 +254,7 @@ fit <- rw_metropolis(
 fit$accept_rate
 ```
 
-## 6. Tuning Proposal Scale
+## Tuning proposal scale
 
 Random-walk Metropolis reveals a basic MCMC trade-off:
 
@@ -265,7 +265,7 @@ Good MCMC is not about maximizing acceptance rate. It is about maximizing effect
 
 In one dimension, an acceptance rate around $0.4$ to $0.5$ is often reasonable for random walks; in higher dimensions, lower optimal rates can occur. These are rules of thumb, not universal laws.
 
-## 7. Autocorrelation And Effective Sample Size
+## Autocorrelation and effective sample size
 
 Because MCMC draws are dependent, the Monte Carlo error of the sample mean depends on autocorrelation. If $\rho_k$ denotes lag-$k$ autocorrelation, then asymptotically
 
@@ -285,7 +285,7 @@ $$
 
 If autocorrelation is high, ESS can be much smaller than the nominal number of iterations.
 
-## 8. Diagnostics That Actually Matter
+## Diagnostics that actually matter
 
 ### Trace plots
 
@@ -314,7 +314,7 @@ ESS is a measure of Monte Carlo information, not a measure of model adequacy.
 
 For HMC, divergences and E-BFMI matter. For importance sampling, tail weights matter. Diagnostics must match the algorithm.
 
-## 9. Common Failure Modes
+## Common failure modes
 
 ### Poor scaling
 
@@ -332,7 +332,7 @@ Random-walk proposals become inefficient on narrow, tilted ridges. This is a pre
 
 A very long chain with high autocorrelation can still carry little effective information.
 
-## 10. Gibbs Sampling Example Sketch
+## Gibbs sampling example sketch
 
 Suppose
 
@@ -351,7 +351,7 @@ Then the full conditionals are:
 
 This produces a two-step Gibbs sampler. The point is not the algebra alone, but the structural insight: conjugacy turns conditionals into direct samplers, which is why Gibbs flourished historically.
 
-## 11. Exercises
+## Exercises
 
 1. Derive the Metropolis-Hastings acceptance ratio from detailed balance.
 2. Show that Gibbs sampling leaves the posterior invariant.
@@ -359,7 +359,7 @@ This produces a two-step Gibbs sampler. The point is not the algebra alone, but 
 4. Construct an independence sampler for a unimodal target and compare it with a random walk.
 5. Explain why thinning is usually a poor substitute for running an efficient sampler.
 
-## 12. Summary
+## Summary
 
 MCMC works by designing a Markov chain whose invariant distribution is the posterior. The most important ideas in this chapter are:
 
@@ -371,6 +371,10 @@ MCMC works by designing a Markov chain whose invariant distribution is the poste
 
 The next computational step is to move beyond random walks and exploit posterior geometry, which is the subject of advanced MCMC and Stan workflow.
 
-## References
+## Further reading
 
-Foundational references include @metropolis1953, @hastings1970, @geman1984, @andrieu2003, @robert2004, @brooks2011, and @vehtari2021.
+The original papers are short and still readable. @metropolis1953 introduced the symmetric-proposal algorithm for a physics problem; @hastings1970 generalised it to asymmetric proposals and gave the acceptance ratio in the form used today; @geman1984 introduced Gibbs sampling for image restoration, which is where the name comes from.
+
+@robert2004 is the standard textbook treatment and covers the convergence theory this chapter states without proof — irreducibility, aperiodicity, and the ergodic theorem for Markov chains on general state spaces. @brooks2011 is the handbook, with survey chapters on most of the variations you are likely to meet.
+
+@andrieu2003 is a good introduction for readers coming from machine learning. On diagnostics, @vehtari2021 is the current reference for rank-normalised $\widehat{R}$ and effective sample size, and supersedes the older diagnostics still found in some software. The geometric methods that overcome the random-walk limitations described here are covered in [advanced MCMC](advanced-mcmc-hmc.qmd), and the mixture-specific case where the dimension itself varies in [the telescoping sampler](telescoping-sampler.qmd).

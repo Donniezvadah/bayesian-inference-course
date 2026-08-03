@@ -1,10 +1,11 @@
 ---
-title: "References and Citation Strategy"
+title: "References and citation strategy"
 nocite: |
   @*
+number-sections: false
 ---
 
-## Citation Strategy
+## Citation strategy
 
 The course cites sources for four distinct purposes:
 
@@ -13,11 +14,11 @@ The course cites sources for four distinct purposes:
 3. **Modeling references** for hierarchical models, Gaussian processes, nonparametrics, and predictive evaluation.
 4. **Software references** for `R`, `Stan`, `cmdstanr`, `posterior`, `bayesplot`, `loo`, and `JAX`.
 
-## Linked Reference Guide
+## Linked reference guide
 
 The bibliography below remains the formal citation record. This section is the practical reading guide: each item links to a publisher page, official documentation page, DOI landing page, or open-access version where possible.
 
-## Annotated Reading Guide By Course Part
+## Annotated reading guide by course part
 
 ### Part I. Foundations
 
@@ -28,7 +29,7 @@ The bibliography below remains the formal citation record. This section is the p
 - [Bayesian Theory](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470316870)  
   Foundational Bayesian reasoning, decision structure, and posterior logic.
 
-### Part II. Core Bayesian Inference
+### Part II. Core Bayesian inference
 
 - [Bayesian Data Analysis](https://www.routledge.com/Bayesian-Data-Analysis-Third-Edition/Gelman-Carlin-Stern-Dunson-Vehtari-Rubin/p/book/9781439840955)  
   The main all-purpose reference for posterior inference, priors, prediction, and applied Bayesian workflow.
@@ -57,7 +58,7 @@ The bibliography below remains the formal citation record. This section is the p
 - [Probabilistic Machine Learning: Advanced Topics](https://mitpress.mit.edu/9780262048439/probabilistic-machine-learning)  
   Broad modern reference connecting hierarchical models, latent variables, graphical models, and advanced Bayesian machine learning.
 
-### Part V. Optimization, Tuning, and Diagnostics
+### Part V. Optimization, tuning, and diagnostics
 
 - [Practical Bayesian Model Evaluation Using Leave-One-Out Cross-Validation and WAIC](https://doi.org/10.1007/s11222-016-9696-4)  
   Standard predictive model evaluation reference.
@@ -66,7 +67,7 @@ The bibliography below remains the formal citation record. This section is the p
 - [Visualization in Bayesian Workflow](https://doi.org/10.1111/rssa.12378)  
   Strong workflow paper connecting computation diagnostics and model criticism.
 
-### Part VI. Software Workflows
+### Part VI. Software workflows
 
 - [R Project](https://www.r-project.org/)  
   Core language environment for the `R` side of the course.
@@ -87,7 +88,7 @@ The bibliography below remains the formal citation record. This section is the p
 - [Quarto](https://quarto.org/)  
   Publishing system used to build this course.
 
-### Part VII. Advanced Topics
+### Part VII. Advanced topics
 
 - [The Bayesian Choice](https://link.springer.com/book/10.1007/0-387-71599-1)  
   Strong reference for Bayesian evidence, Bayes factors, and model comparison logic.
@@ -98,13 +99,13 @@ The bibliography below remains the formal citation record. This section is the p
 - [Bayesian Experimental Design: A Review](https://doi.org/10.1214/ss/1177009939)  
   Classic overview of Bayesian design criteria and methods.
 
-## Core Texts
+## Core texts
 
 - [Bayesian Data Analysis](https://www.routledge.com/Bayesian-Data-Analysis-Third-Edition/Gelman-Carlin-Stern-Dunson-Vehtari-Rubin/p/book/9781439840955)
 - [Monte Carlo Statistical Methods](https://link.springer.com/book/10.1007/978-1-4757-4145-2)
 - [Probabilistic Machine Learning: Advanced Topics](https://mitpress.mit.edu/9780262048439/probabilistic-machine-learning)
 
-## Canonical Textbooks
+## Canonical textbooks
 
 The most important book-length references for the course are:
 
@@ -119,7 +120,7 @@ The most important book-length references for the course are:
 - @mackay2003
 - @murphy2023
 
-## Landmark Papers And Articles
+## Landmark papers and articles
 
 Core methodological papers repeatedly used in the course include:
 
@@ -138,7 +139,7 @@ Core methodological papers repeatedly used in the course include:
 - @ferguson1973
 - @neal2000
 
-## Software References
+## Software references
 
 When the course discusses tools or packages, the preferred citations are:
 
@@ -151,7 +152,7 @@ When the course discusses tools or packages, the preferred citations are:
 - @jax2018
 - @numpyro2020
 
-## Recommended Reading Paths
+## Recommended reading paths
 
 ### Foundations-first
 
@@ -175,4 +176,4 @@ When the course discusses tools or packages, the preferred citations are:
 - @hoffman2014
 - @blei2017
 
-## Full Bibliography
+## Full bibliography

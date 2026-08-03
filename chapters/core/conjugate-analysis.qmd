@@ -1,18 +1,18 @@
 ---
-title: "Conjugate Analysis: Exact Posteriors, Predictive Distributions, and Marginal Likelihoods"
+title: "Conjugate analysis: exact posteriors, predictive distributions, and marginal likelihoods"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - define conjugacy formally and recognize it in standard models;
 - derive posterior, posterior predictive, and marginal likelihood formulas for core conjugate families;
 - interpret pseudo-count, precision, and concentration parameters;
 - use conjugate models as exact benchmarks for approximation methods;
 - explain why conjugacy is pedagogically powerful but not universally appropriate.
+:::
 
-## 1. Why Conjugacy Still Matters
+## Why conjugacy still matters
 
 Conjugate analysis occupies a peculiar place in Bayesian statistics. In serious applied work, many models are not conjugate, and modern posterior computation is driven by HMC, variational methods, and sequential simulation. Yet conjugacy remains essential for three reasons.
 
@@ -22,7 +22,7 @@ Conjugate analysis occupies a peculiar place in Bayesian statistics. In serious 
 
 Conjugacy is therefore not an obsolete trick. It is the cleanest laboratory in which to learn posterior logic.
 
-## 2. Formal Definition
+## Formal definition
 
 :::{.definition}
 A family of priors $\{\pi(\theta; \eta): \eta \in \mathcal{H}\}$ is **conjugate** for a likelihood family $\{p(y \mid \theta)\}$ if the posterior belongs to the same prior family for every admissible observation:
@@ -62,7 +62,7 @@ $$
 
 That algebraic preservation is the essence of conjugacy.
 
-## 3. Beta-Binomial Model
+## Beta-Binomial model
 
 Suppose
 
@@ -74,7 +74,7 @@ $$
 
 with $0 < \theta < 1$.
 
-### 3.1 Posterior derivation
+### Posterior derivation
 
 The likelihood is
 
@@ -110,7 +110,7 @@ $$
 \theta \mid y \sim \operatorname{Beta}(\alpha+y,\beta+n-y).
 $$
 
-### 3.2 Posterior moments
+### Posterior moments
 
 The posterior mean is
 
@@ -132,7 +132,7 @@ $$
 
 This expression shows the posterior mean as a weighted average of the prior mean and the sample proportion.
 
-### 3.3 Posterior predictive distribution
+### Posterior predictive distribution
 
 Let $\tilde{Y}$ denote the number of successes in $m$ future Bernoulli trials. Then
 
@@ -165,7 +165,7 @@ $$
 
 Thus the predictive count is Beta-Binomial.
 
-### 3.4 Marginal likelihood
+### Marginal likelihood
 
 The evidence is
 
@@ -179,9 +179,9 @@ $$
 
 This formula is exact and makes prior sensitivity visible.
 
-## 4. Gamma-Poisson And Gamma-Exponential Models
+## Gamma-Poisson and Gamma-Exponential models
 
-### 4.1 Gamma-Poisson
+### Gamma-Poisson
 
 Suppose
 
@@ -224,7 +224,7 @@ $$
 \operatorname{Gamma}\!\left(\alpha + \sum_{i=1}^n y_i,\ \beta+n\right).
 $$
 
-### 4.2 Predictive distribution
+### Predictive distribution
 
 For one future count $\tilde{Y}$,
 
@@ -261,7 +261,7 @@ $$
 
 which is a negative binomial form.
 
-### 4.3 Gamma-Exponential
+### Gamma-Exponential
 
 If
 
@@ -287,7 +287,7 @@ $$
 
 Again the hyperparameters update additively.
 
-## 5. Normal-Normal Model
+## Normal-Normal model
 
 Suppose
 
@@ -299,7 +299,7 @@ $$
 
 with $\sigma^2$ known.
 
-### 5.1 Posterior derivation by completing the square
+### Posterior derivation by completing the square
 
 The likelihood kernel is
 
@@ -372,7 +372,7 @@ $$
 \mu \mid y \sim \mathcal{N}(\mu_n,\tau_n^2).
 $$
 
-### 5.2 Interpretation
+### Interpretation
 
 The posterior mean is a precision-weighted average:
 
@@ -386,7 +386,7 @@ $$
 
 Higher prior precision means more shrinkage toward $\mu_0$.
 
-### 5.3 Posterior predictive
+### Posterior predictive
 
 For a future observation $\tilde Y$,
 
@@ -401,7 +401,7 @@ $$
 
 The predictive variance is the sum of observation noise and parameter uncertainty.
 
-## 6. Normal-Inverse-Gamma Model
+## Normal-Inverse-Gamma model
 
 Now suppose both $\mu$ and $\sigma^2$ are unknown. A standard conjugate prior is
 
@@ -445,7 +445,7 @@ $$
 \sigma^2 \mid y \sim \operatorname{InvGamma}\!\left(\frac{\nu_n}{2},\frac{\nu_n s_n^2}{2}\right).
 $$
 
-### 6.1 Student-$t$ predictive
+### Student-$t$ predictive
 
 Integrating out $(\mu,\sigma^2)$ yields a Student-$t$ posterior predictive:
 
@@ -461,7 +461,7 @@ $$
 
 up to parameterization conventions for the $t$ scale. The key point is that uncertainty in $\sigma^2$ thickens the predictive tails relative to the known-variance Gaussian case.
 
-## 7. Dirichlet-Multinomial Model
+## Dirichlet-Multinomial model
 
 Let
 
@@ -523,7 +523,7 @@ where $\alpha_0=\sum_{k=1}^K \alpha_k$.
 
 As in the Beta-Binomial case, prior counts and observed counts add directly.
 
-## 8. Matrix-Normal And Inverse-Wishart Discussion
+## Matrix-Normal and Inverse-Wishart discussion
 
 Conjugacy extends to multivariate Gaussian models with matrix-normal priors on coefficient matrices and inverse-Wishart priors on covariance matrices. Historically this was convenient because exact Gibbs updates became available.
 
@@ -535,7 +535,7 @@ The caution is that inverse-Wishart priors often induce coupled and unintuitive 
 
 Conjugacy is therefore still mathematically useful here, but not always the most defensible modeling choice.
 
-## 9. `R` Implementation
+## `R` implementation
 
 The companion script is [conjugate_families.R](../../labs/r/conjugate_families.R). The core update functions are:
 
@@ -562,7 +562,7 @@ dirichlet_multinomial_update <- function(y, alpha) {
 
 These exact formulas make excellent unit tests for approximate algorithms developed later in the course.
 
-## 10. Benefits And Limitations
+## Benefits and limitations
 
 ### Benefits
 
@@ -580,7 +580,7 @@ These exact formulas make excellent unit tests for approximate algorithms develo
 
 Conjugacy is best treated as a tool, not a doctrine.
 
-## 11. Exercises
+## Exercises
 
 1. Derive the posterior predictive distribution for the Gamma-Exponential model.
 2. Starting from the Normal-Normal model, derive the posterior mean by completing the square in full detail.
@@ -588,7 +588,7 @@ Conjugacy is best treated as a tool, not a doctrine.
 4. Compare the Beta-Binomial posterior means induced by Beta$(1,1)$, Beta$(5,5)$, and Beta$(20,20)$ priors for the same data.
 5. Explain why inverse-Wishart conjugacy can be computationally attractive but statistically awkward.
 
-## 12. Summary
+## Summary
 
 Conjugate analysis shows Bayesian updating in its most transparent form:
 
@@ -599,6 +599,10 @@ Conjugate analysis shows Bayesian updating in its most transparent form:
 
 These examples are not only foundational. They remain indispensable benchmarks for model checking, computation, and pedagogy.
 
-## References
+## Further reading
 
-Key references are @bernardo1994, @hoff2009, @gelman2013, @robert2007, and @mackay2003.
+@hoff2009 is the best match to this chapter: chapters 3 to 5 work the beta-binomial, gamma-Poisson, and normal models in the same style and at the same pace. @gelman2013 chapters 2 and 3 cover the same families and are stronger on the predictive distributions and on what the hyperparameters mean in applied terms.
+
+@bernardo1994 gives the general theory of conjugate families for the exponential family, which is the structural result behind the individual cases worked here. @robert2007 treats conjugacy alongside the decision-theoretic and admissibility questions, and is the more mathematically demanding of the two.
+
+@mackay2003 is worth reading for the information-theoretic reading of the marginal likelihood, which is developed further in [model selection and averaging](../advanced/model-selection-and-averaging.qmd).

@@ -1,18 +1,19 @@
 ---
-title: "Part I. Foundations of Probability and Bayesian Thinking"
+title: "Part I. Foundations of probability and Bayesian thinking"
+number-sections: false
 ---
 
 ::: {.part-hero}
-## Part I
+## Part i
 
 This part establishes the mathematical language used everywhere else in the course: probability spaces, expectations, likelihoods, Bayes' theorem, exchangeability, and sequential learning.
 :::
 
-## Part Overview
+## Part overview
 
 Part I establishes the language in which the rest of the course is written. The purpose is not to turn the site into a full measure-theory text, but to make the probabilistic objects used throughout Bayesian statistics precise: sample spaces, conditional distributions, random variables, likelihoods, priors, posteriors, and predictive distributions.
 
-## Part Learning Goals
+## Part learning goals
 
 By the end of Part I, learners should be able to:
 
@@ -22,13 +23,13 @@ By the end of Part I, learners should be able to:
 - explain exchangeability as a Bayesian structural assumption;
 - connect sequential updating to recursive learning.
 
-## Fully Written Chapters In This Repository
+## Fully written chapters in this repository
 
 - [Probability foundations](../chapters/foundations/probability-foundations.qmd)
 - [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
 - [Bayes' theorem, sequential updating, and posterior prediction](../chapters/foundations/bayes-theorem-and-updating.qmd)
 
-## Reading Path
+## Reading path
 
 Recommended order:
 
@@ -36,7 +37,7 @@ Recommended order:
 2. [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
 3. [Bayes' theorem, sequential updating, and posterior prediction](../chapters/foundations/bayes-theorem-and-updating.qmd)
 
-## Chapter 1. Probability Foundations
+## Chapter 1. Probability foundations
 
 ### Core question
 
@@ -93,7 +94,7 @@ What probabilistic language is required to express Bayesian models rigorously an
 
 - [Probability foundations](../chapters/foundations/probability-foundations.qmd)
 
-## Chapter 2. Likelihood Theory
+## Chapter 2. Likelihood theory
 
 ### Core question
 
@@ -144,7 +145,7 @@ How does the likelihood summarize information in the sampling model, and how doe
 
 - [Likelihood theory](../chapters/foundations/likelihood-theory.qmd)
 
-## Chapter 3. Bayes' Theorem and the Bayesian Paradigm
+## Chapter 3. Bayes' theorem and the Bayesian paradigm
 
 ### Core question
 

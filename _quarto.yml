@@ -101,6 +101,7 @@ website:
           - chapters/computation/advanced-mcmc-hmc.qmd
           - chapters/computation/variational-inference.qmd
           - chapters/computation/sequential-and-online-bayes.qmd
+          - chapters/computation/telescoping-sampler.qmd
       - section: "Part IV"
         contents:
           - parts/part-iv-models.qmd
@@ -173,5 +174,12 @@ execute:
 crossref:
   fig-title: "Figure"
   tbl-title: "Table"
-  eq-prefix: "Eq."
+  eq-prefix: "Equation"
   sec-prefix: "Section"
+  def-title: "Definition"
+  thm-title: "Theorem"
+  lem-title: "Lemma"
+  cor-title: "Corollary"
+  prp-title: "Proposition"
+  exm-title: "Example"
+  exr-title: "Exercise"

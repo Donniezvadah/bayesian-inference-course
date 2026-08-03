@@ -1,8 +1,9 @@
 ---
-title: "Detailed Syllabus and Recommended Pacing"
+title: "Detailed syllabus and recommended pacing"
+number-sections: false
 ---
 
-## Course Modes
+## Course modes
 
 This curriculum supports three teaching modes:
 
@@ -12,7 +13,7 @@ This curriculum supports three teaching modes:
 
 The chapter dependencies are strong enough that the intended order matters. Probability and likelihood precede priors and posteriors; priors and posteriors precede computational methods; computational methods precede realistic modeling and diagnostics.
 
-## Semester Syllabus
+## Semester syllabus
 
 | Week | Topics | Core mathematical focus | Computational focus | Suggested deliverable |
 |---|---|---|---|---|
@@ -31,7 +32,7 @@ The chapter dependencies are strong enough that the intended order matters. Prob
 | 13 | Optimization, tuning, and diagnostics | MAP, SBC, PPC, LOO | R-hat, ESS, divergences, E-BFMI | Problem set 6 |
 | 14 | R, Stan, JAX workflow integration; advanced topics and projects | Model averaging, robustness, communication | Reproducible final pipeline | Final project |
 
-## Recommended Reading Spine
+## Recommended reading spine
 
 The course can be taught with a primary and secondary reading strategy.
 
@@ -50,7 +51,7 @@ The course can be taught with a primary and secondary reading strategy.
 - @rasmussen2006 for Gaussian processes.
 - @murphy2023 for modern probabilistic machine learning connections.
 
-## Self-Study Sequence
+## Self-study sequence
 
 The self-study track is slower and more deliberate. A reasonable pacing plan is:
 
@@ -70,7 +71,7 @@ For self-study, the minimum viable sequence is:
 4. Complete two exercises: one analytic and one computational.
 5. Write a one-paragraph reflection on diagnostics or modeling assumptions.
 
-## Learning Outcomes By Assessment Type
+## Learning outcomes by assessment type
 
 ### Derivation sets
 
@@ -104,7 +105,7 @@ Students should demonstrate:
 - sensitivity analysis;
 - clearly written uncertainty communication.
 
-## Prerequisites Checklist
+## Prerequisites checklist
 
 Use the following checklist before starting the full course.
 
@@ -116,7 +117,7 @@ Use the following checklist before starting the full course.
 | Probability | Intermediate | [Measure-probability review](appendix/measure-probability-review.qmd) |
 | Programming | Basic `R` or Python | [Software setup](appendix/software-setup.qmd) |
 
-## Suggested Weekly Rhythm
+## Suggested weekly rhythm
 
 For an instructor-led course, each week should ideally include:
 
@@ -124,7 +125,7 @@ For an instructor-led course, each week should ideally include:
 2. One lecture or lab focused on computation and diagnostics.
 3. A small problem set mixing analytic derivations, simulation, and interpretation.
 
-## What To Emphasize Pedagogically
+## What to emphasize pedagogically
 
 Across the full syllabus, several misconceptions recur. The course should repeatedly correct them.
 
@@ -135,7 +136,7 @@ Across the full syllabus, several misconceptions recur. The course should repeat
 - Posterior predictive fit does not imply causal validity.
 - Bayes factors are highly prior-sensitive and should not be used reflexively.
 
-## Suggested Milestones
+## Suggested milestones
 
 By the midpoint of the course, students should already be able to:
 

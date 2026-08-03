@@ -1,10 +1,9 @@
 ---
-title: "Numerical Integration and Approximation: Quadrature, Laplace, Importance Sampling, and Evidence Estimation"
+title: "Numerical integration and approximation: quadrature, Laplace, importance sampling, and evidence estimation"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - state precisely which posterior quantity is being approximated;
 - distinguish deterministic quadrature from stochastic integration;
@@ -12,8 +11,9 @@ After this chapter, you should be able to:
 - derive importance sampling and self-normalized importance sampling estimators;
 - compute and interpret importance-weight effective sample size;
 - explain when bridge sampling and thermodynamic integration are appropriate.
+:::
 
-## 1. The Approximation Problem
+## The approximation problem
 
 In Bayesian analysis, the central object is almost never the posterior density by itself. The practical target is usually one of the following:
 
@@ -43,7 +43,7 @@ The first methodological question is therefore not “which algorithm should I r
 
 > What integral do I need, under what regularity assumptions, and what type of approximation error can I tolerate?
 
-## 2. Quadrature
+## Quadrature
 
 When the parameter dimension is one or two and the integrand is smooth, deterministic quadrature is often the cleanest approach.
 
@@ -71,11 +71,11 @@ If both numerator and denominator can be evaluated on a grid or through numerica
 
 This curse of dimensionality is one of the reasons Bayesian computation moved from quadrature to Monte Carlo.
 
-## 3. Laplace Approximation
+## Laplace approximation
 
 Laplace approximation replaces a posterior by a Gaussian density near its mode.
 
-### 3.1 Setup
+### Setup
 
 Let
 
@@ -99,7 +99,7 @@ $$
 
 so that $H(\hat\theta)$ is positive definite.
 
-### 3.2 Derivation
+### Derivation
 
 Take a second-order Taylor expansion around the mode:
 
@@ -149,7 +149,7 @@ p(\theta \mid y)
 \mathcal{N}\!\left(\hat\theta,\ H(\hat\theta)^{-1}\right).
 $$
 
-### 3.3 Approximation of posterior expectations
+### Approximation of posterior expectations
 
 If $h(\theta)$ is smooth, then
 
@@ -167,13 +167,13 @@ $$
 
 but using the Gaussian approximation itself is usually better.
 
-### 3.4 When Laplace works well
+### When Laplace works well
 
 - posterior is approximately unimodal;
 - posterior is not strongly skewed;
 - curvature near the mode is informative about the bulk mass.
 
-### 3.5 When Laplace fails
+### When Laplace fails
 
 - substantial skewness;
 - multiple modes;
@@ -183,7 +183,7 @@ but using the Gaussian approximation itself is usually better.
 
 Laplace is a local approximation. It can be excellent or disastrous depending on whether local quadratic geometry reflects global posterior mass.
 
-## 4. Importance Sampling
+## Importance sampling
 
 Importance sampling rewrites posterior expectations in terms of a proposal distribution $g(\theta)$.
 
@@ -216,7 +216,7 @@ $$
 w_i = \frac{\tilde\pi(\theta^{(i)})}{g(\theta^{(i)})}.
 $$
 
-### 4.1 Unnormalized and normalized estimators
+### Unnormalized and normalized estimators
 
 If the normalizing constant $Z=\int \tilde\pi(\theta)\, d\theta$ is known, then
 
@@ -236,13 +236,13 @@ is unbiased.
 
 When $Z$ is unknown, self-normalization is required. The estimator then loses exact unbiasedness but remains consistent under standard conditions.
 
-### 4.2 Variance behavior
+### Variance behavior
 
 The practical performance of importance sampling is driven almost entirely by the variability of the weights.
 
 If $g$ undercovers posterior tails, a few samples can carry enormous weight, causing variance blow-up. In extreme cases, the variance is infinite even though the estimator remains formally defined.
 
-### 4.3 Effective sample size
+### Effective sample size
 
 A common diagnostic is
 
@@ -258,7 +258,7 @@ This is not an exact sample size in a probabilistic sense, but it is a useful me
 - if all weights are equal, ESS = $N$;
 - if one weight dominates, ESS approaches 1.
 
-## 5. Worked Example: Gamma Posterior, Exact vs Laplace vs Importance Sampling
+## Worked example: Gamma posterior, exact vs Laplace vs importance sampling
 
 Consider the Gamma-Poisson model
 
@@ -277,7 +277,7 @@ $$
 
 This is an ideal approximation benchmark because the exact posterior is known.
 
-### 5.1 Exact posterior mode
+### Exact posterior mode
 
 If $\alpha+s > 1$, the posterior mode is
 
@@ -287,7 +287,7 @@ $$
 \frac{\alpha+s-1}{\beta+n}.
 $$
 
-### 5.2 Hessian at the mode
+### Hessian at the mode
 
 The unnormalized log posterior is
 
@@ -329,9 +329,9 @@ $$
 
 with the obvious caveat that the true support is positive while the Gaussian approximation is not.
 
-## 6. Bridge Sampling And Thermodynamic Integration
+## Bridge sampling and thermodynamic integration
 
-### 6.1 Bridge sampling
+### Bridge sampling
 
 Bridge sampling is aimed primarily at estimating ratios of normalizing constants, especially marginal likelihoods. It is often more stable than naive importance sampling because it uses information from both the posterior and an auxiliary reference density to “bridge” the two distributions.
 
@@ -343,7 +343,7 @@ The operational idea is:
 
 This is useful when model comparison by marginal likelihood is unavoidable.
 
-### 6.2 Thermodynamic integration
+### Thermodynamic integration
 
 Thermodynamic integration introduces a tempered family
 
@@ -356,7 +356,7 @@ and integrates expectations over $t$ to recover log normalizing constant differe
 
 These methods belong later in a workflow than quadrature, Laplace, or standard importance sampling. They are specialized tools for difficult evidence estimation problems.
 
-## 7. `R` Implementation
+## `R` implementation
 
 The companion lab is [laplace_importance_sampling.R](../../labs/r/laplace_importance_sampling.R). The key structure is:
 
@@ -389,7 +389,7 @@ The point is not merely to get a number. The point is to compare:
 - quadrature;
 - importance sampling with ESS diagnostics.
 
-## 8. Common Pitfalls
+## Common pitfalls
 
 ### Using Laplace on skewed posteriors without checking the approximation
 
@@ -407,7 +407,7 @@ Marginal likelihood estimation is difficult. It should not be undertaken casuall
 
 A Bayesian estimate without its computational provenance is incomplete. One should always be able to answer: which integral, approximated how, with what diagnostics?
 
-## 9. Exercises
+## Exercises
 
 1. Derive the Laplace approximation to the normalizing constant in one dimension from first principles.
 2. For the Gamma posterior example, compare the exact posterior mean with the posterior mode and explain why the difference reflects skewness.
@@ -415,7 +415,7 @@ A Bayesian estimate without its computational provenance is incomplete. One shou
 4. Derive the importance-weight ESS formula and interpret its extreme cases.
 5. Explain why bridge sampling is often preferable to naive importance sampling for marginal likelihood estimation.
 
-## 10. Summary
+## Summary
 
 Numerical Bayesian approximation begins with integration, not with sampling for its own sake:
 
@@ -426,6 +426,10 @@ Numerical Bayesian approximation begins with integration, not with sampling for 
 
 These methods provide the conceptual bridge from exact conjugate inference to the simulation-based algorithms developed in later computational chapters.
 
-## References
+## Further reading
 
-Key references include @robert2004, @mackay2003, @gelman2013, and @murphy2023.
+@robert2004 covers quadrature, importance sampling, and the variance conditions that decide whether an importance sampler is usable at all. It is the reference for the weight-degeneracy diagnostics discussed here.
+
+@mackay2003 gives the information-theoretic reading of the Laplace approximation and of evidence estimation, and is unusually good at explaining when the Gaussian approximation is and is not defensible.
+
+@gelman2013 chapter 13 treats modal and distributional approximations from the applied side, including their role as initialisation for sampling. @murphy2023 chapter 7 is the most current survey, and connects these approximations to the variational methods of [variational inference](variational-inference.qmd).

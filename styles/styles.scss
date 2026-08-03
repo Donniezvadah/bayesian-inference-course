@@ -183,12 +183,57 @@ table {
   font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
 }
 
-.theorem, .lemma, .proposition, .definition, .corollary {
+// Theorem-like environments. Results carry a solid rule and a tinted panel;
+// examples are tinted differently so they read as illustration, not assertion.
+.theorem, .lemma, .proposition, .definition, .corollary, .conjecture {
   border-left: 0.35rem solid #1b5ea9;
   padding: 0.85rem 1rem;
-  margin: 1rem 0;
+  margin: 1.35rem 0;
   background: rgba(27, 94, 169, 0.05);
   border-radius: 8px;
+}
+
+.example, .exercise {
+  border-left: 0.35rem solid #5b6e82;
+  padding: 0.85rem 1rem;
+  margin: 1.35rem 0;
+  background: rgba(91, 110, 130, 0.06);
+  border-radius: 8px;
+}
+
+// Proofs are subordinate to the result they follow: no fill, lighter rule.
+.proof {
+  border-left: 2px solid rgba(27, 94, 169, 0.35);
+  padding: 0.35rem 0 0.35rem 1rem;
+  margin: 0.85rem 0 1.5rem 0;
+  font-size: 0.97rem;
+}
+
+.theorem-title, .proof-title {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+// Headings used as callout titles should not inherit the h2 display size.
+.callout .callout-title-container > h2,
+.callout .callout-title-container > h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.callout {
+  margin: 1.35rem 0;
+}
+
+// Tables: horizontal scroll rather than a horizontally scrolling page.
+.table-responsive, .cell-output-display > table, table {
+  max-width: 100%;
+}
+
+.cell-output-display, figure {
+  overflow-x: auto;
 }
 
 .page-columns .column-margin .aside {

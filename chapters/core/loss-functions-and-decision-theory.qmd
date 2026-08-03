@@ -1,18 +1,18 @@
 ---
-title: "Loss Functions, Decision Theory, and Bayesian Estimation"
+title: "Loss functions, decision theory, and Bayesian estimation"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - define actions, losses, and posterior risk formally;
 - derive Bayes estimators under quadratic, absolute, and 0-1 loss;
 - distinguish inferential summaries from decision rules;
 - derive classification thresholds under asymmetric costs;
 - explain why credible intervals and confidence intervals answer different questions.
+:::
 
-## 1. Why Decision Theory Is Central
+## Why decision theory is central
 
 Bayesian statistics is often introduced as “updating beliefs.” That is incomplete. In practice, analysis is usually performed to support an action:
 
@@ -23,7 +23,7 @@ Bayesian statistics is often introduced as “updating beliefs.” That is incom
 
 Decision theory formalizes how posterior uncertainty should be translated into action [@berger1985; @bernardo1994]. The posterior alone is not a decision. A decision requires a loss or utility function.
 
-## 2. Formal Setup
+## Formal setup
 
 Let:
 
@@ -53,7 +53,7 @@ That is, Bayesian decision making chooses the action minimizing posterior expect
 
 This looks simple because it is simple. The difficult part is choosing a loss that reflects the actual scientific or operational objective.
 
-## 3. Quadratic Loss And The Posterior Mean
+## Quadratic loss and the posterior mean
 
 Suppose the action space is scalar and the loss is quadratic:
 
@@ -97,7 +97,7 @@ Thus the posterior mean is the Bayes estimator under squared loss.
 
 Quadratic loss penalizes large errors disproportionately, so it favors an estimator that balances posterior mass in a least-squares sense. It is appropriate when symmetric errors are acceptable but larger errors are increasingly costly.
 
-## 4. Absolute Loss And The Posterior Median
+## Absolute loss and the posterior median
 
 Now take
 
@@ -139,7 +139,7 @@ $$
 
 That is exactly the defining property of a posterior median.
 
-## 5. 0-1 Loss And The Posterior Mode
+## 0-1 loss and the posterior mode
 
 In a discrete action problem with action space equal to the parameter space, define
 
@@ -163,7 +163,7 @@ Minimizing posterior risk is equivalent to maximizing posterior probability, so 
 
 For continuous parameters, exact 0-1 loss is less useful because point probabilities vanish; one then uses small-ball or approximation-style losses instead.
 
-## 6. Credible Sets Versus Confidence Intervals
+## Credible sets versus confidence intervals
 
 This comparison matters because it is frequently misunderstood.
 
@@ -191,7 +191,7 @@ The probability statement is about the random interval-generating procedure, not
 
 They may coincide numerically in special cases, but they solve different inferential problems.
 
-## 7. Bayesian Classification Under Asymmetric Loss
+## Bayesian classification under asymmetric loss
 
 Suppose $\theta \in \{0,1\}$ indicates class membership and the action is also binary. Let the losses be:
 
@@ -229,7 +229,7 @@ $$
 
 This is the Bayes classification threshold. Under symmetric costs, the threshold is $1/2$. Under asymmetric losses, it shifts.
 
-## 8. Hypothesis Testing And Model Comparison
+## Hypothesis testing and model comparison
 
 In Bayesian work, model comparison can be framed either:
 
@@ -261,7 +261,7 @@ Bayes factors summarize evidence under the specified priors, but decision making
 
 This is why mature Bayesian workflow often combines posterior model summaries with predictive criteria and explicit utility calculations [@robert2007; @vehtari2017].
 
-## 9. Worked Example: Bayes Estimators From A Beta Posterior
+## Worked example: Bayes estimators from a Beta posterior
 
 Suppose
 
@@ -281,7 +281,7 @@ Then:
 
 The estimators differ because they optimize different objectives.
 
-## 10. `R` Implementation From Posterior Draws
+## `R` implementation from posterior draws
 
 The companion lab is [decision_rules.R](../../labs/r/decision_rules.R). The core idea is that Bayes decisions can be computed directly from posterior samples.
 
@@ -305,7 +305,7 @@ grid[which.min(empirical_risk)]
 
 This general sample-based strategy is indispensable once analytic posterior forms disappear.
 
-## 11. Common Pitfalls
+## Common pitfalls
 
 ### Reporting estimators without reference to loss
 
@@ -323,7 +323,7 @@ A credible interval summarizes uncertainty. It does not, by itself, tell you wha
 
 Many scientific and policy decisions are asymmetric. False negatives and false positives often have very different costs.
 
-## 12. Exercises
+## Exercises
 
 1. Derive the posterior median optimality condition under absolute loss in full detail.
 2. Show that the posterior mean minimizes posterior expected quadratic loss in vector form when the loss is $(a-\theta)^\top W (a-\theta)$ for positive definite $W$.
@@ -331,7 +331,7 @@ Many scientific and policy decisions are asymmetric. False negatives and false p
 4. Compare a decision rule based on posterior expected utility with one based on Bayes factors alone.
 5. Give an example where the posterior mean is a poor decision because the loss is asymmetric.
 
-## 13. Summary
+## Summary
 
 Bayesian decision theory completes the inferential pipeline:
 
@@ -342,6 +342,10 @@ Bayesian decision theory completes the inferential pipeline:
 
 Once this is understood, the posterior mean, median, mode, classification thresholds, and model-choice rules all become special cases of the same general principle.
 
-## References
+## Further reading
 
-Key references include @berger1985, @bernardo1994, @robert2007, and @gelman2013.
+@berger1985 is the standard reference for Bayesian decision theory and covers admissibility, minimaxity, and the complete class theorems that justify treating Bayes rules as the natural object. @robert2007 covers the same territory more concisely and is better organised for a reader who wants the results rather than the full apparatus.
+
+@bernardo1994 derives the decision-theoretic framework from coherence axioms, so it explains where the loss function comes from rather than taking it as given.
+
+@gelman2013 chapter 9 is the applied counterweight: shorter, focused on how decision analysis actually enters a data analysis, and honest about how rarely a formal loss function is available in practice. The consequences for reporting are taken up in [communication and interpretation](../advanced/communication-and-interpretation.qmd).

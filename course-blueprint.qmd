@@ -1,12 +1,13 @@
 ---
-title: "Course Blueprint"
+title: "Course blueprint"
+number-sections: false
 ---
 
 ## Overview
 
 This page serves as the master design document for the course website. It gives the overall site map, instructional sequencing, learning goals, pacing, and the structural logic behind the repository.
 
-## Primary Design Objectives
+## Primary design objectives
 
 The course is built to satisfy six requirements simultaneously:
 
@@ -17,7 +18,7 @@ The course is built to satisfy six requirements simultaneously:
 5. **Cross-language fluency.** `R`, `Stan`, and `JAX` each play a distinct role in the workflow.
 6. **Direct expandability.** The outline pages are detailed enough that an instructor or author can extend them into full lecture notes, handouts, notebooks, or slides without redesigning the curriculum.
 
-## Site Map
+## Site map
 
 ```text
 Home
@@ -53,7 +54,7 @@ Home
 └── References
 ```
 
-## Full Module Sequence
+## Full module sequence
 
 | Part | Chapters | Central question | Main outputs |
 |---|---:|---|---|
@@ -65,7 +66,7 @@ Home
 | VI. Software Workflows | 24-26 | How do we implement robust Bayesian workflows in actual tools? | Reproducible R, Stan, and JAX pipelines |
 | VII. Advanced Topics | 27-31 | How do we handle model uncertainty, robustness, design, and communication? | BMA, stacking, robust Bayes, experimental design, capstones |
 
-## Chapter Inventory
+## Chapter inventory
 
 | Chapter | Title | Deliverable type |
 |---|---|---|
@@ -101,7 +102,7 @@ Home
 | 30 | Communication and interpretation | Reporting and decision summaries |
 | 31 | Capstone projects | Full project pipeline |
 
-## Learning Goals By Part
+## Learning goals by part
 
 ### Part I. Foundations
 
@@ -112,7 +113,7 @@ By the end of Part I, learners should be able to:
 - derive posterior distributions from Bayes' theorem in both discrete and density-based settings;
 - explain exchangeability and sequential updating as core Bayesian ideas.
 
-### Part II. Core Bayesian Inference
+### Part II. Core Bayesian inference
 
 Learners should be able to:
 
@@ -139,7 +140,7 @@ Learners should be able to:
 - reason about latent allocations, label switching, and state-space structure;
 - connect nonparametric, spatial, and causal models to their conditional independence assumptions.
 
-### Part V. Optimization, Tuning, Diagnostics
+### Part V. Optimization, tuning, diagnostics
 
 Learners should be able to:
 
@@ -148,7 +149,7 @@ Learners should be able to:
 - use posterior predictive checks, simulation-based calibration, and cross-validation to criticize models;
 - report weaknesses and sensitivity rather than only point estimates.
 
-### Part VI-VII. Software and Advanced Topics
+### Part VI-VII. software and advanced topics
 
 Learners should be able to:
 
@@ -157,9 +158,9 @@ Learners should be able to:
 - formulate robust Bayesian models for misspecified or outlier-prone data;
 - communicate posterior uncertainty in a decision-oriented and reproducible way.
 
-## Recommended Pacing
+## Recommended pacing
 
-### Semester Format: 14 Weeks
+### Semester format: 14 weeks
 
 | Weeks | Coverage | Main work |
 |---|---|---|
@@ -172,13 +173,13 @@ Learners should be able to:
 | 13 | Chapters 24-26 | Software workflows |
 | 14 | Chapters 27-31 | Advanced topics and project presentations |
 
-### Self-Study Format: 28 Weeks
+### Self-study format: 28 weeks
 
 - Use one week per chapter for Chapters 1-20.
 - Use two weeks for Chapters 9, 10, 15, 23, 25, and 26 because these are computationally dense.
 - Reserve two additional weeks for project work and review.
 
-### Graduate Reading Course
+### Graduate reading course
 
 For a mathematically mature student working with an advisor:
 
@@ -186,7 +187,7 @@ For a mathematically mature student working with an advisor:
 - spend most effort on Parts III-VI;
 - require one project that includes prior sensitivity, diagnostics, and predictive evaluation.
 
-## Assessment Design
+## Assessment design
 
 Recommended assessment mix:
 
@@ -196,7 +197,7 @@ Recommended assessment mix:
 - one model criticism memo based on PPC, LOO, and sensitivity analysis;
 - one capstone project with a written report and reproducible code.
 
-## Repository And Folder Structure
+## Repository and folder structure
 
 The course is organized to make authoring and future expansion straightforward:
 
@@ -225,7 +226,7 @@ The course is organized to make authoring and future expansion straightforward:
 └── .github/workflows/
 ```
 
-## Citation Strategy
+## Citation strategy
 
 The course uses three citation layers:
 

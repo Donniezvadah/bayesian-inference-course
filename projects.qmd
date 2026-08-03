@@ -1,8 +1,9 @@
 ---
-title: "Capstone Projects"
+title: "Capstone projects"
+number-sections: false
 ---
 
-## Capstone Philosophy
+## Capstone philosophy
 
 A Bayesian capstone should not be judged only by whether a model runs. A strong project must show:
 
@@ -13,7 +14,7 @@ A Bayesian capstone should not be judged only by whether a model runs. A strong 
 - predictive or decision-relevant conclusions;
 - reproducible code and narrative.
 
-## Standard Deliverables
+## Standard deliverables
 
 Every project should include:
 
@@ -29,7 +30,7 @@ Reusable templates are provided at:
 - [Project proposal template](templates/project-proposal-template.qmd)
 - [Final project report template](templates/final-project-report-template.qmd)
 
-## Project 1: Hierarchical Bayesian Regression On Grouped Data
+## Project 1: hierarchical Bayesian regression on grouped data
 
 **Question.** How much variation exists within and between groups, and when does partial pooling improve predictive performance?
 
@@ -48,7 +49,7 @@ Reusable templates are provided at:
 - study centered versus non-centered parameterizations;
 - evaluate predictive performance with PSIS-LOO.
 
-## Project 2: Bayesian Hidden Markov Model For Longitudinal Behavior
+## Project 2: Bayesian hidden Markov model for longitudinal behavior
 
 **Question.** Can latent behavioral states explain irregular longitudinal observations?
 
@@ -67,7 +68,7 @@ Reusable templates are provided at:
 - diagnose label-switching or weak identifiability;
 - compare with simpler non-HMM alternatives.
 
-## Project 3: Dirichlet-Multinomial Model For Compositional Counts
+## Project 3: Dirichlet-Multinomial model for compositional counts
 
 **Question.** How do prior concentration and overdispersion affect inference for compositional count data?
 
@@ -85,7 +86,7 @@ Reusable templates are provided at:
 - study prior concentration sensitivity;
 - compare multinomial versus Dirichlet-multinomial fit.
 
-## Project 4: Bayesian Logistic Regression With Prior Sensitivity
+## Project 4: Bayesian Logistic regression with prior sensitivity
 
 **Question.** How sensitive are posterior effect estimates and decisions to prior choices in binary outcome modeling?
 
@@ -102,7 +103,7 @@ Reusable templates are provided at:
 - evaluate calibration and predictive metrics;
 - discuss separation and regularization.
 
-## Project 5: Gaussian Process Regression
+## Project 5: Gaussian process regression
 
 **Question.** How do kernel assumptions shape posterior uncertainty and predictive smoothness?
 
@@ -119,7 +120,7 @@ Reusable templates are provided at:
 - study kernel sensitivity;
 - diagnose extrapolation failure and computational scaling.
 
-## Project 6: Mixture Model And Label Switching Study
+## Project 6: mixture model and label switching study
 
 **Question.** What inferential pathologies emerge in finite mixtures, and how can they be handled?
 
@@ -136,7 +137,7 @@ Reusable templates are provided at:
 - compare identifiable summaries and relabeling strategies;
 - discuss posterior multimodality and prior influence.
 
-## Project 7: HMC Diagnostics Case Study
+## Project 7: HMC diagnostics case study
 
 **Question.** What do HMC pathologies reveal about model geometry?
 
@@ -153,7 +154,7 @@ Reusable templates are provided at:
 - interpret geometry rather than merely increasing tuning parameters;
 - propose model redesigns and justify them.
 
-## Evaluation Rubric
+## Evaluation rubric
 
 | Criterion | Weight | What earns a high score |
 |---|---:|---|
@@ -164,7 +165,7 @@ Reusable templates are provided at:
 | Interpretation | 20 | Careful uncertainty communication and substantive insight |
 | Reproducibility | 10 | Organized code, documented environment, clear report |
 
-## Recommended Project Workflow
+## Recommended project workflow
 
 1. Formulate the substantive question before choosing the model.
 2. Write the generative story and parameterization.

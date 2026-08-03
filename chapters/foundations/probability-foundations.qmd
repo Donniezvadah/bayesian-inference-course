@@ -1,18 +1,18 @@
 ---
-title: "Probability Foundations: Measure Spaces, Conditional Expectation, Limit Theorems, and Transformations"
+title: "Probability foundations: measure spaces, conditional expectation, limit theorems, and transformations"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - state the formal ingredients of a probability model and explain why measurability matters;
 - derive expectation, variance, and covariance identities from first principles;
 - define conditional expectation both computationally and structurally;
 - distinguish independence, conditional independence, and zero covariance;
 - apply LLN, CLT, and change-of-variables arguments correctly in Bayesian settings.
+:::
 
-## 1. Why Probability Language Matters
+## Why probability language matters
 
 Bayesian statistics is written in the language of probability. Every posterior, predictive distribution, and Monte Carlo approximation depends on objects that must be defined clearly:
 
@@ -24,7 +24,7 @@ Bayesian statistics is written in the language of probability. Every posterior, 
 
 If those objects are used imprecisely, later Bayesian formulas are easy to manipulate symbolically but easy to misunderstand conceptually. The purpose of this chapter is therefore foundational rather than ornamental: it fixes the probabilistic grammar used throughout the course [@kolmogorov1956; @durrett2019].
 
-## 2. Probability Spaces
+## Probability spaces
 
 :::{.definition}
 A probability space is a triple
@@ -55,7 +55,7 @@ From these, closure under countable intersections follows by De Morgan's laws.
 
 In Bayesian statistics one constantly conditions on data, transforms parameters, and builds hierarchical random objects. Measurability is what makes those operations probabilistically meaningful rather than merely symbolic.
 
-## 3. Random Variables And Distributions
+## Random variables and distributions
 
 :::{.definition}
 A random variable is a measurable map
@@ -93,7 +93,7 @@ $$
 
 for any fixed $x$, even though $f_X(x)$ can be large. A density is a Radon-Nikodym derivative, not a point probability.
 
-## 4. Expectation, Variance, And Covariance
+## Expectation, variance, and covariance
 
 Expectation is integration with respect to the distribution of the random variable:
 
@@ -147,7 +147,7 @@ $$
 
 without explicitly referring to $\omega$.
 
-## 5. Conditional Probability And Conditional Expectation
+## Conditional probability and conditional expectation
 
 For an event $B$ with $\mathbb{P}(B)>0$,
 
@@ -209,7 +209,7 @@ $$
 
 This identity drives posterior predictive and hierarchical calculations throughout Bayesian statistics.
 
-## 6. Law Of Total Variance
+## Law of total variance
 
 One of the most useful decompositions in statistics is:
 
@@ -279,7 +279,7 @@ This decomposition becomes the distinction between:
 
 It reappears later as posterior predictive variance decomposition.
 
-## 7. Independence And Conditional Independence
+## Independence and conditional independence
 
 Random variables $X$ and $Y$ are independent if for all measurable sets $A,B$,
 
@@ -327,7 +327,7 @@ $$
 
 But $Y$ is a deterministic function of $X$, so independence is impossible. This example matters because posterior summaries sometimes look weakly related marginally while still being strongly dependent jointly.
 
-## 8. Limit Theorems
+## Limit theorems
 
 ### Law of large numbers
 
@@ -361,7 +361,7 @@ These theorems support:
 
 They do not mean small samples are automatically Gaussian, and they do not excuse weak diagnostics.
 
-## 9. Transformations And Jacobians
+## Transformations and Jacobians
 
 Suppose $X$ has density $f_X$ and $Y=g(X)$ where $g$ is one-to-one and differentiable.
 
@@ -408,7 +408,7 @@ where $Dg^{-1}(y)$ is the Jacobian matrix.
 
 If a model is written on a transformed parameter scale, priors must be transformed correctly. Failing to include the Jacobian yields a different prior than intended.
 
-## 10. Common Distributions As Modeling Building Blocks
+## Common distributions as modeling building blocks
 
 The following families recur throughout the course:
 
@@ -422,7 +422,7 @@ The following families recur throughout the course:
 
 The deeper point is not memorization of formulas. It is understanding support, moments, conjugacy relations, and transformation behavior.
 
-## 11. `R` Implementation
+## `R` implementation
 
 The companion lab is [probability_foundations_demo.R](../../labs/r/probability_foundations_demo.R). It illustrates:
 
@@ -441,7 +441,7 @@ c(cor = cor(x, y), mean_x = mean(x), mean_y = mean(y))
 
 The empirical correlation is near zero even though $y$ is determined completely by $x$.
 
-## 12. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Treating densities as probabilities
 
@@ -459,7 +459,7 @@ This is false outside special distribution families such as the multivariate Gau
 
 Support and one-to-one assumptions matter. A transformation formula without domain checking is often wrong.
 
-## 13. Exercises
+## Exercises
 
 1. Prove the tower property in a finite discrete probability space.
 2. Derive the law of total variance from the decomposition
@@ -472,7 +472,7 @@ Support and one-to-one assumptions matter. A transformation formula without doma
 4. Construct a pair of dependent variables with zero covariance and verify the claim analytically.
 5. Explain why the LLN justifies Monte Carlo integration but does not, by itself, provide a Monte Carlo standard error.
 
-## 14. Summary
+## Summary
 
 Probability foundations are not background decoration. They are the structural rules of Bayesian analysis:
 
@@ -484,6 +484,8 @@ Probability foundations are not background decoration. They are the structural r
 
 These ideas are used repeatedly in every later chapter.
 
-## References
+## Further reading
 
-Key references are @kolmogorov1956, @durrett2019, and @casella2002.
+@kolmogorov1956 is the monograph that put probability on its measure-theoretic footing, and is worth reading once for the sense of how recently the foundations were settled. For a modern course-length treatment, @durrett2019 covers measure, integration, and the limit theorems at the level assumed here, with the martingale material that later chapters draw on.
+
+@casella2002 is the gentler companion: it develops distribution theory, transformations, and conditional expectation without the measure-theoretic overhead, and is the right place to go if the arguments in this chapter felt compressed. The appendix on [measure-theoretic probability](../../appendix/measure-probability-review.qmd) gives a shorter refresher on the same material.

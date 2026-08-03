@@ -1,18 +1,18 @@
 ---
-title: "Bayesian Experimental Design: Expected Utility, Information Gain, Sequential Design, and Active Learning"
+title: "Bayesian experimental design: expected utility, information gain, sequential design, and active learning"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - formulate experimental design as a Bayesian decision problem;
 - derive expected utility and expected information gain criteria;
 - distinguish terminal utility from information utility;
 - construct Monte Carlo estimators for design value;
 - explain the difference between static, adaptive, and sequential designs.
+:::
 
-## 1. Design Is Decision Before Data
+## Design is decision before data
 
 Inference happens after data are observed. Design happens before data are observed. Bayesian design therefore asks:
 
@@ -32,7 +32,7 @@ $$
 p(y \mid \theta,d).
 $$
 
-## 2. Expected Utility Criterion
+## Expected utility criterion
 
 Let $U(d,y,\theta)$ denote the utility obtained when design $d$ is chosen, data $y$ are observed, and the true state is $\theta$. The Bayesian criterion is
 
@@ -53,7 +53,7 @@ $$
 
 Expected utility averages over both parameter uncertainty and future data randomness. Design is therefore prior-dependent in the right way: before collecting data, prior beliefs are the only beliefs available.
 
-## 3. Posterior Utility As A Two-Stage Decision Problem
+## Posterior utility as a two-stage decision problem
 
 Often the design is followed by an action $a$ chosen after seeing data. Then one can write utility as $U(a,\theta,d)$ and let the data-dependent action be $a(y)$. The design problem becomes
 
@@ -80,7 +80,7 @@ This expression makes the nesting explicit:
 2. a Bayes action is chosen under that posterior;
 3. the design is evaluated by averaging the resulting utility over possible future data.
 
-## 4. Expected Information Gain
+## Expected information gain
 
 When the design goal is learning rather than direct action, a common choice is expected information gain:
 
@@ -122,7 +122,7 @@ $$
 
 Hence information-based design chooses the design under which future data are expected to reduce posterior uncertainty the most.
 
-## 5. Analytic Example: Beta-Binomial Design
+## Analytic example: Beta-Binomial design
 
 Suppose
 
@@ -225,7 +225,7 @@ $$
 
 This provides an exact analytic tradeoff between information gain and sampling cost.
 
-## 6. Monte Carlo Design Estimation
+## Monte Carlo design estimation
 
 In most realistic designs the integrals are intractable. A standard nested Monte Carlo estimator for expected utility is:
 
@@ -256,7 +256,7 @@ $$
 
 This nested estimator is expensive but conceptually direct.
 
-## 7. Sequential And Adaptive Design
+## Sequential and adaptive design
 
 In sequential design, one chooses
 
@@ -283,13 +283,13 @@ where $s_t$ is a sufficient summary of current posterior information.
 
 Exact dynamic optimization is often too expensive. Many applied Bayesian design systems therefore use myopic or one-step-ahead expected utility rules, which can still be highly effective.
 
-## 8. Active Learning And Bayesian Optimization
+## Active learning and Bayesian optimization
 
 Active learning chooses observations adaptively to learn prediction functions efficiently. Bayesian optimization chooses evaluation points of an expensive black-box objective using an acquisition rule built from a posterior surrogate, often a Gaussian process.
 
 These are design problems because they optimize future information or utility under uncertainty.
 
-## 9. `R` Implementation
+## `R` implementation
 
 The companion lab is [expected_utility_design.R](../../labs/r/expected_utility_design.R). It:
 
@@ -307,7 +307,7 @@ expected_utility_beta_binomial <- function(n, alpha, beta, cost) {
 }
 ```
 
-## 10. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Confusing information with decision value
 
@@ -325,7 +325,7 @@ Greedy one-step rules are often reasonable, but one should state explicitly when
 
 Nested Monte Carlo design optimization can dominate the cost of the final inference itself.
 
-## 11. Exercises
+## Exercises
 
 1. Derive the expected utility formula for the Beta-Binomial design with sampling cost.
 2. Show that expected information gain can be written as mutual information.
@@ -333,7 +333,7 @@ Nested Monte Carlo design optimization can dominate the cost of the final infere
 4. Construct a Monte Carlo estimator for the expected utility of a design in a normal-mean experiment.
 5. Give an example where the design maximizing information gain differs from the design maximizing practical utility.
 
-## 12. Summary
+## Summary
 
 Bayesian design treats data collection as part of inference rather than a pre-statistical step:
 
@@ -343,6 +343,10 @@ Bayesian design treats data collection as part of inference rather than a pre-st
 - sequential design updates choices as posterior information evolves;
 - computational difficulty is intrinsic because the design problem nests the inference problem.
 
-## References
+## Further reading
 
-Key references are @berger1985, @chaloner1995, @mackay2003, and @murphy2023.
+@chaloner1995 is the standard review of Bayesian experimental design and covers the main utility functions, the relationship between them, and the computational difficulties that kept the field small for decades. Start there.
+
+@berger1985 supplies the decision-theoretic foundation: a design is a decision made before the data arrive, and the expected-utility criterion follows from the same axioms that give the Bayes rule.
+
+@mackay2003 chapter 36 gives the information-theoretic reading, in which expected information gain is mutual information between the parameter and the future data. @murphy2023 chapter 34 covers the modern computational versions — Bayesian optimisation and active learning — where the utility is optimised approximately because it cannot be optimised exactly.

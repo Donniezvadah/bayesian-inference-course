@@ -1,12 +1,12 @@
 ---
-title: "Measure-Probability Review"
+title: "Measure-probability review"
 ---
 
-## Why This Appendix Exists
+## Why this appendix exists
 
 Bayesian statistics can be taught at many mathematical levels. This course aims to be mathematically mature without becoming unreadable. That means the main chapters use rigorous probability language when it matters, and this appendix reviews the minimum formalism needed to support that choice.
 
-## Probability Space
+## Probability space
 
 A probability space is a triple $(\Omega, \mathcal{F}, \mathbb{P})$ where:
 
@@ -16,7 +16,7 @@ A probability space is a triple $(\Omega, \mathcal{F}, \mathbb{P})$ where:
 
 The countable additivity of $\mathbb{P}$ is what allows expectation, conditioning, and limit theorems to behave coherently.
 
-## Random Variables And Measurability
+## Random variables and measurability
 
 A random variable $X$ is a measurable map from $(\Omega, \mathcal{F})$ into a measurable state space. In practice, this formality matters because probability statements about $X$ are induced from the measure $\mathbb{P}$ through measurability.
 
@@ -30,7 +30,7 @@ $$
 
 provided the integral exists.
 
-## Conditional Expectation
+## Conditional expectation
 
 Conditional expectation $\mathbb{E}[X \mid \mathcal{G}]$ is the $\mathcal{G}$-measurable random variable satisfying
 
@@ -43,7 +43,7 @@ $$
 
 This is the formal object underlying the tower property, Rao-Blackwellization, and many Bayesian updating arguments.
 
-## Bayes' Rule In Density Form
+## Bayes' rule in density form
 
 When prior and likelihood admit densities with respect to dominating measures, the posterior density is
 
@@ -57,7 +57,7 @@ provided the denominator is finite and positive.
 
 A sequence $(Y_1, Y_2, \dots)$ is exchangeable if its joint law is invariant under finite permutations. In Bayesian statistics, exchangeability is often more fundamental than independence because it motivates latent-variable representations and partial pooling.
 
-## Suggested Review References
+## Suggested review references
 
 - @kolmogorov1956
 - @durrett2019

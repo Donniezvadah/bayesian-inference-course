@@ -1,18 +1,18 @@
 ---
-title: "Likelihood Theory: Score, Fisher Information, MLE, Profile Likelihood, and Comparison with Posterior Inference"
+title: "Likelihood theory: score, Fisher information, MLE, profile likelihood, and comparison with posterior inference"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - define the likelihood function and explain how it differs from probability and posterior density;
 - derive score functions and Fisher information in standard parametric models;
 - compute MLEs and profile likelihoods in common examples;
 - derive the local asymptotic normality heuristic behind MLE asymptotics;
 - compare likelihood-based and Bayesian inferential summaries precisely.
+:::
 
-## 1. Probability Versus Likelihood
+## Probability versus likelihood
 
 Given a model
 
@@ -33,7 +33,7 @@ Two important facts follow immediately:
 
 Bayesian inference will later turn the likelihood into part of a probability distribution by multiplying it with a prior and normalizing. Likelihood theory stops before that step.
 
-## 2. Formal Setup
+## Formal setup
 
 Suppose
 
@@ -63,7 +63,7 @@ $$
 
 The log form is preferred because products become sums and curvature becomes visible.
 
-## 3. Score And Fisher Information
+## Score and Fisher information
 
 :::{.definition}
 For scalar $\theta$, the score is
@@ -141,7 +141,7 @@ $$
 
 This identity links local curvature to inferential precision.
 
-## 4. Standard Examples
+## Standard examples
 
 ### Bernoulli / Binomial
 
@@ -245,7 +245,7 @@ U(\mu)=\frac{1}{\sigma^2}\sum_{i=1}^n (y_i-\mu),
 I(\mu)=\frac{n}{\sigma^2}.
 $$
 
-## 5. Maximum Likelihood Estimation
+## Maximum likelihood estimation
 
 An MLE is any maximizer
 
@@ -341,7 +341,7 @@ $$
 
 This is not the unbiased sample variance. Likelihood and unbiasedness are distinct criteria.
 
-## 6. Invariance And Reparameterization
+## Invariance and reparameterization
 
 If $\hat \theta$ is the MLE of $\theta$ and $\phi=g(\theta)$ for a one-to-one transformation $g$, then the MLE of $\phi$ is
 
@@ -355,7 +355,7 @@ This follows because maximizing $L(\theta;y)$ over $\theta$ is equivalent to max
 
 Likelihood curvature is not invariant in the same way. Reparameterization can make the same inferential content look numerically very different. This matters for asymptotic approximations and for comparing likelihood and posterior geometry.
 
-## 7. Identifiability
+## Identifiability
 
 :::{.definition}
 A parametric family is identifiable if
@@ -376,7 +376,7 @@ Mixture models, latent-variable models, and weakly separated hierarchical struct
 - asymptotic approximations can mislead;
 - posterior inference may still be coherent, but interpretation must respect symmetries and weak information.
 
-## 8. Nuisance Parameters And Profile Likelihood
+## Nuisance parameters and profile likelihood
 
 Suppose the parameter is split as
 
@@ -430,7 +430,7 @@ $$
 
 The maximizer is again $\bar y$, but now the nuisance scale has been removed explicitly.
 
-## 9. Local Asymptotic Normality Heuristic
+## Local asymptotic normality heuristic
 
 Likelihood asymptotics begin with the score equation
 
@@ -494,7 +494,7 @@ $$
 
 This local quadratic form explains why curvature-based intervals and Laplace approximations work in regular settings.
 
-## 10. Likelihood And Posterior Inference
+## Likelihood and posterior inference
 
 Likelihood theory and Bayesian inference often agree locally but differ conceptually.
 
@@ -530,7 +530,7 @@ Thus the prior adds curvature and location information.
 
 In regular models with well-behaved priors, posterior distributions often become approximately Gaussian around the MLE or MAP. But in weakly identified, constrained, multimodal, or small-sample settings, the differences can be material.
 
-## 11. `R` Implementation
+## `R` implementation
 
 The companion lab is [likelihood_geometry.R](../../labs/r/likelihood_geometry.R). It:
 
@@ -549,7 +549,7 @@ loglik_binomial <- function(theta, y, n) {
 }
 ```
 
-## 12. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Treating the likelihood as a posterior
 
@@ -567,7 +567,7 @@ A sharply peaked optimizer output is not meaningful if multiple parameter settin
 
 Profiling can clarify one parameter of interest, but it can also hide uncertainty if used mechanically.
 
-## 13. Exercises
+## Exercises
 
 1. Derive the score and Fisher information for a Binomial model.
 2. Show that the MLE for a Poisson mean is the sample mean.
@@ -575,7 +575,7 @@ Profiling can clarify one parameter of interest, but it can also hide uncertaint
 4. Use the score expansion to explain heuristically why the MLE is asymptotically normal.
 5. Compare the MLE and posterior mode in a Binomial model with a weak Beta prior.
 
-## 14. Summary
+## Summary
 
 Likelihood theory studies information in the sampling model before prior information is added:
 
@@ -588,6 +588,10 @@ Likelihood theory studies information in the sampling model before prior informa
 
 This chapter provides the frequentist local geometry that later Bayesian chapters will reuse and critique.
 
-## References
+## Further reading
 
-Key references are @casella2002, @vandervaart1998, and @berger1985.
+@casella2002 develops the score, Fisher information, and the Cramér-Rao bound at the level used here, and is the standard first source for the regularity conditions that make those results work.
+
+@vandervaart1998 is the reference for what happens asymptotically: consistency, local asymptotic normality, and the efficiency theory that explains why the maximum likelihood estimator is hard to beat. It is also where to look for the precise statements this chapter states informally, and it supplies the machinery behind the Bernstein-von Mises theorem that connects likelihood and posterior inference.
+
+@berger1985 comes at the likelihood from the decision-theoretic side and is useful for seeing why likelihood alone does not determine an inference until a loss is specified — the theme picked up in [loss functions and decision theory](../core/loss-functions-and-decision-theory.qmd).

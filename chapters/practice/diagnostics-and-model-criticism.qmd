@@ -1,18 +1,18 @@
 ---
-title: "Diagnostics and Model Criticism: Posterior Checks, SBC, ESS, Divergences, and Predictive Evaluation"
+title: "Diagnostics and model criticism: posterior checks, SBC, ESS, divergences, and predictive evaluation"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - distinguish computation diagnostics from model diagnostics;
 - derive posterior predictive checking logic;
 - explain simulation-based calibration and what rank uniformity means;
 - interpret ESS, $\hat{R}$, divergences, and E-BFMI together;
 - compare WAIC, PSIS-LOO, Bayes factors, and stacking at a high level.
+:::
 
-## 1. Two Diagnostic Questions
+## Two diagnostic questions
 
 Bayesian workflow requires two different diagnostic questions:
 
@@ -21,7 +21,7 @@ Bayesian workflow requires two different diagnostic questions:
 
 These are not the same question. Good chains can target a bad model, and a good model can still be approximated badly.
 
-## 2. Posterior Predictive Checks
+## Posterior predictive checks
 
 The posterior predictive distribution is
 
@@ -52,7 +52,7 @@ If the observed statistic is extreme relative to the replicated distribution, th
 
 Posterior predictive checks do not prove a model correct. They reveal where it fails to mimic data features that matter.
 
-## 3. Prior Predictive Checks
+## Prior predictive checks
 
 Posterior predictive checks happen after seeing the data. Prior predictive checks happen before fitting:
 
@@ -62,7 +62,7 @@ $$
 
 These are indispensable because many computational and inferential failures begin with absurd priors that already imply absurd data.
 
-## 4. Effective Sample Size
+## Effective sample size
 
 For an MCMC estimator based on autocorrelated draws,
 
@@ -85,7 +85,7 @@ Modern workflows distinguish:
 
 Both matter.
 
-## 5. $\hat{R}$
+## $\hat{R}$
 
 The modern rank-normalized $\hat{R}$ compares within-chain and between-chain variation across multiple chains. Values near 1 indicate the chains mix consistently with one another [@vehtari2021].
 
@@ -95,7 +95,7 @@ The modern rank-normalized $\hat{R}$ compares within-chain and between-chain var
 - good $\hat{R}$ is necessary but not sufficient;
 - one must still inspect ESS, trace plots, and model-specific diagnostics.
 
-## 6. Divergences And E-BFMI
+## Divergences and e-BFMI
 
 For HMC-based workflows:
 
@@ -109,7 +109,7 @@ Low E-BFMI indicates poor exploration of the energy distribution and often sugge
 
 These are geometry diagnostics, not generic MCMC diagnostics. They should be treated as signals of model-parameterization problems unless mild and clearly resolved.
 
-## 7. Simulation-Based Calibration
+## Simulation-based calibration
 
 SBC tests end-to-end inferential calibration under the assumed model.
 
@@ -130,7 +130,7 @@ If the full workflow is calibrated under the model, those ranks should be approx
 
 SBC is one of the strongest tests of a Bayesian workflow because it validates the entire inferential pipeline, not just one run on one data set [@rubin1984].
 
-## 8. Predictive Model Comparison
+## Predictive model comparison
 
 ### WAIC
 
@@ -159,7 +159,7 @@ The key distinction is:
 - Bayes factors emphasize model evidence under the prior;
 - LOO and stacking emphasize predictive adequacy.
 
-## 9. Sensitivity Analysis
+## Sensitivity analysis
 
 A posterior conclusion should be stress-tested against:
 
@@ -171,7 +171,7 @@ A posterior conclusion should be stress-tested against:
 
 Sensitivity analysis belongs to diagnostics because robustness is itself a property to be evaluated, not assumed.
 
-## 10. `R` Workflow
+## `R` workflow
 
 The companion diagnostics labs are:
 
@@ -184,7 +184,7 @@ Together they illustrate:
 - SBC rank histograms;
 - observation-level predictive reasoning.
 
-## 11. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Trusting one scalar summary
 
@@ -202,7 +202,7 @@ Aggregate metrics can hide localized bad fit.
 
 They require strong prior care and are often not the most practical model comparison tool.
 
-## 12. Exercises
+## Exercises
 
 1. Explain why posterior predictive checking requires simulated replicated data rather than only residuals.
 2. Derive the ESS formula conceptually from autocorrelation inflation of Monte Carlo variance.
@@ -210,7 +210,7 @@ They require strong prior care and are often not the most practical model compar
 4. Compare the goals of PSIS-LOO and Bayes factors.
 5. Give an example where the algorithm is well behaved but the model is still poor.
 
-## 13. Summary
+## Summary
 
 Bayesian diagnostics are multi-layered:
 
@@ -220,6 +220,10 @@ Bayesian diagnostics are multi-layered:
 - sensitivity analysis assesses robustness;
 - predictive comparison assesses practical out-of-sample utility.
 
-## References
+## Further reading
 
-Key references are @gelman1992, @gabry2019, @vehtari2017, @vehtari2021, and @rubin1984.
+@gelman1992 introduced the multiple-chain convergence diagnostic, and @vehtari2021 is its modern replacement: rank-normalised $\widehat{R}$, improved effective sample size estimators, and a clear account of why the older versions could pass a chain that had not converged. Use the latter.
+
+@rubin1984 is the source for posterior predictive checking, and remains the best statement of the logic — simulate replicated data from the fitted model and ask whether the observed data look like a plausible draw. @gelman1992 and @gabry2019 develop the graphical side; @gabry2019 in particular is organised around the workflow rather than around individual diagnostics.
+
+@vehtari2017 covers approximate leave-one-out cross-validation with Pareto-smoothed importance sampling, including the $\hat{k}$ diagnostic that tells you when the approximation has failed. @talts2018 gives simulation-based calibration, which validates an inference algorithm rather than a model and is the right tool when you have implemented a sampler yourself. @gelman2020 places all of it in a single workflow.

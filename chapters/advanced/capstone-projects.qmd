@@ -1,18 +1,18 @@
 ---
-title: "Capstone Projects: End-to-End Bayesian Workflow, Project Architecture, and Assessment"
+title: "Capstone projects: end-to-end Bayesian workflow, project architecture, and assessment"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - structure a serious Bayesian project from scientific question to final report;
 - define the minimum evidentiary standard for a graduate-level Bayesian analysis;
 - build a model-development ladder instead of jumping directly to the most complex model;
 - document diagnostics, sensitivity analysis, and limitations as core outputs;
 - use the provided proposal and report templates to organize a reproducible capstone.
+:::
 
-## 1. What A Bayesian Capstone Must Demonstrate
+## What a Bayesian capstone must demonstrate
 
 A capstone is not a code dump and not a single fitted model. It is an integrated demonstration of:
 
@@ -26,7 +26,7 @@ A capstone is not a code dump and not a single fitted model. It is an integrated
 
 The standard should be closer to a small research report than to a homework submission.
 
-## 2. The Project As A Workflow Object
+## The project as a workflow object
 
 Every serious project should make explicit the tuple
 
@@ -46,13 +46,13 @@ where:
 
 Weak projects leave several of these implicit.
 
-## 3. Project Architecture
+## Project architecture
 
-### Stage 1: Scientific question
+### Stage 1: scientific question
 
 State the question in a way that determines the estimand. “Fit a Bayesian model” is not a question.
 
-### Stage 2: Data audit
+### Stage 2: data audit
 
 Document:
 
@@ -62,7 +62,7 @@ Document:
 - grouping or dependence;
 - likely sources of bias or contamination.
 
-### Stage 3: Generative story
+### Stage 3: generative story
 
 Write down the joint factorization
 
@@ -72,7 +72,7 @@ $$
 
 or its hierarchical extension. If the factorization cannot be written clearly, the model is not yet ready.
 
-### Stage 4: Model ladder
+### Stage 4: model ladder
 
 A good project usually fits several models:
 
@@ -83,7 +83,7 @@ A good project usually fits several models:
 
 This ladder is essential. Without it, the analyst cannot distinguish genuine scientific structure from overfitting or computational artifact.
 
-## 4. Minimum Evidence Package
+## Minimum evidence package
 
 At a minimum, the final project should contain:
 
@@ -96,7 +96,7 @@ At a minimum, the final project should contain:
 
 Any project lacking several of these may still be interesting, but it is not a complete Bayesian workflow.
 
-## 5. Proposal Requirements
+## Proposal requirements
 
 The proposal should include:
 
@@ -110,7 +110,7 @@ The proposal should include:
 
 The companion proposal template is [project-proposal-template.qmd](../../templates/project-proposal-template.qmd).
 
-## 6. Final Report Requirements
+## Final report requirements
 
 The final report should do more than show that a model ran. It should provide:
 
@@ -123,7 +123,7 @@ The final report should do more than show that a model ran. It should provide:
 
 The companion report template is [final-project-report-template.qmd](../../templates/final-project-report-template.qmd).
 
-## 7. Computational Standards
+## Computational standards
 
 Each project should make the computational target explicit:
 
@@ -139,7 +139,7 @@ The choice is acceptable only if the project states:
 - what tuning choices were made;
 - how convergence or approximation quality was checked.
 
-## 8. Diagnostic Review Checklist
+## Diagnostic review checklist
 
 Before interpretation, a project should be able to answer:
 
@@ -152,7 +152,7 @@ Before interpretation, a project should be able to answer:
 
 If several answers are “no,” the project is not yet mature.
 
-## 9. Recommended Repository Structure
+## Recommended repository structure
 
 For a reproducible project, a clean structure is:
 
@@ -170,7 +170,7 @@ project/
 
 The point is not rigid directory aesthetics. The point is separation of data, model code, diagnostics, and narrative.
 
-## 10. Project Bank
+## Project bank
 
 The canonical project bank is [projects.qmd](../../projects.qmd). It includes:
 
@@ -184,7 +184,7 @@ The canonical project bank is [projects.qmd](../../projects.qmd). It includes:
 
 Each of these can be expanded to doctoral-level depth if the proposal is framed carefully.
 
-## 11. Assessment Rubric
+## Assessment rubric
 
 The grading logic is aligned with the rubric on [projects.qmd](../../projects.qmd), but the hierarchy is:
 
@@ -194,7 +194,7 @@ The grading logic is aligned with the rubric on [projects.qmd](../../projects.qm
 
 A mathematically sophisticated project with weak diagnostics is weaker than a slightly simpler project with full workflow discipline.
 
-## 12. Common Failure Modes
+## Common failure modes
 
 ### Starting from a maximal model
 
@@ -212,7 +212,7 @@ Divergences, unstable VI, or label switching are results. They are not embarrass
 
 Without sensitivity analysis, posterior confidence often exceeds what the workflow has earned.
 
-## 13. Suggested Timeline
+## Suggested timeline
 
 1. Week 1: proposal, literature review, and data audit.
 2. Week 2: prior predictive exploration and baseline model.
@@ -222,7 +222,7 @@ Without sensitivity analysis, posterior confidence often exceeds what the workfl
 
 Longer schedules should still preserve this order.
 
-## 14. Exercises
+## Exercises
 
 1. Draft a project proposal that includes question, estimand, prior strategy, computation plan, and diagnostics plan.
 2. Write a model ladder for one project in the project bank, from simplest defensible model to reference model.
@@ -230,7 +230,7 @@ Longer schedules should still preserve this order.
 4. Explain why prior predictive checks belong in the proposal stage rather than only in the final report.
 5. Describe what evidence would justify using VI rather than MCMC in a capstone.
 
-## 15. Summary
+## Summary
 
 The capstone chapter closes the course by treating workflow as the real object of mastery:
 
@@ -240,6 +240,10 @@ The capstone chapter closes the course by treating workflow as the real object o
 - reproducible computation is part of the evidence;
 - communication should report what the model supports, and no more.
 
-## References
+## Further reading
 
-Key references are @gelman2013, @gabry2019, @vehtari2017, and @murphy2023.
+@gelman2020 is the single most useful reference for a capstone: it sets out the full workflow — prior predictive checks, fitting, diagnostics, posterior predictive checks, model comparison, and iteration — and is explicit that the process is cyclical rather than linear.
+
+@gabry2019 covers the graphical side of that workflow, and @vehtari2017 the predictive evaluation you will need to justify a model choice. @gelman2013 remains the reference for the modelling questions themselves.
+
+@mcelreath2020 is the best guide to writing the results up in a way a reader can follow. For projects with a substantial computational component, @murphy2023 is the most convenient single survey of the modern methods.

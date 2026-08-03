@@ -1,278 +1,441 @@
 ---
-title: "Hierarchical and Multilevel Models: Partial Pooling, Exchangeability, and Reparameterization"
+title: "Hierarchical and multilevel models"
+subtitle: "Exchangeability, partial pooling, shrinkage, and the geometry of the funnel"
 ---
 
-## Learning Outcomes
+::: {.callout-note}
+## What you should be able to do after this chapter
 
-After this chapter, you should be able to:
+- Explain exchangeability and state de Finetti's theorem, and say why it makes a hierarchical prior a consequence of a symmetry judgement rather than an arbitrary choice.
+- Derive the normal-normal posterior and write the posterior mean as a convex combination of the group mean and the overall mean.
+- Show that the shrinkage weight is a ratio of precisions, and explain what happens to it in the limits $\tau \to 0$ and $\tau \to \infty$.
+- Derive the marginal posterior of the group-level scale $\tau$ with the group effects integrated out, and explain why it is the hard part of the model.
+- Connect partial pooling to Stein's inadmissibility result and to the James-Stein estimator.
+- Diagnose Neal's funnel, explain geometrically why it defeats a fixed step size, and reparameterise to fix it.
+- Choose a hyperprior on $\tau$ and justify it in terms of implied prior pooling.
+- Distinguish prediction for an observed group from prediction for a new group.
+:::
 
-- derive the normal-normal multilevel posterior and shrinkage factor;
-- explain exchangeability as the modeling rationale for partial pooling;
-- distinguish complete pooling, no pooling, and hierarchical pooling;
-- explain centered versus non-centered parameterizations geometrically;
-- justify hyperpriors for group-level scale parameters.
+## Grouped data and the three modelling choices
 
-## 1. Why Multilevel Modeling
+Data arrive in groups more often than not. Patients within hospitals, students within schools, repeated measurements within a subject, plots within fields, counties within states. In every case there is a tension the analyst has to resolve: the groups are not identical, but neither are they unrelated.
 
-Grouped data are ubiquitous:
+Suppose $J$ groups, with group $j$ contributing $n_j$ observations and a parameter $\theta_j$ that we want to learn about. There are three things you can do.
 
-- schools within districts;
-- patients within hospitals;
-- repeated measurements within individuals;
-- species within ecological regions;
-- regions within countries.
+::: {.callout-note}
+## Three positions on a spectrum
 
-A multilevel model is appropriate when units are similar enough to borrow strength from one another, but not so similar that they should be forced to share one common parameter. The Bayesian language for this is exchangeability plus hierarchical prior structure [@gelman2013].
+**Complete pooling.** Assume $\theta_1 = \cdots = \theta_J = \theta$. One parameter, estimated from all $N = \sum_j n_j$ observations. Efficient if the assumption holds, badly biased if it does not.
 
-## 2. Partial Pooling As A Bayesian Compromise
+**No pooling.** Estimate each $\theta_j$ separately from its own $n_j$ observations. Unbiased, but the estimates for small groups are hopeless, and in aggregate they are worse than useless — see @sec-stein.
 
-For group-specific parameters $\theta_1,\dots,\theta_J$:
+**Partial pooling.** Treat $\theta_1,\dots,\theta_J$ as draws from a common distribution whose parameters are themselves unknown. Each group's estimate borrows from the others, in proportion to how little it knows on its own.
+:::
 
-- **complete pooling** assumes $\theta_1=\cdots=\theta_J$;
-- **no pooling** estimates each $\theta_j$ separately;
-- **partial pooling** assumes the $\theta_j$ are related through a common prior.
+Complete and no pooling are the endpoints; partial pooling is the interior, and the position along the interval is estimated rather than assumed. That is the whole idea of the chapter. Everything that follows is either a derivation of where the estimate lands, a justification for why the structure is legitimate, or a warning about what goes wrong computationally when you write it down carelessly.
 
-The hierarchical prior is what allows data-rich groups to remain distinct while data-poor groups borrow information.
+The Bayesian machinery for partial pooling is the hierarchical prior, and the argument that licenses it is exchangeability.
 
-## 3. Normal-Normal Hierarchical Model
+## Exchangeability {#sec-exchangeability}
 
-Suppose the group-level sufficient statistics are
+### The symmetry judgement
+
+::: {.definition #def-exchangeable}
+A finite sequence of random variables $\theta_1,\dots,\theta_J$ is **exchangeable** if its joint distribution is invariant under permutation: for every permutation $\sigma$ of $\{1,\dots,J\}$,
+$$
+p(\theta_1,\dots,\theta_J) = p(\theta_{\sigma(1)},\dots,\theta_{\sigma(J)}).
+$$
+An infinite sequence is exchangeable if every finite subsequence is.
+:::
+
+Exchangeability is a statement about your knowledge, not about the world. It says that the group labels carry no information: before seeing any data, you have no reason to expect group 3 to have a larger effect than group 7. It does *not* say the groups are identical, and it does not say the $\theta_j$ are independent. Indeed exchangeable variables are typically dependent, which is exactly what makes borrowing strength possible.
+
+If you *do* know something that distinguishes the groups — hospital size, school funding, region — then the $\theta_j$ are not exchangeable, and you should not pretend otherwise. The remedy is to model the distinguishing information as a covariate, which restores exchangeability *conditional on* that covariate. This is the standard route from a plain hierarchical model to a hierarchical regression, and it is the honest way to handle group-level information.
+
+### de Finetti's theorem
+
+The reason exchangeability is more than a convenient assumption is that it forces the hierarchical structure on you.
+
+::: {.theorem #thm-definetti}
+Let $\theta_1, \theta_2, \dots$ be an infinitely exchangeable sequence of real-valued random variables. Then there exists a distribution $\Pi$ over distribution functions such that
+$$
+p(\theta_1,\dots,\theta_J) = \int \left[\prod_{j=1}^{J} F(\theta_j)\right] d\Pi(F)
+$$
+for every $J$.
+:::
+
+Read the right-hand side as a recipe: draw a distribution $F$ from $\Pi$, then draw the $\theta_j$ independently from $F$. The theorem says that *any* infinitely exchangeable sequence can be represented this way [@definetti1974; @bernardo1994].
+
+That is precisely the two-stage structure of a hierarchical model. The mixing distribution $\Pi$ is the hyperprior; the latent $F$ is the population distribution of group effects; conditional independence given $F$ is what the second stage of the hierarchy asserts. If you judge your groups exchangeable and you are willing to embed them in a conceptually infinite population of similar groups, a hierarchical prior is not an extra assumption you are making. It is a consequence of the symmetry judgement you have already made.
+
+The parametric hierarchical model restricts $F$ to a family — typically $\mathcal{N}(\mu,\tau^2)$ — and puts a prior on $(\mu,\tau)$. That restriction is an assumption, and a real one. Lifting it is what Bayesian nonparametrics is for.
+
+## The normal-normal model
+
+### Setup
+
+Write the model in the form that makes the algebra cleanest. Let $\bar y_j$ be the sample mean of group $j$ and let $\sigma_j^2$ be its sampling variance, treated as known for now:
 
 $$
-\bar y_j \mid \theta_j \sim \mathcal{N}(\theta_j,\sigma_j^2),
+\begin{aligned}
+\bar y_j \mid \theta_j &\sim \mathcal{N}(\theta_j, \sigma_j^2), && j = 1,\dots,J, \\
+\theta_j \mid \mu, \tau &\overset{\text{iid}}{\sim} \mathcal{N}(\mu, \tau^2), \\
+(\mu, \tau) &\sim \pi(\mu, \tau).
+\end{aligned}
+$$ {#eq-normal-normal}
+
+Two variances appear and they mean different things. Within-group variance $\sigma_j^2$ measures how precisely group $j$'s own data pin down $\theta_j$; it shrinks as $n_j$ grows, since $\sigma_j^2 = s_j^2/n_j$ for a group of size $n_j$. Between-group variance $\tau^2$ measures how much the groups genuinely differ; it does not shrink with sample size, because it is a property of the population of groups.
+
+Their ratio decides everything.
+
+### Posterior for the group effects
+
+::: {.proposition #prp-group-posterior}
+Under @eq-normal-normal with $(\mu,\tau)$ held fixed, the group effects are conditionally independent with
+$$
+\theta_j \mid \bar y_j, \mu, \tau \sim \mathcal{N}(m_j, V_j),
+$$
+where
+$$
+V_j = \left(\frac{1}{\sigma_j^2} + \frac{1}{\tau^2}\right)^{-1},
 \qquad
-\theta_j \mid \mu,\tau^2 \sim \mathcal{N}(\mu,\tau^2),
+m_j = V_j\left(\frac{\bar y_j}{\sigma_j^2} + \frac{\mu}{\tau^2}\right).
 $$
+:::
 
-for $j=1,\dots,J$.
-
-Treat $\mu$ and $\tau^2$ as known for the moment.
-
-### 3.1 Posterior for group effects
-
-The posterior kernel for $\theta_j$ is
-
+::: {.proof}
+Conditional on $(\mu,\tau)$ the groups separate, so consider one $j$. The posterior kernel is
 $$
-\pi(\theta_j \mid \bar y_j,\mu,\tau^2)
+\pi(\theta_j \mid \bar y_j, \mu, \tau)
 \propto
-\exp\!\left\{
--\frac{1}{2\sigma_j^2}(\bar y_j-\theta_j)^2
--\frac{1}{2\tau^2}(\theta_j-\mu)^2
-\right\}.
+\exp\left\{-\frac{(\bar y_j - \theta_j)^2}{2\sigma_j^2} - \frac{(\theta_j-\mu)^2}{2\tau^2}\right\}.
 $$
-
-Completing the square gives
-
+Expand the exponent and collect powers of $\theta_j$, discarding terms free of $\theta_j$:
 $$
-\theta_j \mid \bar y_j,\mu,\tau^2
-\sim
-\mathcal{N}(m_j,V_j),
+-\frac{1}{2}\left[\theta_j^2\left(\frac{1}{\sigma_j^2}+\frac{1}{\tau^2}\right) - 2\theta_j\left(\frac{\bar y_j}{\sigma_j^2}+\frac{\mu}{\tau^2}\right)\right].
 $$
+This is a quadratic in $\theta_j$ with coefficient $V_j^{-1}$ on $\theta_j^2$ and $V_j^{-1}m_j$ on $\theta_j$. Completing the square gives $-\frac{1}{2V_j}(\theta_j - m_j)^2$ plus a constant, which is the stated normal kernel.
+:::
 
-with
+The result is the familiar precision-weighted average: precisions add, and the posterior mean is the average of the two sources weighted by their precisions. What makes it interesting here is what the weights turn out to be.
 
+### Shrinkage {#sec-shrinkage}
+
+::: {.corollary #cor-shrinkage}
+The posterior mean of @prp-group-posterior can be written as
 $$
-V_j=\left(\frac{1}{\sigma_j^2}+\frac{1}{\tau^2}\right)^{-1},
+m_j = (1 - B_j)\,\bar y_j + B_j\,\mu,
+\qquad
+B_j = \frac{\sigma_j^2}{\sigma_j^2 + \tau^2}.
 $$
+:::
 
-and
-
+::: {.proof}
+From @prp-group-posterior, $V_j = \sigma_j^2\tau^2/(\sigma_j^2+\tau^2)$. Then
 $$
-m_j
-=
-V_j\left(\frac{\bar y_j}{\sigma_j^2}+\frac{\mu}{\tau^2}\right).
+m_j = \frac{\sigma_j^2\tau^2}{\sigma_j^2+\tau^2}\left(\frac{\bar y_j}{\sigma_j^2}+\frac{\mu}{\tau^2}\right)
+= \frac{\tau^2 \bar y_j + \sigma_j^2 \mu}{\sigma_j^2+\tau^2},
 $$
+which is the stated convex combination.
+:::
 
-### 3.2 Shrinkage form
+The quantity $B_j \in (0,1)$ is the **shrinkage factor**: the fraction of the distance from $\bar y_j$ to $\mu$ that the estimate travels. It is a ratio of variances and it behaves exactly as intuition demands.
 
-Rearranging,
+| Situation | $B_j$ | Estimate |
+|:---|:---|:---|
+| Group data very precise, $\sigma_j^2 \ll \tau^2$ | near 0 | stays at $\bar y_j$ |
+| Group data very noisy, $\sigma_j^2 \gg \tau^2$ | near 1 | pulled to $\mu$ |
+| Groups genuinely alike, $\tau \to 0$ | $\to 1$ | complete pooling |
+| Groups unrelated, $\tau \to \infty$ | $\to 0$ | no pooling |
 
+: How the shrinkage factor responds {#tbl-shrinkage}
+
+The last two rows are the important ones. Complete pooling and no pooling are not alternatives to the hierarchical model; they are its two limiting cases, recovered as $\tau$ goes to its extremes. Because $\tau$ is estimated from the data, the model chooses its own position on that spectrum, and it chooses separately for each group through $\sigma_j^2$. A large group with precise data is barely shrunk; a small group with noisy data is pulled most of the way to the centre. That differential treatment is the substantive content of partial pooling, and it is why hierarchical estimates beat both endpoints in practice.
+
+::: {.callout-important}
+## Shrinkage is not bias in the pejorative sense
+
+Practitioners often object that shrinkage "distorts" the group estimates away from what the data say. It does move them, and deliberately. The justification is that $\bar y_j$ is an unbiased estimate of $\theta_j$ but a poor one, and the hierarchical estimate trades a little bias for a large reduction in variance. @sec-stein makes this precise: the unshrunk estimator is not merely worse on average, it is *inadmissible*.
+:::
+
+## Why shrinkage wins: Stein's result {#sec-stein}
+
+The frequentist justification for partial pooling arrived before the Bayesian one was widely appreciated, and it is worth knowing because it settles the argument on the sceptic's own terms.
+
+Consider $J$ independent observations $\bar y_j \sim \mathcal{N}(\theta_j, 1)$ and total squared-error loss $\sum_j (\hat\theta_j - \theta_j)^2$. The obvious estimator is $\hat\theta_j = \bar y_j$. It is unbiased, it is the maximum likelihood estimator, and it is the minimum-variance unbiased estimator for each coordinate separately.
+
+@stein1956 showed that for $J \ge 3$ it is inadmissible: there is another estimator with strictly smaller risk *for every* $\theta$. The James-Stein estimator
 $$
-m_j
-=
-\left(\frac{\tau^2}{\tau^2+\sigma_j^2}\right)\bar y_j
-\;+\;
-\left(\frac{\sigma_j^2}{\tau^2+\sigma_j^2}\right)\mu.
+\hat\theta_j^{\text{JS}} = \bar y_\cdot + \left(1 - \frac{J-3}{\sum_k (\bar y_k - \bar y_\cdot)^2}\right)\left(\bar y_j - \bar y_\cdot\right)
 $$
+dominates it, and the improvement is largest when the $\theta_j$ are close together.
 
-This is the canonical shrinkage formula:
+Compare that with @cor-shrinkage. The James-Stein estimator shrinks each observation toward the grand mean by a factor estimated from the observed spread of the data, which is structurally identical to the hierarchical posterior mean with $\tau^2$ estimated from the between-group variability. @efron1975 made this correspondence explicit and showed that the empirical Bayes derivation gives essentially the James-Stein rule. The hierarchical model is the Bayesian route to an estimator that a frequentist decision theorist would have had to invent anyway.
 
-- when $\sigma_j^2$ is large, estimate is pulled strongly toward $\mu$;
-- when $\sigma_j^2$ is small, the group-specific estimate stays closer to $\bar y_j$.
+The result is initially disturbing — why should estimating a school's effect be improved by data from unrelated schools? — but the resolution is that the loss is *total* squared error across all $J$ coordinates. You are not being asked to estimate one $\theta_j$; you are being asked to estimate the whole vector, and for that problem the vector's own spread is relevant information.
 
-This is partial pooling in one equation.
+## The full posterior and the marginal for $\tau$
 
-## 4. Full Hierarchical Factorization
-
-With hyperpriors
-
+Fixing $(\mu,\tau)$ was a convenient fiction. The real posterior is
 $$
-\mu \sim \pi(\mu),\qquad \tau \sim \pi(\tau),
-$$
-
-the full posterior is
-
-$$
-p(\theta_{1:J},\mu,\tau \mid y)
+p(\theta_{1:J}, \mu, \tau \mid y)
 \propto
-\left[
-\prod_{j=1}^J p(y_j \mid \theta_j)
-\right]
-\left[
-\prod_{j=1}^J p(\theta_j \mid \mu,\tau)
-\right]
-\pi(\mu)\pi(\tau).
+\left[\prod_{j=1}^{J} p(\bar y_j \mid \theta_j)\right]
+\left[\prod_{j=1}^{J} p(\theta_j \mid \mu,\tau)\right]
+\pi(\mu,\tau).
+$$ {#eq-full-posterior}
+
+The factorisation displays the flow of information. Data inform group effects; group effects inform the hyperparameters; the hyperparameters couple the groups to one another. The coupling is indirect and that is the point — group $j$'s data affect group $k$'s estimate only through what they say about $(\mu,\tau)$.
+
+### Integrating out the group effects
+
+Because everything is normal, the middle level can be marginalised analytically, and doing so is the key to understanding both the statistics and the computation.
+
+::: {.proposition #prp-marginal-tau}
+Under @eq-normal-normal, integrating out $\theta_{1:J}$ gives
+$$
+\bar y_j \mid \mu, \tau \sim \mathcal{N}(\mu,\ \sigma_j^2 + \tau^2)
+$$
+independently across $j$. Consequently the marginal posterior of the hyperparameters is
+$$
+p(\mu,\tau \mid y) \;\propto\; \pi(\mu,\tau)\prod_{j=1}^{J}
+(\sigma_j^2+\tau^2)^{-1/2}
+\exp\left\{-\frac{(\bar y_j - \mu)^2}{2(\sigma_j^2+\tau^2)}\right\}.
+$$
+:::
+
+::: {.proof}
+Write $\bar y_j = \theta_j + \varepsilon_j$ with $\varepsilon_j \sim \mathcal{N}(0,\sigma_j^2)$ and $\theta_j = \mu + \tau z_j$ with $z_j \sim \mathcal{N}(0,1)$, all independent. Then $\bar y_j = \mu + \tau z_j + \varepsilon_j$ is a sum of independent normals, hence normal with mean $\mu$ and variance $\tau^2 + \sigma_j^2$. Independence across $j$ follows because the $(z_j,\varepsilon_j)$ are independent across $j$. The posterior expression is Bayes' rule applied to this marginal likelihood.
+:::
+
+Further integrating $\mu$ under a flat prior gives the marginal posterior of $\tau$ alone,
+$$
+p(\tau \mid y) \;\propto\; \pi(\tau)\,
+V_\mu(\tau)^{1/2}
+\prod_{j=1}^{J}(\sigma_j^2+\tau^2)^{-1/2}
+\exp\left\{-\frac{(\bar y_j - \hat\mu(\tau))^2}{2(\sigma_j^2+\tau^2)}\right\},
+$$ {#eq-tau-marginal}
+where
+$$
+\hat\mu(\tau) = \frac{\sum_j \bar y_j/(\sigma_j^2+\tau^2)}{\sum_j 1/(\sigma_j^2+\tau^2)},
+\qquad
+V_\mu(\tau) = \left[\sum_j \frac{1}{\sigma_j^2+\tau^2}\right]^{-1}.
 $$
 
-The factorization makes the inferential structure explicit:
+This one-dimensional function is worth plotting for any hierarchical dataset you fit. It shows immediately how much the data actually say about the degree of pooling — which, with $J$ small, is often very little.
 
-- data inform group parameters;
-- group parameters inform hyperparameters;
-- hyperparameters couple groups together.
+::: {.callout-warning}
+## With few groups, $\tau$ is weakly identified
 
-## 5. Exchangeability
+The information about $\tau$ comes from the *spread of $J$ numbers*. With $J = 8$ groups you have roughly eight observations' worth of information about the between-group scale, no matter how large the individual groups are. The likelihood for $\tau$ is typically flat near zero and only weakly informative in the tail, so the hyperprior does real work. This is not a defect to be hidden; it is a fact about the design, and it should be reported.
+:::
 
-Why is the hierarchical prior justified? Exchangeability provides the core answer.
+## Neal's funnel {#sec-funnel}
 
-If groups are judged similar enough that their labels do not encode prior scientific differences, then a symmetric prior over $\theta_1,\dots,\theta_J$ is natural. A common latent distribution
+### The geometry
+
+The hierarchical structure creates a posterior shape that defeats naive samplers, and understanding why is the difference between fixing the problem and papering over it.
+
+Consider the joint posterior of $(\theta_j, \tau)$ in @eq-normal-normal. The prior contributes $\theta_j \mid \tau \sim \mathcal{N}(\mu, \tau^2)$, so the conditional width of $\theta_j$ is proportional to $\tau$. When $\tau$ is small the $\theta_j$ are squeezed into a narrow neck around $\mu$; when $\tau$ is large they spread out. Plotted with $\log\tau$ on the vertical axis and $\theta_j$ on the horizontal, the posterior looks like a funnel: wide at the top, pinching to a point at the bottom.
+
+@neal2011 isolated this in a pure form. Neal's funnel is
+$$
+\log\tau \sim \mathcal{N}(0, 3^2), \qquad \theta_j \mid \tau \overset{\text{iid}}{\sim} \mathcal{N}(0,\tau^2),
+$$
+with no data at all. It has no pathology as a distribution — it is perfectly well defined and easy to sample from directly — but it is very hard for a Markov chain to explore.
+
+::: {.callout-important}
+## Why a single step size cannot work
+
+A sampler with a fixed step size $\epsilon$ faces a contradiction. In the wide mouth of the funnel, $\tau$ is large and the useful step in $\theta_j$ is of order $\tau$; a step of $\epsilon \ll \tau$ crawls. In the narrow neck, $\tau$ is small and any step of order $\epsilon \gg \tau$ overshoots into vanishing density and is rejected.
+
+No single $\epsilon$ serves both regions. Hamiltonian Monte Carlo does not escape this: it manifests as **divergent transitions**, where the leapfrog integrator's energy error explodes as the trajectory descends into the neck and the curvature outruns the step size.
+:::
+
+Divergences are therefore not a numerical nuisance to be suppressed. They are a geometric report: the sampler has found a region it cannot resolve, and the draws you have are biased because that region is under-visited. Raising `adapt_delta` shrinks the step size and may make the warnings disappear, but it does so by making the sampler tiptoe, which is slow and only postpones the problem. The right response is to change the geometry.
+
+### The fix: non-centred parameterisation
+
+::: {.definition #def-parameterisations}
+The **centred** parameterisation writes the group effects directly:
+$$
+\theta_j \sim \mathcal{N}(\mu, \tau^2).
+$$
+
+The **non-centred** parameterisation writes them as a deterministic transformation of standardised variables:
+$$
+z_j \sim \mathcal{N}(0,1), \qquad \theta_j = \mu + \tau z_j .
+$$
+:::
+
+The two define the *same statistical model*. Every posterior statement about $\theta_j$, $\mu$, $\tau$, or any prediction is identical. What differs is the coordinate system in which the sampler works, and therefore the curvature it has to navigate.
+
+Under the non-centred form, the prior on $z_j$ is standard normal *regardless of $\tau$*. The funnel is gone: in $(z_j, \log\tau)$ coordinates the prior is a product of independent standard normals and a normal, with no dependence between them. The dependence has been moved out of the prior and into the likelihood, where it is expressed through the deterministic map $\theta_j = \mu + \tau z_j$.
+
+@papaspiliopoulos2007 give the general framework and the criterion for choosing between them.
+
+::: {.callout-tip}
+## Which parameterisation to use
+
+**Non-centred** when the data are weak relative to the prior — small $n_j$, low signal, $\tau$ poorly identified. This is the common case, and the reason non-centred is the default in Stan's hierarchical examples.
+
+**Centred** when the data are strong — large $n_j$, well-identified group effects. With strong data the likelihood dominates and the centred form has the better-conditioned geometry; the non-centred form then induces its own funnel through the likelihood.
+
+With varying group sizes, the best choice can differ *by group*. Some groups want centring and others do not, and mixed parameterisations are a legitimate answer.
+:::
+
+@betancourt2015 work through the geometry in detail and give the diagnostic reasoning for choosing between the two.
+
+## Worked example: the eight schools
+
+The canonical illustration is the eight schools data of @rubin1984, in which eight schools ran independent coaching programmes for the SAT and reported estimated effects with standard errors.
+
+| School | A | B | C | D | E | F | G | H |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|
+| $\bar y_j$ | 28 | 8 | −3 | 7 | −1 | 1 | 18 | 12 |
+| $\sigma_j$ | 15 | 10 | 16 | 11 | 9 | 11 | 10 | 18 |
+
+: Estimated coaching effects and standard errors {#tbl-eight-schools}
+
+The tension is visible in the table. School A reports an effect of 28 points, but with a standard error of 15 — the no-pooling estimate is large and almost uninformative. School C reports −3. Taken at face value the schools look wildly different; taken with their standard errors, the spread is roughly what you would expect if every school had the same effect.
+
+The marginal posterior @eq-tau-marginal for these data has its mode at $\tau = 0$ and a long right tail. The data are consistent with complete pooling and do not rule out substantial heterogeneity. The hierarchical model, rather than picking a side, averages over the possibilities, and the resulting posterior means are pulled sharply toward the overall mean of about 8: school A's estimate drops from 28 to roughly 11, school C's rises from −3 to roughly 6.
+
+The Stan implementation is in [stan-hierarchical-models.qmd](../software/stan-hierarchical-models.qmd), and the shrinkage geometry is explored in [hierarchical_partial_pooling.R](../../labs/r/hierarchical_partial_pooling.R). The non-centred model statement is short enough to give here:
+
+```stan
+parameters {
+  real mu;
+  real<lower=0> tau;
+  vector[J] z;            // standardised group effects
+}
+transformed parameters {
+  vector[J] theta = mu + tau * z;   // the non-centring map
+}
+model {
+  z ~ std_normal();       // free of tau: no funnel in these coordinates
+  mu ~ normal(0, 5);
+  tau ~ normal(0, 5);     // half-normal, given the lower bound above
+  y ~ normal(theta, sigma);
+}
+```
+
+Fitting the centred version of the same model produces divergent transitions concentrated at small $\tau$, which is @sec-funnel made visible. Plotting $\log\tau$ against any $\theta_j$ and colouring the divergences shows them clustered in the neck.
+
+## Hierarchical regression
+
+Nothing so far required $\theta_j$ to be a scalar mean. The same structure carries over to regression coefficients, which is where multilevel modelling earns its keep.
+
+### Varying intercepts and slopes
 
 $$
-\theta_j \mid \mu,\tau \overset{\text{i.i.d.}}{\sim} \mathcal{N}(\mu,\tau^2)
-$$
-
-is one explicit way to encode that exchangeability.
-
-This does not say the groups are identical. It says that before seeing their data, we do not privilege one group-specific effect over another except through the shared hyperparameters.
-
-## 6. Random Intercepts And Random Slopes
-
-The standard multilevel regression model generalizes to
-
-$$
-y_{ij} \mid \alpha_j,\beta_j,\sigma^2
-\sim
-\mathcal{N}(\alpha_j + \beta_j x_{ij},\sigma^2),
-$$
-
-with
-
-$$
-\begin{pmatrix}
-\alpha_j \\
-\beta_j
-\end{pmatrix}
+y_{ij} \mid \alpha_j, \beta_j, \sigma \sim \mathcal{N}(\alpha_j + \beta_j x_{ij},\ \sigma^2),
+\qquad
+\begin{pmatrix}\alpha_j\\ \beta_j\end{pmatrix}
 \sim
 \mathcal{N}\!\left(
-\begin{pmatrix}
-\mu_\alpha \\
-\mu_\beta
-\end{pmatrix},
+\begin{pmatrix}\mu_\alpha\\ \mu_\beta\end{pmatrix},
 \Sigma
 \right).
 $$
 
-Now the model performs pooling across both intercepts and slopes, and the covariance matrix $\Sigma$ captures between-group dependence in intercept-slope variation.
+Now the model pools intercepts and slopes jointly, and the off-diagonal of $\Sigma$ carries real information: a negative intercept-slope correlation says that groups starting low tend to grow faster. Shrinkage now operates on a vector, and it operates *along the correlation structure* — a group with few observations has its slope pulled toward the value implied by its intercept and the estimated correlation, not merely toward the average slope.
 
-This is where multilevel modeling becomes genuinely rich: it is not just about shrinking means, but about borrowing structure across a whole parameter vector.
-
-## 7. Centered And Non-Centered Parameterizations
-
-### Centered form
-
-Write
-
+The standard parameterisation separates scales from correlations,
 $$
-\theta_j \sim \mathcal{N}(\mu,\tau^2).
+\Sigma = \operatorname{diag}(\boldsymbol{\varsigma})\,\Omega\,\operatorname{diag}(\boldsymbol{\varsigma}),
 $$
+with a half-normal or half-$t$ prior on each $\varsigma$ and an LKJ prior on the correlation matrix $\Omega$. This is better than an inverse-Wishart prior on $\Sigma$, which couples the scales and correlations in ways that are hard to reason about and imposes more information than intended.
 
-### Non-centered form
+### Group-level predictors
 
-Write
-
+When a covariate $u_j$ distinguishes the groups, exchangeability is restored conditionally:
 $$
-z_j \sim \mathcal{N}(0,1),\qquad \theta_j=\mu+\tau z_j.
+\theta_j \mid \mu, \gamma, \tau \sim \mathcal{N}(\mu + \gamma u_j,\ \tau^2).
 $$
+The groups are no longer exchangeable, but the *residual* group effects are. This is the formal version of the advice in @sec-exchangeability: model what you know, and assume symmetry only about what you do not.
 
-### Why the choice matters
+## Hyperpriors for the group-level scale {#sec-hyperpriors}
 
-The two parameterizations define the same statistical model, but they induce different posterior geometry in coordinates used by HMC.
+Because $\tau$ controls the amount of pooling and is weakly identified when $J$ is small, its prior matters more than most priors do. @gelman2006 is the standard reference and argues the case at length.
 
-- centered works well when group-level effects are strongly informed by data;
-- non-centered often works better when data are weak and the group-level scale is poorly identified.
+| Prior | Behaviour |
+|:---|:---|
+| Half-normal, $\tau \sim \mathcal{N}^+(0,s)$ | Sensible default; set $s$ to a plausible upper range for between-group variation |
+| Half-Cauchy / half-$t$ | Heavier tail, allows large $\tau$ if the data insist; the usual weakly informative choice |
+| Penalised complexity [@simpson2017] | Exponential on $\tau$, shrinking toward the complete-pooling base model by construction |
+| Uniform on $\tau$ | Acceptable when $J$ is large; improper and can behave badly when $J$ is small |
+| Inverse-gamma$(\epsilon,\epsilon)$ on $\tau^2$ | Avoid. Appears uninformative, is not, and is badly behaved near zero |
 
-This is not a stylistic coding preference. It is a computational consequence of hierarchical curvature.
+: Hyperpriors on the between-group scale {#tbl-hyperpriors}
 
-## 8. Hyperpriors For Group-Level Scales
+The inverse-gamma warning deserves its own sentence, because the prior remains common in older software and textbooks. $\operatorname{Inv-Gamma}(\epsilon,\epsilon)$ with small $\epsilon$ was promoted as a diffuse default, but its density vanishes as $\tau^2 \to 0$ while placing a spike just above zero, and the resulting posterior for $\tau$ is sensitive to $\epsilon$ in a way that has no interpretation. @gelman2006 documents the failure with examples.
 
-The group-level scale $\tau$ governs how much pooling occurs. Its prior therefore matters a great deal.
+The constructive way to choose is to reason about implied pooling. Pick a candidate prior, simulate $\tau$ from it, compute the shrinkage factor $B_j = \sigma_j^2/(\sigma_j^2 + \tau^2)$ for your actual $\sigma_j$, and look at the distribution of $B_j$. If your prior implies that you are nearly certain of near-complete pooling, or nearly certain of none, you have said more than you meant to. This is prior predictive checking applied to the hyperparameter, and it takes a few lines of code.
 
-Reasonable choices often include:
+## Prediction
 
-- half-normal priors;
-- half-Student-$t$ priors;
-- penalized-complexity priors;
-- domain-specific informative priors if prior group heterogeneity is known.
+Multilevel models support two predictive questions, and confusing them is a common and consequential error.
 
-Diffuse inverse-gamma defaults are often less interpretable and can behave badly in weakly informed problems.
-
-## 9. Posterior Prediction For New Groups
-
-Multilevel models support a crucial form of prediction:
-
-- predicting new observations in observed groups;
-- predicting observations from a new, previously unseen group.
-
-For a new group effect $\theta_{\text{new}}$,
-
+**A new observation in an observed group.** Here $\theta_j$ has a posterior informed by group $j$'s own data:
 $$
-\theta_{\text{new}} \mid y
-=
-\int p(\theta_{\text{new}} \mid \mu,\tau)\, p(\mu,\tau \mid y)\, d\mu\, d\tau.
+p(\tilde y \mid y, j) = \int p(\tilde y \mid \theta_j)\, p(\theta_j \mid y)\, d\theta_j .
 $$
 
-This is often far more scientifically relevant than prediction for already-observed groups because it tests whether the hierarchical structure generalizes.
+**An observation from a new, unobserved group.** Here the group effect must be drawn from the population distribution, with its parameters marginalised:
+$$
+p(\tilde y \mid y) = \iiint p(\tilde y \mid \theta_{\text{new}})\, p(\theta_{\text{new}} \mid \mu,\tau)\, p(\mu,\tau \mid y)\, d\theta_{\text{new}}\,d\mu\,d\tau .
+$$
 
-## 10. Stan Workflow
+The second is much more variable, because it carries the between-group spread $\tau$ in addition to the sampling variability and the uncertainty in the hyperparameters. It is also the more scientifically demanding claim, since it is what tests whether the hierarchical structure generalises beyond the groups you happened to observe. If a model is to be used on a new hospital, a new school, or a new region, the new-group predictive distribution is the one to validate, and the one to report.
 
-The canonical example in this repository is the non-centered eight-schools model in [stan-hierarchical-models.qmd](../software/stan-hierarchical-models.qmd).
+Cross-validation should match the question. Leave-one-observation-out estimates within-group predictive performance; leave-one-*group*-out estimates the new-group performance, and the two can differ substantially [@vehtari2017].
 
-The companion R lab for shrinkage geometry is [hierarchical_partial_pooling.R](../../labs/r/hierarchical_partial_pooling.R).
+## Pitfalls
 
-## 11. Diagnostics And Pitfalls
+**Reading shrinkage as distortion.** Covered in @sec-shrinkage and @sec-stein. The shrunk estimate is closer to the truth on average, and the unshrunk one is inadmissible.
 
-### Interpreting shrinkage as bias
+**Using an inverse-gamma hyperprior by default.** See @sec-hyperpriors.
 
-Shrinkage is not an arbitrary distortion. It is posterior learning under a structured prior.
+**Raising `adapt_delta` until the divergences go away.** This treats a geometric problem as a tuning problem. Reparameterise first; tune only after the geometry is sensible.
 
-### Using flat priors on scale without checking implications
+**Assuming non-centred is always right.** It is right when the data are weak. With large well-informed groups it is the worse choice, and the funnel reappears in the transformed coordinates.
 
-Hyperpriors on $\tau$ strongly affect pooling when the number of groups is small.
+**Fitting a hierarchical model to two or three groups.** With $J$ that small, $\tau$ is essentially determined by its prior and the model is doing little beyond expressing that prior. Either use a fixed-effects model and say so, or use a genuinely informative prior on $\tau$ and defend it.
 
-### Ignoring funnel geometry
+**Ignoring group-level information.** If you know the groups differ systematically, exchangeability is false. Put the covariate in.
 
-Poor HMC behavior in hierarchical models is often geometric, not just computational.
+**Reporting only within-group predictive checks** when the intended use is a new group.
 
-### Confusing observed-group and new-group prediction
+## Exercises
 
-These are different predictive tasks and can yield very different uncertainty behavior.
+1. Prove @prp-group-posterior by completing the square, keeping track of the terms discarded as constants.
+2. Derive @cor-shrinkage from @prp-group-posterior and verify the four limiting cases in @tbl-shrinkage.
+3. Show that $V_j \le \min(\sigma_j^2, \tau^2)$ and interpret the inequality.
+4. Prove @prp-marginal-tau, and use it to derive @eq-tau-marginal by integrating out $\mu$ under a flat prior.
+5. For the eight schools data in @tbl-eight-schools, plot @eq-tau-marginal over $\tau \in (0, 30)$ under a uniform prior. Where is the mode, and what does the shape imply about the strength of evidence for heterogeneity?
+6. Compute the posterior mean for each school at $\tau = 0$, $\tau = 5$, and $\tau = 25$, and plot the eight shrinkage paths on one figure.
+7. State de Finetti's theorem and explain which of its components corresponds to which level of a hierarchical model. Where does the parametric assumption $F = \mathcal{N}(\mu,\tau^2)$ enter, and what is lost by making it?
+8. Simulate from Neal's funnel directly and plot $\log\tau$ against $\theta_1$. Then run a random-walk Metropolis sampler on the same target and overlay its draws. Which region is under-visited?
+9. Fit the eight schools model in Stan under both parameterisations. Record divergence counts and the minimum effective sample size for $\tau$, and plot the divergent draws in $(\theta_1, \log\tau)$ space.
+10. Now simulate eight schools' worth of data with $n_j = 500$ per group and a large true $\tau$. Refit both parameterisations. Which one performs better, and why does the answer reverse?
+11. For the eight schools' $\sigma_j$, simulate $\tau$ from a half-normal$(0,5)$, a half-Cauchy$(0,5)$, and an $\operatorname{Inv-Gamma}(0.001,0.001)$ on $\tau^2$. Plot the implied prior distribution of $B_j$ under each and comment.
+12. Derive the posterior predictive distribution for an observation from a new group under @eq-normal-normal with $(\mu,\tau)$ known, and show its variance exceeds that of the observed-group predictive.
+13. Explain why leave-one-out and leave-one-group-out cross-validation can rank two hierarchical models differently.
+14. Extend @prp-group-posterior to the varying intercept-slope model and show how the covariance $\Sigma$ enters the shrinkage.
 
-## 12. Exercises
+## Summary
 
-1. Derive the normal-normal posterior mean and variance for $\theta_j$ in the known hyperparameter model.
-2. Rewrite the posterior mean as a convex combination of $\bar y_j$ and $\mu$ and interpret the weights.
-3. Explain why exchangeability is the natural prior symmetry assumption for multilevel effects.
-4. Compare centered and non-centered parameterizations in terms of posterior geometry.
-5. Describe how the prior on $\tau$ influences partial pooling.
+Grouped data force a choice between ignoring the groups and treating them as unrelated, and both extremes are wrong. The hierarchical model replaces the choice with an estimate: group effects are drawn from a common distribution whose scale $\tau$ is learned, and each group is shrunk toward the centre by a factor $\sigma_j^2/(\sigma_j^2 + \tau^2)$ that reflects how little its own data say.
 
-## 13. Summary
+Exchangeability is what licenses the structure. Under de Finetti's theorem, judging the groups symmetric *is* asserting a two-stage hierarchical representation, so the prior is a consequence of a modelling judgement rather than an extra assumption. Stein's inadmissibility result supplies the decision-theoretic case from the other direction: the unshrunk estimator is dominated, and the hierarchical posterior mean is close to the estimator that dominates it.
 
-Hierarchical models are the formal Bayesian answer to grouped inference:
+The cost is computational. Making the width of one parameter depend on another produces the funnel, which no fixed step size can traverse, and which HMC reports as divergences. The fix is a change of coordinates rather than a change of tuning. Whether to centre depends on whether the data or the prior dominates, and with unbalanced groups the answer can differ from group to group.
 
-- exchangeability motivates the prior structure;
-- posterior learning induces partial pooling;
-- shrinkage depends on both group data precision and hyperparameter uncertainty;
-- parameterization matters because geometry matters.
+## Further reading
 
-## References
+@gelman2013 chapter 5 is the standard treatment and works the eight schools example in full. @gelmanhill2007 is the applied companion, long on interpretation and worked data analysis. @hoff2009 gives a compact and careful derivation of the normal-normal case.
 
-Key references are @gelman2013, @gelman2006, @betancourt2017, and @hoff2009.
+On the origins, @lindley1972 is the paper that introduced the Bayesian hierarchical linear model, and @definetti1974 the source for exchangeability. @stein1956 and @efron1975 supply the decision-theoretic argument and its empirical Bayes reading.
+
+For computation, @papaspiliopoulos2007 is the general reference on parameterisation, @betancourt2015 the geometric analysis specific to HMC, and @neal2011 the origin of the funnel. On hyperpriors, @gelman2006 is essential and @simpson2017 develops the penalised-complexity alternative. @gelman2020 places the whole thing in a workflow, and @vehtari2017 covers the predictive assessment.

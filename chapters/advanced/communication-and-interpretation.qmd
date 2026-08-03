@@ -1,18 +1,18 @@
 ---
-title: "Communication and Interpretation: Posterior Summaries, Predictive Uncertainty, Decision Reporting, and Reproducibility"
+title: "Communication and interpretation: posterior summaries, predictive uncertainty, decision reporting, and reproducibility"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - define posterior summaries as functionals of posterior draws rather than as isolated scalar estimates;
 - distinguish equal-tail intervals, HPD sets, and predictive intervals;
 - separate parameter uncertainty from outcome uncertainty mathematically;
 - report results on scientifically meaningful transformed scales;
 - construct decision-oriented posterior summaries that remain transparent about assumptions.
+:::
 
-## 1. Reporting Is Part Of Inference
+## Reporting is part of inference
 
 Bayesian inference is not finished when posterior draws are obtained. The analyst must decide which posterior functionals matter for the scientific question. That step is substantive, not cosmetic.
 
@@ -30,7 +30,7 @@ $$
 
 Reporting $\theta$ directly when collaborators care about $g(\theta)$ is a failure of translation.
 
-## 2. Posterior Summaries As Functionals
+## Posterior summaries as functionals
 
 For any posterior distribution $p(\theta \mid y)$, common summaries are functionals:
 
@@ -54,7 +54,7 @@ For any posterior distribution $p(\theta \mid y)$, common summaries are function
 
 None of these is universally best. The choice depends on loss function, interpretability, and audience.
 
-## 3. Credible Sets
+## Credible sets
 
 A set $C_\alpha(y)$ is a $(1-\alpha)$ posterior credible set if
 
@@ -88,7 +88,7 @@ HPD sets are natural for skewed posteriors, but they can be awkward or nonunique
 
 A Bayesian credible interval is a posterior probability statement conditional on the observed data. A frequentist confidence interval is a procedure with long-run coverage properties. The two objects may be numerically similar in regular models, but they are conceptually different.
 
-## 4. Transformed And Derived Quantities
+## Transformed and derived quantities
 
 Many scientific questions are about transformations:
 
@@ -109,7 +109,7 @@ automatically approximate the posterior of $\psi$.
 
 This is one of the strongest practical advantages of Bayesian computation: nonlinear uncertainty propagation is handled by transforming draws rather than linearizing everything analytically.
 
-## 5. Parameter Uncertainty Versus Predictive Uncertainty
+## Parameter uncertainty versus predictive uncertainty
 
 Analysts frequently conflate uncertainty about parameters with uncertainty about future outcomes. The law of total variance separates them:
 
@@ -126,7 +126,7 @@ The first term is irreducible observational noise under the model. The second is
 
 If one reports only credible intervals for coefficients, collaborators may think the study says more about future observables than it actually does. Predictive intervals are often wider and more decision-relevant.
 
-## 6. Decision-Oriented Summaries
+## Decision-oriented summaries
 
 Suppose actions lie in $\mathcal{A}$ and the loss is $L(a,\theta)$. The posterior risk is
 
@@ -149,7 +149,7 @@ Reporting should then include:
 
 This is more honest than pretending that one posterior mean alone determines the decision.
 
-## 7. Worked Example: Logistic Regression Communication
+## Worked example: Logistic regression communication
 
 Suppose
 
@@ -176,7 +176,7 @@ The coefficient $\beta_j$ is a log-odds change. Many collaborators do not think 
 
 These are more directly aligned with scientific or policy decisions.
 
-## 8. Visualization As Statistical Argument
+## Visualization as statistical argument
 
 Plots are not decorations. They are inferential objects that emphasize some posterior functionals and suppress others.
 
@@ -189,7 +189,7 @@ Strong Bayesian graphics typically show:
 
 Visualization is part of model criticism as well as communication [@gabry2019].
 
-## 9. Reproducibility And Literate Reporting
+## Reproducibility and literate reporting
 
 A credible Bayesian report should make the following traceable:
 
@@ -203,7 +203,7 @@ A credible Bayesian report should make the following traceable:
 
 Literate tools such as Quarto make it possible to couple derivation, code, diagnostics, and narrative in one document.
 
-## 10. `R` Implementation
+## `R` implementation
 
 The companion lab is [posterior_reporting_summary.R](../../labs/r/posterior_reporting_summary.R). It:
 
@@ -226,7 +226,7 @@ summarize_draws <- function(x) {
 }
 ```
 
-## 11. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Reporting only posterior means
 
@@ -244,7 +244,7 @@ A large posterior probability of a tiny effect does not imply practical importan
 
 Posterior summaries should be accompanied by enough model context that readers know what assumptions produced them.
 
-## 12. Exercises
+## Exercises
 
 1. Define a posterior credible set and explain how it differs from a confidence interval.
 2. Use the law of total variance to separate predictive uncertainty into noise and parameter-uncertainty components.
@@ -252,7 +252,7 @@ Posterior summaries should be accompanied by enough model context that readers k
 4. Explain why posterior tail probabilities may be more useful than means for threshold-based decisions.
 5. Draft a one-paragraph posterior summary for a nontechnical collaborator that preserves uncertainty honestly.
 
-## 13. Summary
+## Summary
 
 Communication is not an afterthought. It determines whether the posterior is translated into the right scientific object:
 
@@ -262,6 +262,10 @@ Communication is not an afterthought. It determines whether the posterior is tra
 - decision reporting requires posterior risk, not only coefficient tables;
 - reproducible reporting keeps the inferential chain auditable.
 
-## References
+## Further reading
 
-Key references are @berger1985, @gelman2013, @gabry2019, and @mcelreath2020.
+@gabry2019 is the reference for visualisation in a Bayesian workflow, and treats graphics as part of the inference rather than as decoration added at the end.
+
+@mcelreath2020 is the best model for how to explain Bayesian results to a reader who does not want the machinery, and is particularly good on why a credible interval should not be described as though it were a confidence interval.
+
+@gelman2013 chapter 9 covers decision-relevant summaries, and @berger1985 the underlying point that which summary to report depends on the loss the reader faces. @gelman2020 covers the reproducibility side, where the argument is less about statistics than about making the analysis inspectable.

@@ -1,8 +1,9 @@
 ---
 title: "Evaluation"
+number-sections: false
 ---
 
-## Evaluation Philosophy
+## Evaluation philosophy
 
 This course evaluates understanding at three levels:
 
@@ -15,9 +16,9 @@ This course evaluates understanding at three levels:
 
 The third level is the one most often missing from technically polished work.
 
-## Recommended Assessment Mix
+## Recommended assessment mix
 
-### Derivation Sets
+### Derivation sets
 
 Short problem sets should cover:
 
@@ -28,7 +29,7 @@ Short problem sets should cover:
 - HMC and VI derivations;
 - filtering and state-space recursions.
 
-### Computational Labs
+### Computational labs
 
 Labs should require students to:
 
@@ -39,7 +40,7 @@ Labs should require students to:
 
 Relevant lab materials are indexed in [Tools and Setup](appendix/software-setup.qmd).
 
-### Reading And Critique Memos
+### Reading and critique memos
 
 Short memos are useful for:
 
@@ -48,7 +49,7 @@ Short memos are useful for:
 - interpreting diagnostics;
 - translating posterior summaries for nontechnical audiences.
 
-### Capstone Project
+### Capstone project
 
 The capstone should include:
 
@@ -62,7 +63,7 @@ The capstone should include:
 
 See [Projects](projects.qmd) for the project bank and [Capstone Projects](chapters/advanced/capstone-projects.qmd) for the full workflow standard.
 
-## Suggested Weighting
+## Suggested weighting
 
 | Component | Recommended weight | What it should measure |
 |---|---:|---|
@@ -72,7 +73,7 @@ See [Projects](projects.qmd) for the project bank and [Capstone Projects](chapte
 | Mid-course assessment | 10% | Integration of theory and computation |
 | Capstone project | 30% | End-to-end Bayesian workflow maturity |
 
-## What A High-Quality Submission Looks Like
+## What a high-quality submission looks like
 
 Strong work in this course usually has five properties:
 
@@ -82,7 +83,7 @@ Strong work in this course usually has five properties:
 - diagnostics are interpreted rather than pasted;
 - conclusions are uncertainty-aware and modest in scope.
 
-## Evaluation Rubric For Projects
+## Evaluation rubric for projects
 
 | Criterion | Weight | High-standard evidence |
 |---|---:|---|
@@ -93,11 +94,11 @@ Strong work in this course usually has five properties:
 | Interpretation | 20 | Clear substantive explanation with uncertainty |
 | Reproducibility | 10 | Clean project structure and runnable code |
 
-## Academic Standard
+## Academic standard
 
 This course rewards clarity over theatrical complexity. A simpler model with excellent derivation, diagnostics, and interpretation is stronger than a fashionable model that only barely runs.
 
-## Recommended Student Checklist
+## Recommended Student checklist
 
 Before submitting work, ask:
 

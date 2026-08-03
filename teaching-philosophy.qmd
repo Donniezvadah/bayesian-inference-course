@@ -1,8 +1,9 @@
 ---
-title: "Teaching Philosophy"
+title: "Teaching philosophy"
+number-sections: false
 ---
 
-## Why This Course Is Structured This Way
+## Why this course is structured this way
 
 This course treats Bayesian statistics as a discipline of reasoning, not as a collection of isolated formulas. The core teaching idea is simple:
 
@@ -13,7 +14,7 @@ This course treats Bayesian statistics as a discipline of reasoning, not as a co
 
 That sequence is repeated throughout the site because it is the shortest path to genuine mastery.
 
-## Core Principles
+## Core principles
 
 ### Mathematical seriousness
 
@@ -39,9 +40,9 @@ The course repeatedly compares:
 
 ### Independent learning
 
-The final goal is not just solving provided exercises. It is building the ability to read a new paper, derive what matters, test an implementation, and explain the result clearly.
+The exercises are a means to an end. What they are training is the ability to read a new paper, derive what matters from it, test an implementation, and explain the result to someone who was not in the room.
 
-## How A Chapter Should Be Read
+## How a chapter should be read
 
 Each chapter is designed to support four passes:
 
@@ -52,7 +53,7 @@ Each chapter is designed to support four passes:
 
 Skipping the fourth pass is where many technically strong students go wrong.
 
-## What Students Should Produce
+## What Students should produce
 
 A strong learner in this course should be able to produce:
 
@@ -62,7 +63,7 @@ A strong learner in this course should be able to produce:
 - posterior checks and sensitivity analysis;
 - short written explanations of what the model does and does not support.
 
-## Expectations For Projects
+## Expectations for projects
 
 Capstone-level work should show:
 
@@ -73,7 +74,7 @@ Capstone-level work should show:
 
 That is the standard used throughout the site and in the project templates.
 
-## Suggested Workflow Norm
+## Suggested workflow norm
 
 For every serious model, ask:
 

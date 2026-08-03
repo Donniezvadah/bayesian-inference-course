@@ -1,18 +1,19 @@
 ---
-title: "Part V. Optimization, Tuning, and Diagnostics"
+title: "Part V. Optimization, tuning, and diagnostics"
+number-sections: false
 ---
 
 ::: {.part-hero}
-## Part V
+## Part v
 
 This part makes Bayesian workflow operational: optimization, tuning, convergence assessment, model criticism, and predictive diagnostics.
 :::
 
-## Part Overview
+## Part overview
 
 Part V makes the course operational. Bayesian methods are only as credible as their optimization, tuning, diagnostics, and model criticism practices.
 
-## Part Learning Goals
+## Part learning goals
 
 By the end of Part V, learners should be able to:
 
@@ -21,13 +22,13 @@ By the end of Part V, learners should be able to:
 - diagnose convergence and model misfit using modern Bayesian workflow tools;
 - communicate what diagnostics can and cannot certify.
 
-## Fully Written Chapters In This Repository
+## Fully written chapters in this repository
 
 - [Optimization techniques in Bayesian statistics](../chapters/practice/optimization-techniques-in-bayesian-statistics.qmd)
 - [Tuning and calibration](../chapters/practice/tuning-and-calibration.qmd)
 - [Diagnostics and model criticism](../chapters/practice/diagnostics-and-model-criticism.qmd)
 
-## Reading Path
+## Reading path
 
 Recommended order:
 
@@ -35,7 +36,7 @@ Recommended order:
 2. [Tuning and calibration](../chapters/practice/tuning-and-calibration.qmd)
 3. [Diagnostics and model criticism](../chapters/practice/diagnostics-and-model-criticism.qmd)
 
-## Chapter 21. Optimization Techniques in Bayesian Statistics
+## Chapter 21. Optimization techniques in Bayesian statistics
 
 ### Core question
 
@@ -81,7 +82,7 @@ When does posterior mode optimization help, and how does it relate to full Bayes
 - @murphy2023
 - @bishop2006
 
-## Chapter 22. Tuning and Calibration
+## Chapter 22. Tuning and calibration
 
 ### Core question
 
@@ -125,7 +126,7 @@ How should algorithmic hyperparameters be chosen so that computation is stable, 
 - @betancourt2017
 - @vehtari2021
 
-## Chapter 23. Diagnostics and Model Criticism
+## Chapter 23. Diagnostics and model criticism
 
 ### Core question
 

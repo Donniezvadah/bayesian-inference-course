@@ -1,18 +1,18 @@
 ---
-title: "Robust Bayesian Methods: Heavy Tails, Contamination, Misspecification, and Generalized Updating"
+title: "Robust Bayesian methods: heavy tails, contamination, misspecification, and generalized updating"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - explain what robustness means in Bayesian analysis and what it does not mean;
 - derive the Student-$t$ likelihood as a scale mixture of Gaussians;
 - formulate contamination models with latent outlier indicators;
 - describe posterior behavior under model misspecification;
 - compare classical posterior updating with generalized Bayes updates based on losses.
+:::
 
-## 1. Why Robustness Matters
+## Why robustness matters
 
 All models are approximations. Robust Bayesian analysis asks how posterior conclusions behave when the approximation is imperfect:
 
@@ -23,7 +23,7 @@ All models are approximations. Robust Bayesian analysis asks how posterior concl
 
 Robustness is not a license to stop modeling carefully. It is a way to reduce the inferential damage when the model is not exactly correct.
 
-## 2. Posterior Concentration Under Misspecification
+## Posterior concentration under misspecification
 
 Let $p_0$ denote the true data-generating distribution and let $\{p_\theta : \theta \in \Theta\}$ be the model family. If $p_0 \notin \{p_\theta\}$, then the posterior cannot concentrate at a “true” parameter value. Under regularity conditions it concentrates near the pseudo-true parameter
 
@@ -43,7 +43,7 @@ This fact has two consequences:
 
 Hence robustness is partly about changing the model family so the pseudo-true target is less distorted by localized failures.
 
-## 3. Heavy-Tailed Likelihoods
+## Heavy-tailed likelihoods
 
 The most common robustification is to replace a Gaussian observation model with a Student-$t$ model.
 
@@ -75,7 +75,7 @@ $$
 
 which is quadratic. This is why the Student-$t$ downweights outliers.
 
-## 4. Student-$t$ As A Scale Mixture
+## Student-$t$ as a scale mixture
 
 The representation
 
@@ -149,7 +149,7 @@ $$
 
 Large residuals therefore receive smaller effective precision weights.
 
-## 5. Robust Priors
+## Robust priors
 
 Likelihood robustness is only half the story. Priors can also be chosen to reduce overshrinkage or separation pathologies.
 
@@ -161,7 +161,7 @@ Examples include:
 
 Heavy-tailed priors preserve regularization near zero while allowing genuine large signals to escape. This is especially important in sparse high-dimensional settings.
 
-## 6. Contamination Models
+## Contamination models
 
 Another robustification is explicit contamination:
 
@@ -210,7 +210,7 @@ Contamination models are expressive, but they introduce:
 - sensitivity to the specification of $g$;
 - extra computational burden.
 
-## 7. Generalized Bayes
+## Generalized Bayes
 
 Classical Bayesian updating uses log likelihood accumulation. A broader decision-theoretic update replaces the negative log likelihood by a generic loss $\ell(y,\theta)$ [@bissiri2016]:
 
@@ -236,7 +236,7 @@ then classical Bayes is recovered. But one can choose alternative losses that ar
 
 Generalized Bayes clarifies that robustness need not be tied to one parametric likelihood family. One can build posterior-like updates around loss functions. The cost is that coherence with a fully specified generative model is partially relaxed.
 
-## 8. Worked Comparison: Gaussian Versus Student-$t$ Regression
+## Worked comparison: Gaussian versus Student-$t$ regression
 
 Consider a Gaussian prior
 
@@ -269,7 +269,7 @@ $$
 
 The Gaussian objective is dominated by large squared residuals. The Student-$t$ objective is much flatter for large residuals. Therefore a small number of aberrant observations distort the posterior much less.
 
-## 9. `R` Implementation
+## `R` implementation
 
 The companion lab is [robust_t_vs_gaussian.R](../../labs/r/robust_t_vs_gaussian.R). It:
 
@@ -289,7 +289,7 @@ neg_log_post_t <- function(beta, X, y, sigma, tau, nu) {
 }
 ```
 
-## 10. Diagnostics And Pitfalls
+## Diagnostics and pitfalls
 
 ### Robustness is not immunity
 
@@ -307,7 +307,7 @@ The learning-rate parameter $w$ matters. If it is poorly calibrated, the update 
 
 One must still inspect whether the fitted robust model reproduces the parts of the data that matter scientifically.
 
-## 11. Exercises
+## Exercises
 
 1. Derive the Student-$t$ density from the Gaussian-gamma scale-mixture representation.
 2. Show that the Student-$t$ residual penalty grows more slowly than the Gaussian penalty for large residuals.
@@ -315,7 +315,7 @@ One must still inspect whether the fitted robust model reproduces the parts of t
 4. Explain the pseudo-true parameter under misspecification.
 5. Compare classical Bayes and generalized Bayes in terms of the objective being accumulated across observations.
 
-## 12. Summary
+## Summary
 
 Robust Bayesian analysis is about controlled resistance to misspecification:
 
@@ -327,6 +327,10 @@ Robust Bayesian analysis is about controlled resistance to misspecification:
 
 Robustness should be treated as part of workflow, not as a one-line fix.
 
-## References
+## Further reading
 
-Key references are @gelman2013, @lange1989, @kleijn2012, @bissiri2016, and @murphy2023.
+@lange1989 is the practical starting point for heavy-tailed modelling: it works through Student-$t$ errors as a robust replacement for the normal and gives the scale-mixture representation that makes the model easy to sample.
+
+@kleijn2012 covers what happens to the posterior when the model is wrong — the misspecified Bernstein-von Mises theorem — and explains why posterior credible intervals can have poor frequentist coverage under misspecification even as the sample grows.
+
+@bissiri2016 develops general Bayesian updating with a loss function in place of a likelihood, which gives a coherent way to be deliberately robust rather than accidentally fragile. @gelman2013 chapter 17 covers the applied side, and @murphy2023 chapter 15 the connection to robust loss functions in machine learning. The diagnostic question of noticing misspecification in the first place is treated in [diagnostics and model criticism](../practice/diagnostics-and-model-criticism.qmd).

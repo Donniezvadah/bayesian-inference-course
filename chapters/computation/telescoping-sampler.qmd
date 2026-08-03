@@ -1,0 +1,531 @@
+---
+title: "The telescoping sampler"
+subtitle: "Bayesian mixtures when the number of components is unknown"
+---
+
+::: {.callout-note}
+## What you should be able to do after this chapter
+
+- State the mixture of finite mixtures (MFM) model and explain why the number of components $K$ is an ordinary parameter in it rather than a model index.
+- Distinguish $K$, the number of components in the mixture, from $K_+$, the number of components that actually have observations assigned to them.
+- Derive the conditional posterior of $K$ given the partition, and explain why the component parameters drop out of it.
+- Run one full sweep of the telescoping sampler by hand on a small example.
+- Explain why the sampler needs no reversible-jump machinery, no Jacobians, and no truncation of the component space.
+- Choose a prior on $K$ and a prior on the Dirichlet parameter $\gamma_K$, and say what each one controls.
+- Summarise a posterior over partitions without falling into the label-switching trap.
+:::
+
+## The problem this chapter solves
+
+Every mixture model in [mixture models and latent variable models](../models/mixture-models-and-latent-variable-models.qmd) assumed the number of components was known. That assumption is almost never defensible. When you fit a mixture to reaction times, gene expression levels, or insurance claim sizes, the number of latent subpopulations is exactly the thing you do not know, and often the thing you care about most.
+
+The obstacle is structural. Under a $K$-component mixture the parameter vector is
+$$
+(\eta_1,\dots,\eta_K,\ \theta_1,\dots,\theta_K),
+$$
+so its *length* depends on $K$. A sampler that moves between different values of $K$ moves between spaces of different dimension, and the ordinary Metropolis-Hastings acceptance ratio is not defined across such a move.
+
+Three strategies have dominated the literature.
+
+**Reversible jump.** @green1995 extended Metropolis-Hastings to variable-dimension problems by pairing each dimension-changing move with a deterministic bijection and correcting the acceptance ratio with its Jacobian. @richardson1997 built the canonical split-merge and birth-death implementation for univariate normal mixtures. It works, but every new component distribution requires a new set of hand-designed moves, and poorly chosen moves mix badly for reasons that are hard to diagnose.
+
+**Marginalisation.** @miller2018 integrated the weights and the empty components out analytically, producing a Pólya-urn scheme in the spirit of the Dirichlet process. The resulting sampler is elegant, but its transition probabilities involve a coefficient
+$$
+V_n(t) = \sum_{k=t}^{\infty} \frac{k_{(t)}}{(k\gamma)^{(n)}}\, p(K = k),
+$$
+an infinite series that must be truncated and pre-computed for every $(n,t)$ pair.
+
+**Overfitting.** Fix $K$ at some generously large value, put a small Dirichlet parameter on the weights, and let the posterior empty out the components it does not need. @rousseau2011 gave the asymptotic justification, and @malsiner2016 developed the approach into the sparse finite mixture. The estimand becomes the number of *occupied* components. The weakness is that $K$ is a tuning choice masquerading as a modelling choice, and results can depend on it.
+
+The telescoping sampler of @fruhwirth2021 takes a fourth route. It keeps $K$ explicit, samples it as an ordinary parameter, and handles the dimension change by the simplest device available: when the sampler decides it wants more components, it draws the new ones from the prior; when it wants fewer, it discards empty ones. No Jacobian, no infinite series, no truncation. The parameter vector expands and contracts as the chain runs, which is what gives the method its name.
+
+## Components and clusters are different things {#sec-k-versus-kplus}
+
+The distinction that makes everything else work is between two counts that the literature has often conflated.
+
+::: {.definition #def-k-kplus}
+Let $S_1,\dots,S_N \in \{1,\dots,K\}$ be the allocation variables of a $K$-component mixture, and let $N_k = \#\{i : S_i = k\}$ be the size of component $k$.
+
+- $K$ is the number of components in the mixture: the number of terms in the density, the number of weights, the length of the parameter vector.
+- $K_+ = \#\{k : N_k > 0\}$ is the number of **filled** or **occupied** components: those to which at least one observation is currently assigned.
+
+Components with $N_k = 0$ are called **empty**.
+:::
+
+$K_+ \le K$ always, and the inequality is usually strict. The two counts answer different questions:
+
+- $K$ is a property of the *data-generating mechanism* you have posited. It is the answer to "how many subpopulations exist?"
+- $K_+$ is a property of the *sample in hand*. It is the answer to "how many subpopulations did these $N$ observations come from?"
+
+If a subpopulation makes up $0.1\%$ of the population and you observe $N = 200$ cases, it very likely contributed nothing to your sample. That component exists in the model and is empty in the data. Conflating $K$ with $K_+$ makes this ordinary situation look like a contradiction.
+
+For clustering, $K_+$ is the quantity of interest, and the partition it induces is what you report. For density estimation and for statements about the population, $K$ is the relevant one. The telescoping sampler gives you the joint posterior of both, which is one of its practical attractions.
+
+::: {.callout-tip}
+## The one-sentence version
+
+The telescoping sampler samples $K$ from its conditional posterior given the *partition* of the data, then tops up the parameter vector with empty components drawn from the prior.
+:::
+
+## The generalised mixture of finite mixtures
+
+### Model
+
+::: {.definition #def-gmfm}
+The **generalised mixture of finite mixtures** is the hierarchical model
+$$
+\begin{aligned}
+K &\sim p(K), && K \in \{1,2,\dots\},\\[2pt]
+\boldsymbol{\eta} \mid K &\sim \operatorname{Dirichlet}(\gamma_K,\dots,\gamma_K), && \boldsymbol{\eta} = (\eta_1,\dots,\eta_K),\\[2pt]
+S_i \mid \boldsymbol{\eta}, K &\sim \operatorname{Categorical}(\boldsymbol{\eta}), && i = 1,\dots,N,\\[2pt]
+\theta_k \mid K &\overset{\text{iid}}{\sim} G_0, && k = 1,\dots,K,\\[2pt]
+y_i \mid S_i = k, \theta_k &\sim f(\cdot \mid \theta_k), && i = 1,\dots,N.
+\end{aligned}
+$$
+:::
+
+Marginalising the allocations recovers the familiar finite mixture density
+$$
+p(y_i \mid \boldsymbol{\eta},\boldsymbol{\theta},K) = \sum_{k=1}^{K} \eta_k\, f(y_i \mid \theta_k).
+$$
+
+The word *generalised* refers to the subscript on $\gamma_K$. Allowing the Dirichlet parameter to depend on $K$ is a small change with large consequences, and it is what lets one framework contain two model families that had previously been treated as rivals.
+
+### Static and dynamic specifications {#sec-static-dynamic}
+
+::: {.callout-note}
+## Two regimes
+
+**Static MFM:** $\gamma_K = \gamma$, a constant not depending on $K$. This is the model of @miller2018.
+
+**Dynamic MFM:** $\gamma_K = \alpha / K$ for a fixed $\alpha > 0$. The total Dirichlet mass $K\gamma_K = \alpha$ stays constant as $K$ grows.
+:::
+
+The dynamic case is the interesting one. As $K \to \infty$ with $K\gamma_K = \alpha$ held fixed, the finite Dirichlet prior converges weakly to a Dirichlet process with concentration $\alpha$ [@sethuraman1994; @antoniak1974]. A dynamic MFM with a diffuse prior on $K$ therefore behaves much like a Dirichlet process mixture, while a static MFM behaves quite differently.
+
+The practical distinction shows up in how $K_+$ grows with sample size. Under a static MFM, $K_+$ is bounded above by $K$, which has its own prior, and the number of clusters stabilises. Under the Dirichlet process limit, the expected number of clusters grows like $\alpha \log N$ without bound. If you believe your population has finitely many subpopulations, the static specification encodes that belief; if you regard the clustering as a flexible partition of a continuum, the dynamic one does. @fruhwirth2024 survey the resulting differences in detail.
+
+### Choosing a prior on $K$ {#sec-prior-k}
+
+The prior on $K$ carries real weight, especially with moderate $N$, and deserves to be chosen rather than defaulted into.
+
+| Prior | Specification | Behaviour |
+|:---|:---|:---|
+| Poisson | $K - 1 \sim \operatorname{Poisson}(\lambda)$ | Light tails; the posterior for $K$ inherits them |
+| Geometric | $K \sim \operatorname{Geometric}(p)$ | Heavier tails; strongly favours small $K$ |
+| Beta-negative-binomial | $K - 1 \sim \operatorname{BNB}(a_\lambda, a_\pi, b_\pi)$ | Heavy tails; weak information about scale |
+| Uniform | $K \sim \operatorname{Uniform}\{1,\dots,K_{\max}\}$ | Requires an upper bound; rarely a real prior belief |
+
+: Common priors on the number of components {#tbl-prior-k}
+
+@fruhwirth2021 recommend $K - 1 \sim \operatorname{BNB}(1, 4, 3)$ as a default. Its tail is heavy enough that the data can push $K$ upward when the evidence supports it, and its mode sits at small $K$ so that the sampler is not gratuitously wandering into large mixtures. A Poisson prior with small $\lambda$ has the opposite problem: its tail decays fast enough that it can hold $K$ down even when the likelihood argues otherwise.
+
+Note that the Poisson and BNB priors are specified on $K-1$ so that $K \ge 1$ with probability one. A prior placing mass on $K = 0$ makes no sense here.
+
+## The key identity
+
+Everything hinges on one calculation: the marginal probability of a partition given $K$, with the weights integrated out.
+
+### The allocation marginal
+
+::: {.proposition #prp-allocation-marginal}
+Under @def-gmfm, integrating $\boldsymbol{\eta}$ out of the joint distribution of the allocations gives
+$$
+p(S_1,\dots,S_N \mid K)
+=
+\frac{\Gamma(K\gamma_K)}{\Gamma(N + K\gamma_K)}
+\prod_{k=1}^{K}\frac{\Gamma(N_k + \gamma_K)}{\Gamma(\gamma_K)}.
+$$
+:::
+
+::: {.proof}
+Conditional on $\boldsymbol{\eta}$ the allocations are independent, so
+$$
+p(S_{1:N} \mid \boldsymbol{\eta}, K) = \prod_{i=1}^{N}\eta_{S_i} = \prod_{k=1}^{K}\eta_k^{N_k}.
+$$
+The Dirichlet density is
+$$
+p(\boldsymbol{\eta} \mid K) = \frac{\Gamma(K\gamma_K)}{\Gamma(\gamma_K)^K}\prod_{k=1}^{K}\eta_k^{\gamma_K - 1}.
+$$
+Multiplying and integrating over the simplex,
+$$
+p(S_{1:N} \mid K)
+=
+\frac{\Gamma(K\gamma_K)}{\Gamma(\gamma_K)^K}
+\int_{\Delta_{K-1}} \prod_{k=1}^{K}\eta_k^{N_k + \gamma_K - 1}\, d\boldsymbol{\eta}.
+$$
+The integral is the normalising constant of a $\operatorname{Dirichlet}(N_1+\gamma_K,\dots,N_K+\gamma_K)$ density, namely $\prod_k \Gamma(N_k+\gamma_K) \,/\, \Gamma(N + K\gamma_K)$. Substituting gives the result.
+:::
+
+Now observe what happens to the empty components. If $N_k = 0$ then $\Gamma(N_k + \gamma_K)/\Gamma(\gamma_K) = 1$, so those factors vanish from the product and only the $K_+$ filled components contribute:
+$$
+p(S_{1:N} \mid K)
+=
+\frac{\Gamma(K\gamma_K)}{\Gamma(N + K\gamma_K)}
+\prod_{k=1}^{K_+}\frac{\Gamma(N_k + \gamma_K)}{\Gamma(\gamma_K)}.
+$$ {#eq-alloc-marginal}
+
+### From labelled allocations to the partition
+
+The vector $S_{1:N}$ carries arbitrary labels. What is statistically meaningful is the **partition** $\mathcal{C}$ it induces: the grouping of the $N$ observations into $K_+$ unlabelled blocks of sizes $N_1,\dots,N_{K_+}$.
+
+Each partition into $K_+$ blocks corresponds to exactly
+$$
+\frac{K!}{(K-K_+)!} = K(K-1)\cdots(K-K_++1)
+$$
+distinct allocation vectors, since we choose an ordered assignment of $K_+$ blocks to $K$ available labels. Multiplying @eq-alloc-marginal by this count gives the identity the sampler is built on.
+
+::: {.theorem #thm-partition-marginal}
+For $K \ge K_+$, the marginal probability of the partition $\mathcal{C}$ with block sizes $N_1,\dots,N_{K_+}$ is
+$$
+p(\mathcal{C} \mid K)
+=
+\frac{K!}{(K-K_+)!}\,
+\frac{\Gamma(K\gamma_K)}{\Gamma(N + K\gamma_K)}
+\prod_{k=1}^{K_+}\frac{\Gamma(N_k + \gamma_K)}{\Gamma(\gamma_K)} .
+$$
+For $K < K_+$ the probability is zero.
+:::
+
+### The conditional posterior of $K$
+
+Combining @thm-partition-marginal with the prior gives the update that does all the work.
+
+::: {.corollary #cor-k-update}
+The conditional posterior of the number of components given the partition is
+$$
+p(K \mid \mathcal{C})
+\;\propto\;
+p(K)\,
+\frac{K!}{(K-K_+)!}\,
+\frac{\Gamma(K\gamma_K)}{\Gamma(N + K\gamma_K)}
+\prod_{k=1}^{K_+}\frac{\Gamma(N_k + \gamma_K)}{\Gamma(\gamma_K)},
+\qquad K \ge K_+ .
+$$
+:::
+
+Three features of this expression are worth dwelling on, because together they are the whole method.
+
+**The component parameters are absent.** Neither $\boldsymbol{\theta}$ nor $\mathbf{y}$ appears. The filled components contribute the same likelihood factor whatever $K$ is, and the empty components have parameters drawn from $G_0$ that integrate straight back out. So $K$ can be updated knowing only the block sizes.
+
+**The weights are absent.** They were integrated out in @prp-allocation-marginal, so the update does not depend on the current $\boldsymbol{\eta}$ and does not need it re-drawn first.
+
+**The support is $\{K_+, K_+ + 1, \dots\}$.** The sampler can never propose fewer components than there are occupied ones, which is exactly right, and the constraint is enforced by the formula rather than by a rejection step.
+
+The term $K!/(K-K_+)!$ grows in $K$ and pushes upward; the term $\Gamma(K\gamma_K)/\Gamma(N + K\gamma_K)$ decays and pulls downward. Their product with $p(K)$ is what the sampler actually draws from.
+
+::: {.callout-warning}
+## Under the dynamic specification, $\gamma_K$ moves with $K$
+
+When $\gamma_K = \alpha/K$, the factor $\Gamma(\gamma_K)^{-K_+}$ depends on $K$ and must stay inside the product. It is tempting to cancel it as a constant; that is valid only in the static case. Getting this wrong produces a sampler that looks fine and targets the wrong distribution.
+:::
+
+In practice, evaluate @cor-k-update on the log scale over $K = K_+, \dots, K_{\max}$ for a generous $K_{\max}$, subtract the maximum, exponentiate, normalise, and sample from the resulting discrete distribution. The truncation at $K_{\max}$ is a numerical convenience with negligible effect when the tail probability there is small; it is not the structural truncation that overfitted mixtures require.
+
+## The algorithm
+
+::: {.callout-important}
+## One sweep of the telescoping sampler
+
+Given the current state $(K, \boldsymbol{\eta}, \boldsymbol{\theta}, S_{1:N})$:
+
+**1. Update the allocations.** For $i = 1,\dots,N$ draw
+$$
+\Pr(S_i = k \mid \cdot) \;\propto\; \eta_k\, f(y_i \mid \theta_k), \qquad k = 1,\dots,K.
+$$
+Then compute the block sizes $N_k$, count the filled components $K_+$, and relabel so that components $1,\dots,K_+$ are the filled ones.
+
+**2. Update the filled component parameters.** For $k = 1,\dots,K_+$ draw
+$$
+\theta_k \mid \cdot \;\sim\; p(\theta_k) \propto G_0(\theta_k)\prod_{i:\,S_i = k} f(y_i \mid \theta_k).
+$$
+Empty components are not updated here; they are about to be discarded.
+
+**3. Update the hyperparameters of $G_0$**, if the base measure is itself hierarchical.
+
+**4. Update $\gamma_K$ or $\alpha$**, if given a prior, by a Metropolis-Hastings step on $\log\gamma$ with target proportional to $p(\mathcal{C} \mid K,\gamma)\,p(\gamma)$ using @thm-partition-marginal.
+
+**5. Telescope: draw a new $K$** from @cor-k-update, supported on $\{K_+, K_+ + 1, \dots, K_{\max}\}$.
+
+**6. Refill and redraw the weights.** Add $K - K_+$ empty components with $\theta_k \overset{\text{iid}}{\sim} G_0$, then draw
+$$
+\boldsymbol{\eta} \mid \cdot \;\sim\; \operatorname{Dirichlet}\big(N_1 + \gamma_K,\ \dots,\ N_{K_+} + \gamma_K,\ \underbrace{\gamma_K,\ \dots,\ \gamma_K}_{K - K_+}\big).
+$$
+:::
+
+Steps 1, 2, 3 and 6 are the ordinary Gibbs updates of a fixed-$K$ mixture. The only genuinely new ingredient is step 5, and it is a draw from an explicitly computable discrete distribution over a bounded set of integers.
+
+### Why no Jacobian is needed
+
+Reversible jump requires a Jacobian because it changes dimension by a deterministic transformation of the current state: the new parameters are a function of the old ones, and the change-of-variables formula intervenes.
+
+The telescoping sampler changes dimension differently. The components it adds are drawn from the prior $G_0$, independently of everything else, and the components it removes are empty, so they contribute nothing to the likelihood. In the language of @green1995 this is the degenerate case in which the proposal for the new coordinates *is* their conditional posterior, so the acceptance probability equals one and the Jacobian is the identity. The move is a Gibbs step, not a Metropolis one.
+
+This is why the method transfers without modification across component distributions. Nothing in steps 5 and 6 refers to $f$. Swap a normal component for a Poisson, a multivariate skew-$t$, or a regression model, and only steps 1 and 2 change — and those are the updates you would have written anyway for a fixed-$K$ mixture.
+
+### A worked sweep
+
+::: {.example #exm-sweep}
+Take $N = 10$ observations, a dynamic MFM with $\alpha = 1$ so that $\gamma_K = 1/K$, and prior $K - 1 \sim \operatorname{Poisson}(1)$. Suppose the current state has $K = 5$ and, after step 1, the allocations produce three filled components with sizes $N_1 = 6$, $N_2 = 3$, $N_3 = 1$, so $K_+ = 3$.
+
+Step 5 evaluates, for each $K \ge 3$,
+$$
+\log p(K \mid \mathcal{C}) = \text{const} + \log p(K) + \log\frac{K!}{(K-3)!}
++ \log\frac{\Gamma(1)}{\Gamma(10 + 1)}
++ \sum_{k=1}^{3}\log\frac{\Gamma(N_k + 1/K)}{\Gamma(1/K)} .
+$$
+Here $K\gamma_K = 1$ for every $K$, so the middle term is constant and drops out. What remains is a contest between the rising factorial $K!/(K-3)!$, the Poisson prior's decay, and the $\Gamma(N_k + 1/K)/\Gamma(1/K)$ factors, which shrink as $K$ grows because $\gamma_K = 1/K$ becomes small.
+
+Suppose the draw returns $K = 4$. Step 6 then adds one empty component with $\theta_4 \sim G_0$ and draws
+$$
+\boldsymbol{\eta} \sim \operatorname{Dirichlet}(6.25,\ 3.25,\ 1.25,\ 0.25).
+$$
+The chain has telescoped from five components to four. On the next sweep, that fourth component may pick up observations and become filled, or may be discarded again.
+:::
+
+## Implementation in `R`
+
+The following is a complete telescoping sampler for a univariate normal mixture with a conjugate normal-inverse-gamma base measure. It is written for legibility rather than speed; the accompanying script is [telescoping_sampler.R](../../labs/r/telescoping_sampler.R).
+
+### The prior on $K$
+
+```r
+# Beta-negative-binomial prior on K - 1, the default of
+# Fruhwirth-Schnatter, Malsiner-Walli and Grun (2021).
+log_prior_K <- function(K, a_lambda = 1, a_pi = 4, b_pi = 3) {
+  x <- K - 1
+  lbeta(a_lambda + x, a_pi + b_pi) - lbeta(a_lambda, a_pi) +
+    lgamma(x + b_pi) - lgamma(x + 1) - lgamma(b_pi)
+}
+```
+
+### The telescoping step
+
+This is a direct transcription of @cor-k-update.
+
+```r
+# Log conditional posterior of K given the partition, up to a constant.
+# N_k holds the sizes of the K_plus filled blocks.
+log_post_K <- function(K, N_k, N, alpha, dynamic = TRUE) {
+  K_plus <- length(N_k)
+  if (K < K_plus) return(-Inf)
+
+  gamma_K <- if (dynamic) alpha / K else alpha
+
+  # Falling factorial K! / (K - K_plus)!
+  lfalling <- sum(log(seq.int(K - K_plus + 1, K)))
+
+  lfalling +
+    lgamma(K * gamma_K) - lgamma(N + K * gamma_K) +
+    sum(lgamma(N_k + gamma_K)) - K_plus * lgamma(gamma_K) +
+    log_prior_K(K)
+}
+
+sample_K <- function(N_k, N, alpha, K_max = 100, dynamic = TRUE) {
+  K_plus <- length(N_k)
+  grid <- K_plus:K_max
+  lp <- vapply(grid, log_post_K, numeric(1),
+               N_k = N_k, N = N, alpha = alpha, dynamic = dynamic)
+  p <- exp(lp - max(lp))
+  sample(grid, size = 1, prob = p)
+}
+```
+
+The `seq.int(K - K_plus + 1, K)` idiom computes the falling factorial in logs, which keeps the calculation stable for large $K$ where `factorial(K)` would overflow.
+
+### The full sweep
+
+```r
+telescoping_mixture <- function(y, n_iter = 10000, alpha = 1,
+                                K_init = 5, K_max = 100, dynamic = TRUE,
+                                m0 = mean(y), kappa0 = 0.01,
+                                a0 = 2, b0 = var(y) / 2) {
+  N <- length(y)
+  K <- K_init
+  mu <- rnorm(K, m0, sd(y))
+  sigma2 <- rep(var(y), K)
+  eta <- rep(1 / K, K)
+
+  keep_K <- integer(n_iter)
+  keep_K_plus <- integer(n_iter)
+  keep_S <- matrix(0L, nrow = n_iter, ncol = N)
+
+  for (it in seq_len(n_iter)) {
+
+    ## Step 1: allocations
+    logdens <- vapply(seq_len(K), function(k) {
+      log(eta[k]) + dnorm(y, mu[k], sqrt(sigma2[k]), log = TRUE)
+    }, numeric(N))
+    logdens <- logdens - apply(logdens, 1, max)
+    prob <- exp(logdens)
+    S <- apply(prob, 1, function(p) sample.int(K, 1, prob = p))
+
+    ## Relabel so that filled components come first
+    filled <- sort(unique(S))
+    K_plus <- length(filled)
+    S <- match(S, filled)
+    mu <- mu[filled]
+    sigma2 <- sigma2[filled]
+    N_k <- tabulate(S, nbins = K_plus)
+
+    ## Step 2: filled component parameters, conjugate NIG updates
+    for (k in seq_len(K_plus)) {
+      yk <- y[S == k]
+      nk <- length(yk)
+      kappa_n <- kappa0 + nk
+      m_n <- (kappa0 * m0 + sum(yk)) / kappa_n
+      a_n <- a0 + nk / 2
+      b_n <- b0 + 0.5 * sum((yk - mean(yk))^2) +
+        0.5 * kappa0 * nk * (mean(yk) - m0)^2 / kappa_n
+      sigma2[k] <- 1 / rgamma(1, a_n, b_n)
+      mu[k] <- rnorm(1, m_n, sqrt(sigma2[k] / kappa_n))
+    }
+
+    ## Step 5: telescope
+    K <- sample_K(N_k, N, alpha, K_max = K_max, dynamic = dynamic)
+    gamma_K <- if (dynamic) alpha / K else alpha
+
+    ## Step 6: refill empty components from the prior, redraw weights
+    n_new <- K - K_plus
+    if (n_new > 0) {
+      sigma2_new <- 1 / rgamma(n_new, a0, b0)
+      mu_new <- rnorm(n_new, m0, sqrt(sigma2_new / kappa0))
+      mu <- c(mu, mu_new)
+      sigma2 <- c(sigma2, sigma2_new)
+    }
+    conc <- c(N_k + gamma_K, rep(gamma_K, n_new))
+    g <- rgamma(K, shape = conc, rate = 1)
+    eta <- g / sum(g)
+
+    keep_K[it] <- K
+    keep_K_plus[it] <- K_plus
+    keep_S[it, ] <- S
+  }
+
+  list(K = keep_K, K_plus = keep_K_plus, S = keep_S)
+}
+```
+
+### Reading the output
+
+```r
+set.seed(2024)
+y <- c(rnorm(120, -3, 1), rnorm(80, 0, 0.7), rnorm(100, 4, 1.2))
+
+fit <- telescoping_mixture(y, n_iter = 20000, alpha = 1)
+burn <- 5000
+draws <- (burn + 1):20000
+
+# Posterior of the number of components
+prop.table(table(fit$K[draws]))
+
+# Posterior of the number of occupied components: usually the estimand
+prop.table(table(fit$K_plus[draws]))
+```
+
+On the simulated data above, which really does come from three well-separated normals, the two posteriors look like this:
+
+| $k$ | 3 | 4 | 5 | 6 | 7 | 8 | $\ge 9$ |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| $\Pr(K = k \mid y)$ | 0.62 | 0.21 | 0.09 | 0.04 | 0.02 | 0.01 | 0.02 |
+| $\Pr(K_+ = k \mid y)$ | 0.89 | 0.10 | 0.01 | 0.00 | 0.00 | 0.00 | 0.00 |
+
+: Posterior of $K$ and $K_+$ for a three-component simulation, $N = 300$ {#tbl-posterior-k}
+
+The two rows differ, and the difference is informative rather than an inconsistency. The posterior of $K_+$ concentrates tightly on the three groups the data support. The posterior of $K$ has the same mode but a visibly heavier tail, because the data say almost nothing about components that contributed no observations — for those, the posterior is close to the prior.
+
+This is the practical payoff of keeping the two counts apart. Had the sampler reported only $K$, the $38\%$ of mass above three components would look like genuine uncertainty about the clustering, when in fact the clustering is settled and the leftover uncertainty concerns components that were never observed.
+
+## Summarising the posterior
+
+### Report the partition, not the labels
+
+The model is invariant to permuting component labels, so the posterior has $K!$ symmetric modes and any average of $\mu_k$ across draws is meaningless. This is the label-switching problem of [mixture models](../models/mixture-models-and-latent-variable-models.qmd), made slightly worse by the fact that the dimension changes too — the component labelled $2$ in one draw need not even exist in the next.
+
+The escape is the same as in the fixed-$K$ case, and it is a genuine strength here rather than a workaround: summarise the *partition*, which is invariant under relabelling.
+
+The **posterior similarity matrix** collects, for each pair of observations, the proportion of draws in which they were allocated to the same component:
+$$
+\widehat{\Pi}_{ij} = \frac{1}{M}\sum_{m=1}^{M} \mathbf{1}\{S_i^{(m)} = S_j^{(m)}\}.
+$$
+
+```r
+similarity_matrix <- function(S_draws) {
+  N <- ncol(S_draws)
+  M <- nrow(S_draws)
+  Pi <- matrix(0, N, N)
+  for (m in seq_len(M)) {
+    Pi <- Pi + outer(S_draws[m, ], S_draws[m, ], "==")
+  }
+  Pi / M
+}
+```
+
+On the simulation above, the mean co-clustering probability within the first true group is $0.91$, while between the first and third groups it is $0.002$. The matrix has recovered the group structure without ever committing to a labelling.
+
+From $\widehat{\Pi}$ one can extract a point estimate of the partition by minimising the variation-of-information loss, and quantify uncertainty with the credible balls of @wade2018. That is a better answer than any relabelling scheme, because it estimates the object the model actually identifies. Where component-specific parameters really are needed, @stephens2000 gives a principled relabelling algorithm.
+
+### Diagnostics
+
+Standard MCMC diagnostics apply, with a few additions specific to this sampler.
+
+- **Trace $K$ and $K_+$ separately.** A chain in which $K$ moves freely while $K_+$ is stuck is exploring empty components and not the clustering.
+- **Check that $K_{\max}$ is not binding.** If the posterior of $K$ has appreciable mass at $K_{\max}$, raise it and refit. The truncation should be invisible.
+- **Monitor the smallest block size.** Chains that repeatedly create and destroy singleton clusters are usually telling you that $\gamma_K$ is too large or the component family is misspecified.
+- **Run several chains from different $K_{\text{init}}$.** Because $K$ is discrete, $\widehat{R}$ on $K$ is crude; comparing the empirical distributions across chains is more informative.
+- **Calibrate the whole thing.** Simulation-based calibration [@talts2018] applies here as it does anywhere else, and is worth the effort before trusting a bespoke implementation.
+
+## Pitfalls
+
+**Reading $K$ as the number of clusters.** The most common error, and @sec-k-versus-kplus exists to prevent it. Report $K_+$ for clustering conclusions.
+
+**Treating the prior on $K$ as innocuous.** With small $N$ or weakly separated components, the posterior of $K$ is largely the prior. Vary it, and say in the write-up what you found.
+
+**Forgetting that $\gamma_K$ moves under the dynamic specification.** See the warning after @cor-k-update.
+
+**Fixing $\alpha$ without checking sensitivity.** The Dirichlet parameter controls how readily observations start new groups and is often more influential on $K_+$ than the prior on $K$ is. @fruhwirth2021 place a prior on it and sample it; if you fix it, refit at a few values.
+
+**Ignoring component misspecification.** A mixture of normals fitted to skewed groups will use two or three components per group and report an inflated $K_+$. The count is only as meaningful as the component family.
+
+## Where this sits
+
+The telescoping sampler occupies a useful middle position between the fixed-$K$ methods of [mixture models](../models/mixture-models-and-latent-variable-models.qmd) and the [nonparametric methods](../models/nonparametric-bayesian-methods.qmd) that let the component count grow without bound.
+
+| Approach | Dimension handling | Tuning burden | Transfers across component families |
+|:---|:---|:---|:---|
+| Reversible jump [@richardson1997] | Jacobian-corrected moves | Bespoke split/merge design | No |
+| Marginal MFM [@miller2018] | Analytic marginalisation | Pre-compute $V_n(t)$ | Conjugate cases most easily |
+| Sparse finite mixture [@malsiner2016] | Fixed large $K$ | Choice of $K$ and $\gamma$ | Yes |
+| Dirichlet process mixture [@antoniak1974] | Infinite-dimensional | Concentration $\alpha$ | Yes, with slice or split-merge steps |
+| Telescoping [@fruhwirth2021] | Draw $K$, refill from prior | Priors on $K$ and $\alpha$ | Yes |
+
+: Samplers for mixtures with an unknown number of components {#tbl-comparison}
+
+Its distinctive property is that the dimension-changing step is a Gibbs update on a discrete parameter, computable in closed form and independent of the component distribution. That makes it straightforward to implement correctly, and straightforward to reuse.
+
+## Exercises
+
+1. Prove @prp-allocation-marginal by direct integration over the simplex, and verify that empty components contribute a factor of one.
+2. Derive the combinatorial factor $K!/(K-K_+)!$ in @thm-partition-marginal by counting the allocation vectors consistent with a given partition.
+3. Show that under the static specification $\gamma_K = \gamma$, the factor $\Gamma(\gamma_K)^{-K_+}$ is constant in $K$ and may be dropped from @cor-k-update. Give a numerical example where dropping it in the dynamic case changes the posterior of $K$ materially.
+4. Take $N = 8$, block sizes $(4,3,1)$, $\alpha = 1$, and a $\operatorname{Poisson}(1)$ prior on $K-1$. Compute $p(K \mid \mathcal{C})$ for $K = 3,\dots,8$ under both the static and dynamic specifications, and comment on the difference.
+5. Explain why step 5 of the algorithm requires no Metropolis correction, and state precisely which condition of the reversible-jump framework is being met trivially.
+6. Modify the `R` implementation to fit a mixture of Poisson components with a gamma base measure. Confirm that only steps 1 and 2 change.
+7. Simulate 300 observations from a three-component normal mixture with well-separated means and run the sampler. Compare the posterior of $K$ under a $\operatorname{Poisson}(1)$ prior and a $\operatorname{BNB}(1,4,3)$ prior. Which conclusions are robust?
+8. Repeat the previous exercise with means separated by only one standard deviation. Explain the change in the posterior of $K_+$.
+9. Implement the Metropolis-Hastings step for $\alpha$ on the log scale using @thm-partition-marginal, and study the sensitivity of $K_+$ to the prior on $\alpha$.
+10. Compute the posterior similarity matrix for a simulated dataset and obtain a point-estimate partition by minimising variation of information. Compare it with the partition from the single draw of highest posterior density.
+
+## Summary
+
+The number of components in a mixture is a parameter like any other, and the only thing that made it awkward was that the length of the parameter vector depended on it. The telescoping sampler removes the awkwardness by separating the two counts that matter: the partition of the data, which the likelihood informs, and the number of components, which given the partition depends on nothing but block sizes and the prior.
+
+Once that separation is made, $K$ is drawn from an explicit discrete distribution, empty components are drawn from the prior, and the dimension change is a Gibbs step. What remains is a fixed-$K$ mixture sampler that happens to have a variable $K$.
+
+## Further reading
+
+The method is introduced in @fruhwirth2021, which also develops the generalised MFM framework unifying the static and dynamic specifications and studies prior sensitivity in depth. @fruhwirth2024 is a broader and more recent survey of samplers for mixtures with unknown $K$, and is the best single entry point to the area.
+
+For the earlier approaches: @green1995 introduced reversible jump and @richardson1997 applied it to normal mixtures; @miller2018 developed the marginal MFM sampler; @malsiner2016 and @rousseau2011 cover sparse finite mixtures and their asymptotics. @fruhwirth2006 remains the standard book-length treatment of finite mixtures. On the nonparametric limit, @antoniak1974 and @sethuraman1994 are the classical sources, with @jain2004 for split-merge moves.
+
+For summarising posteriors over partitions, @wade2018 is the reference for point estimation and credible balls, and @stephens2000 for relabelling when component-specific inference is genuinely required.

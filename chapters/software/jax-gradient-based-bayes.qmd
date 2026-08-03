@@ -1,18 +1,18 @@
 ---
-title: "JAX for Gradient-Based Bayesian Computation"
+title: "JAX for gradient-based Bayesian computation"
 ---
 
-## Learning Outcomes
-
-After this chapter, you should be able to:
+::: {.callout-note}
+## What you should be able to do after this chapter
 
 - explain why `JAX` is useful in Bayesian computation;
 - write log posterior functions in pure Python/JAX code;
 - compute gradients and Hessians automatically;
 - obtain MAP estimates and Laplace approximations;
 - implement a basic HMC-style integrator using JAX primitives.
+:::
 
-## 1. Why JAX Belongs In This Course
+## Why JAX belongs in this course
 
 This course is centered on `R` and `Stan`, but `JAX` serves a distinct purpose: it exposes the computational anatomy of modern Bayesian methods. Where Stan gives a robust high-level inference engine, JAX gives transparent access to:
 
@@ -28,7 +28,7 @@ JAX runs as **Python code**. In a Quarto course centered on `R` and `Stan`, that
 
 For this repository, the first strategy is used for robustness. The companion script is [jax_logistic_map_hmc.py](../../labs/jax/jax_logistic_map_hmc.py).
 
-## 2. Example Model: Bayesian Logistic Regression
+## Example model: Bayesian Logistic regression
 
 Consider binary responses $y_i \in \{0,1\}$ with predictors $x_i \in \mathbb{R}^p$. Let
 
@@ -61,7 +61,7 @@ This model is ideal for JAX because it has:
 - analytically meaningful gradients and Hessians;
 - direct connection to both MAP optimization and HMC.
 
-## 3. Writing A Stable Log Posterior In JAX
+## Writing a stable log posterior in JAX
 
 Numerical stability matters. Instead of writing $\log(1+\exp(\eta))$ naively, it is better to use `jax.nn.softplus`.
 
@@ -78,7 +78,7 @@ def log_posterior(beta, X, y, prior_scale=2.5):
 
 This function is pure, vectorized, and differentiable. That is exactly the structure JAX wants.
 
-## 4. Automatic Differentiation
+## Automatic differentiation
 
 One line gives the gradient:
 
@@ -112,7 +112,7 @@ with $W=\operatorname{diag}(p_i(1-p_i))$.
 
 JAX does not require us to derive these expressions by hand, but understanding them is still important because they explain curvature, optimization stability, and local posterior shape.
 
-## 5. MAP Estimation
+## MAP estimation
 
 The MAP estimate solves
 
@@ -165,7 +165,7 @@ The MAP is not a full Bayesian answer, but it is useful for:
 - curvature inspection;
 - optimization-based comparisons.
 
-## 6. Laplace Approximation
+## Laplace approximation
 
 Once the MAP estimate $\hat{\beta}$ is available, approximate the posterior locally by a Gaussian:
 
@@ -186,7 +186,7 @@ $$
 
 The Laplace approximation is often useful as a baseline, but it can fail badly for skewed, multimodal, or weakly identified posteriors.
 
-## 7. HMC-Style Building Blocks In JAX
+## HMC-style building blocks in JAX
 
 To understand HMC, define the potential energy
 
@@ -226,7 +226,7 @@ This is not a production NUTS implementation. It is a pedagogical kernel that ex
 - momentum moves the position;
 - the symplectic map approximately conserves Hamiltonian energy.
 
-## 8. A Basic HMC Step
+## A basic HMC step
 
 ```python
 def hmc_step(key, position, step_size, n_steps, X, y, prior_scale=2.5):
@@ -254,7 +254,7 @@ def hmc_step(key, position, step_size, n_steps, X, y, prior_scale=2.5):
 
 This code is intentionally simple. Its purpose is not to compete with Stan; its purpose is to reveal how gradients, leapfrog integration, and Metropolis correction fit together.
 
-## 9. Where JAX Fits Relative To Stan
+## Where JAX fits relative to Stan
 
 ### Use Stan when
 
@@ -270,7 +270,7 @@ This code is intentionally simple. Its purpose is not to compete with Stan; its 
 
 In other words, Stan is the better default inference engine. JAX is the better environment for algorithmic transparency and experimentation.
 
-## 10. Environment Requirements
+## Environment requirements
 
 The JAX material is Python-based. To run it locally:
 
@@ -281,7 +281,7 @@ python labs/jax/jax_logistic_map_hmc.py
 
 For online use, Binder or Codespaces is recommended. JAX is not well suited to pure in-browser Pyodide execution, so the course keeps JAX execution outside the static site itself.
 
-## 11. Common Pitfalls
+## Common pitfalls
 
 ### Numerical instability
 
@@ -299,14 +299,14 @@ JAX works best with pure functions. Code written with mutation-heavy patterns is
 
 A basic HMC demonstration is excellent for learning. It is not a substitute for a mature NUTS implementation with adaptation and diagnostics.
 
-## 12. Exercises
+## Exercises
 
 1. Derive the gradient and Hessian of the Bayesian logistic regression log posterior.
 2. Implement gradient ascent and Newton updates and compare convergence.
 3. Build a Laplace approximation at the MAP and compare its posterior standard deviations with those from a small HMC run.
 4. Experiment with leapfrog step size and number of steps. Describe how acceptance probability changes.
 
-## 13. Summary
+## Summary
 
 JAX is the course's bridge between Bayesian statistics and differentiable scientific computing. The key ideas are:
 
@@ -315,6 +315,10 @@ JAX is the course's bridge between Bayesian statistics and differentiable scient
 - MAP and Laplace approximations are natural first uses of autodiff;
 - HMC can be understood mechanically by implementing its building blocks directly.
 
-## References
+## Further reading
 
-Key references for this chapter are @jax2018, @numpyro2020, @betancourt2017, and @murphy2023.
+@jax2018 is the reference for the library itself — the transformation model built on `grad`, `jit`, `vmap`, and the functional-purity requirements that come with it. @numpyro2020 builds a probabilistic programming layer on top and is the practical choice when you want NUTS without implementing it yourself.
+
+@betancourt2017 and @neal2011 are the references for the sampler being implemented here by hand; the point of writing it out in `JAX` is that every term in those papers becomes something you can differentiate and inspect.
+
+@murphy2023 is the most convenient survey of the gradient-based methods this infrastructure makes accessible, and @bishop2006 remains useful for the optimisation background. For the same workflow in a mature probabilistic language, compare [Stan workflow for hierarchical models](stan-hierarchical-models.qmd).

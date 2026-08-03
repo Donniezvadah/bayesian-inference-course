@@ -1,18 +1,19 @@
 ---
-title: "Bayesian Inference and Bayesian Statistics"
-subtitle: "A rigorous long-form course in probability, inference, computation, modeling, diagnostics, and modern probabilistic workflow"
+title: "Bayesian inference and Bayesian statistics"
+subtitle: "A long-form course in probability, inference, computation, modelling, and workflow"
 toc: false
 page-layout: full
+number-sections: false
 ---
 
 ::: {.hero}
-# Bayesian Inference and Bayesian Statistics
+# Bayesian inference and Bayesian statistics
 
-This website is designed as a serious university-level course in Bayesian statistics for advanced undergraduates, MSc students, PhD students, and quantitatively mature self-learners. It is written as a real course rather than a blog: structured modules, detailed chapters, executable labs, references, project work, and a clear path from foundations to advanced Bayesian workflow.
+A university-level course for advanced undergraduates, MSc and PhD students, and anyone with the mathematical background to work through it independently. It is written as a course rather than a blog: sequenced chapters, worked derivations, executable labs, exercises, and project work running from measure-theoretic foundations to modern probabilistic workflow.
 
-The organizing principle is that Bayesian statistics is not merely a formula for updating beliefs. It is a coherent workflow that begins with probability models, proceeds through prior design and posterior computation, and ends with decision-relevant summaries, predictive performance, and model criticism [@bernardo1994; @gelman2013; @betancourt2017].
+The organising idea is that Bayesian statistics is a workflow, not a formula. It begins with a probability model, proceeds through prior specification and posterior computation, and ends in decision-relevant summaries, predictive checks, and criticism of the model you just fitted [@bernardo1994; @gelman2013; @gelman2020].
 
-[Teaching philosophy](teaching-philosophy.qmd) · [Instructor & Credits](instructor-and-credits.qmd) · [Schedule](syllabus.qmd) · [Tools and Setup](appendix/software-setup.qmd) · [Evaluation](evaluation.qmd)
+[Teaching philosophy](teaching-philosophy.qmd) · [Instructor](instructor-and-credits.qmd) · [Schedule](syllabus.qmd) · [Setup](appendix/software-setup.qmd) · [Evaluation](evaluation.qmd)
 :::
 
 ::: {.instructor-hero}
@@ -21,200 +22,118 @@ The organizing principle is that Bayesian statistics is not merely a formula for
 ::: {.instructor-summary}
 ## Instructor
 
-Donald Zvada is a PhD student in Statistics at Trinity College Dublin. The course is designed from the perspective of statistical theory, computational workflow, and applied modeling practice.
+Donald Zvada is a PhD student in Statistics at Trinity College Dublin, working on longitudinal dietary patterns, health outcomes, and statistical modelling. The course is written from that vantage point: statistical theory, computational practice, and applied modelling treated as one subject.
 
-[Read the full instructor profile](instructor-and-credits.qmd)
+[Full profile and credits](instructor-and-credits.qmd)
 :::
 :::
 
-## Goals Of This Course
+## What the course is for
 
-This course has four simultaneous goals:
+Four things, pursued at the same time rather than in sequence.
 
-1. Develop the formal probability and statistical foundations needed for mathematically precise Bayesian reasoning.
-2. Derive core Bayesian inferential results carefully, including conjugate posteriors, marginal likelihoods, posterior predictive distributions, and decision-theoretic estimators.
-3. Build modern computational competence, from Monte Carlo integration and MCMC to HMC, variational inference, state-space methods, and gradient-based inference.
-4. Train a disciplined Bayesian workflow in `R`, `Stan`, and `JAX`, including prior predictive checks, posterior predictive checks, diagnostics, sensitivity analysis, and reproducible reporting.
+The first is the probability and inference background needed to reason precisely: measure-theoretic probability where it matters, likelihood theory, and the asymptotic results connecting likelihood to posterior inference.
 
-## About This Course
+The second is the core Bayesian machinery derived rather than asserted — conjugate posteriors, marginal likelihoods, predictive distributions, and the decision-theoretic estimators that follow once a loss function is specified.
 
-Use the front-matter pages as the course orientation block:
+The third is computation, from Monte Carlo integration through MCMC, Hamiltonian methods, variational inference, sequential Monte Carlo, and samplers for models whose dimension is not fixed in advance.
 
-- [Teaching Philosophy](teaching-philosophy.qmd)
-- [Instructor & Credits](instructor-and-credits.qmd)
-- [Course Blueprint](course-blueprint.qmd)
-- [Schedule and Recommended Pacing](syllabus.qmd)
-- [Tools and Setup](appendix/software-setup.qmd)
-- [Evaluation](evaluation.qmd)
-- [Chapter Expansion Map](chapter-outline.qmd)
+The fourth is workflow in `R`, `Stan`, and `JAX`: prior predictive checks, diagnostics, cross-validation, sensitivity analysis, and reporting that someone else can reproduce.
 
-## Course Structure
+## Prerequisites
+
+You should be comfortable with multivariable calculus, linear algebra to the level of eigenvalues and quadratic forms, undergraduate probability and statistics, and basic programming in `R` or `Python`. The appendices cover [notation](appendix/notation.qmd), a [measure-theoretic refresher](appendix/measure-probability-review.qmd), and [software setup](appendix/software-setup.qmd).
+
+You do not need prior exposure to Bayesian methods.
+
+## How the course is organised
 
 ::: {.grid-cards}
 ::: {.course-card}
-### Part I
-Probability foundations, likelihood theory, Bayes' theorem, exchangeability, sequential updating, and the logic of probabilistic learning.
+### [Part I. Foundations](parts/part-i-foundations.qmd)
+Probability spaces, conditional expectation, limit theorems, likelihood theory, Bayes' theorem, exchangeability, and sequential updating.
 :::
 
 ::: {.course-card}
-### Part II
-Conjugate analysis, loss functions, decision theory, prior design, shrinkage, prior predictive analysis, and sensitivity.
+### [Part II. Core inference](parts/part-ii-core-bayesian-inference.qmd)
+Conjugate analysis, marginal likelihoods, loss functions and decision theory, prior design, and prior sensitivity.
 :::
 
 ::: {.course-card}
-### Part III
-Numerical approximation, Monte Carlo, MCMC, HMC, NUTS, variational inference, sequential Monte Carlo, and online Bayesian computation.
+### [Part III. Computation](parts/part-iii-computation.qmd)
+Quadrature and Laplace approximation, Monte Carlo, MCMC, HMC and NUTS, variational inference, particle methods, and the telescoping sampler.
 :::
 
 ::: {.course-card}
-### Part IV
-Linear models, GLMs, hierarchical models, mixture models, time series, Gaussian processes, Bayesian nonparametrics, spatial models, and causal perspectives.
+### [Part IV. Models](parts/part-iv-models.qmd)
+Linear models, GLMs, hierarchical models, mixtures, state-space models, Gaussian processes, nonparametrics, spatial models, and causal inference.
 :::
 
 ::: {.course-card}
-### Part V
-Optimization, MAP estimation, tuning, calibration, posterior diagnostics, model criticism, and predictive evaluation.
+### [Part V. Diagnostics](parts/part-v-optimization-and-diagnostics.qmd)
+MAP estimation and curvature, tuning and calibration, convergence diagnostics, posterior predictive checking, and model criticism.
 :::
 
 ::: {.course-card}
-### Part VI
-Full workflows in `R`, `Stan`, and `JAX`, including diagnostics, reproducibility, and computational practice.
+### [Part VI. Software](parts/part-vi-software-workflows.qmd)
+End-to-end workflows in `R`, `Stan`, and `JAX`, with diagnostics and reproducibility treated as part of the analysis.
 :::
 
 ::: {.course-card}
-### Part VII
-Model selection, stacking, robustness, experimental design, communication, and capstone-level workflow synthesis.
+### [Part VII. Advanced topics](parts/part-vii-advanced-topics.qmd)
+Model selection and stacking, robustness and misspecification, experimental design, communication, and capstone work.
 :::
 :::
 
-## About The Instructor
+## How each chapter is built
 
-Donald Zvada is a PhD student in Statistics at Trinity College Dublin whose research focuses on longitudinal dietary patterns, health outcomes, statistical modeling, and machine learning. A fuller profile is available on [Instructor & Credits](instructor-and-credits.qmd).
+Chapters follow the same shape, and the repetition is deliberate. Definitions, derivations, computation, and criticism are much easier to hold together when they arrive in a predictable order.
 
-## Audience And Prerequisites
+Each one opens with what you should be able to do by the end, motivates the problem before formalising it, states definitions and results in numbered environments, derives the central results rather than quoting them, works an example, gives a runnable implementation, then covers the diagnostics and the ways the method fails. Exercises and annotated further reading close the chapter.
 
-The intended audience should already be comfortable with:
+## Software
 
-- calculus through multivariable differentiation and integration;
-- linear algebra at the level of eigenvalues, quadratic forms, and matrix factorizations;
-- undergraduate probability and statistics;
-- basic programming in `R` or `Python`.
+Three tools, chosen because they fail in different ways and teach different things.
 
-The appendices provide a compact review of notation, measure-theoretic probability, and software setup:
+`R` handles simulation, analytic conjugate calculations, custom samplers, and posterior summaries, with `posterior`, `bayesplot`, `loo`, and `cmdstanr` for the workflow layer [@r2025; @posterior2024; @bayesplot2024; @loo2024; @cmdstanr2024].
 
-- [Notation and assumptions](appendix/notation.qmd)
-- [Measure-probability review](appendix/measure-probability-review.qmd)
-- [Tools and setup](appendix/software-setup.qmd)
+`Stan` provides a mature implementation of HMC and NUTS, which makes it the natural vehicle for hierarchical and nonlinear models where hand-rolled samplers struggle [@carpenter2017; @hoffman2014].
 
-## Course Design Principles
+`JAX` supplies automatic differentiation, vectorisation, and JIT compilation for the chapters where the point is to build an algorithm rather than call one [@jax2018]. Writing HMC by hand in `JAX` is the fastest way to understand what Stan is doing on your behalf.
 
-Each major topic is organized around a repeating pedagogical template:
+## Labs
 
-1. Intuition and motivating problem.
-2. Formal definition and notation.
-3. Core theorem or structural result.
-4. Step-by-step derivation.
-5. Worked example.
-6. Computational implementation.
-7. Diagnostics, pathologies, and common mistakes.
-8. Exercises.
-9. Reading notes and references.
+The site is static, but every lab in the repository runs. `R` scripts are in `labs/r/`, Stan programs in `labs/stan/`, Python in `labs/jax/`.
 
-This repeated structure is intentional. Bayesian statistics becomes much easier to master when definitions, derivations, computation, and criticism are presented as a single coherent object rather than as disconnected topics.
+| Lab | Topic |
+|:---|:---|
+| `beta_binomial.R` | Conjugate updating and posterior summaries |
+| `mh_sampler.R` | Random-walk Metropolis from scratch |
+| `hierarchical_partial_pooling.R` | Shrinkage geometry in a multilevel model |
+| `telescoping_sampler.R` | Mixtures with an unknown number of components |
+| `eight_schools.stan` | Non-centred hierarchical model in Stan |
+| `jax_logistic_map_hmc.py` | MAP, Laplace, and HMC in `JAX` |
 
-## Representative Deep-Dive Chapters
+: Selected labs {#tbl-labs}
 
-The site includes several fully written exemplar chapters that demonstrate the intended level of mathematical and computational detail for the rest of the course:
+[Deployment and online execution](deployment.qmd) documents the hosting setup: the site on GitHub Pages, `R` and Stan labs on Posit Cloud, Python on Binder or Codespaces, every environment pinned in the repository.
 
-- [Probability foundations](chapters/foundations/probability-foundations.qmd)
-- [Likelihood theory](chapters/foundations/likelihood-theory.qmd)
-- [Bayes' theorem, sequential updating, and posterior prediction](chapters/foundations/bayes-theorem-and-updating.qmd)
-- [Numerical integration and approximation](chapters/computation/numerical-integration-and-approximation.qmd)
-- [Monte Carlo methods: integration, error analysis, and variance reduction](chapters/computation/monte-carlo-methods.qmd)
-- [Markov chain Monte Carlo: derivation, tuning, and diagnostics](chapters/computation/markov-chain-monte-carlo.qmd)
-- [Advanced MCMC: HMC, NUTS, geometry, and diagnostics](chapters/computation/advanced-mcmc-hmc.qmd)
-- [Variational inference: ELBO and coordinate ascent](chapters/computation/variational-inference.qmd)
-- [Sequential and online Bayes: filtering and particle methods](chapters/computation/sequential-and-online-bayes.qmd)
-- [Bayesian linear models](chapters/models/bayesian-linear-models.qmd)
-- [Hierarchical and multilevel models](chapters/models/hierarchical-and-multilevel-models.qmd)
-- [Nonparametric Bayesian methods](chapters/models/nonparametric-bayesian-methods.qmd)
-- [Optimization techniques in Bayesian statistics](chapters/practice/optimization-techniques-in-bayesian-statistics.qmd)
-- [Diagnostics and model criticism](chapters/practice/diagnostics-and-model-criticism.qmd)
-- [Stan workflow for hierarchical models and HMC diagnostics](chapters/software/stan-hierarchical-models.qmd)
-- [JAX for gradient-based Bayesian computation](chapters/software/jax-gradient-based-bayes.qmd)
-- [Model selection and averaging](chapters/advanced/model-selection-and-averaging.qmd)
-- [Robust Bayesian methods](chapters/advanced/robust-bayesian-methods.qmd)
-- [Bayesian experimental design](chapters/advanced/bayesian-experimental-design.qmd)
-- [Communication and interpretation](chapters/advanced/communication-and-interpretation.qmd)
+## Where to start
 
-## Software Stack
+If your mathematics is strong, skim Part I and start at [conjugate analysis](chapters/core/conjugate-analysis.qmd), returning to the foundations when a proof depends on them.
 
-The course uses three complementary tools.
+If you are an applied statistician, begin with [conjugate analysis](chapters/core/conjugate-analysis.qmd), [Bayesian linear models](chapters/models/bayesian-linear-models.qmd), and the [workflow chapters](parts/part-vi-software-workflows.qmd), then come back for the measure-theoretic material once the practice makes sense.
 
-### `R`
+If you are implementing algorithms, pair [Part III](parts/part-iii-computation.qmd) with the [JAX chapter](chapters/software/jax-gradient-based-bayes.qmd) and the [diagnostics material](chapters/practice/diagnostics-and-model-criticism.qmd).
 
-`R` is used for simulation, analytic conjugate calculations, custom samplers, posterior summaries, graphical diagnostics, and high-level workflow with `posterior`, `bayesplot`, `loo`, and `cmdstanr` [@r2025; @posterior2024; @bayesplot2024; @loo2024; @cmdstanr2024].
+If you want to judge the depth before committing, read [hierarchical and multilevel models](chapters/models/hierarchical-and-multilevel-models.qmd) and [the telescoping sampler](chapters/computation/telescoping-sampler.qmd).
 
-### `Stan`
+## Notation
 
-`Stan` provides an industrial-strength implementation of HMC and NUTS, making it the natural vehicle for serious posterior computation in hierarchical and nonlinear models [@carpenter2017; @hoffman2014].
+Data are $y$ or $y_{1:n}$; parameters $\theta$; priors $\pi(\theta)$; likelihoods $p(y \mid \theta)$; posteriors $p(\theta \mid y)$; posterior predictive distributions $p(\tilde{y} \mid y)$. Full conventions are in [notation and assumptions](appendix/notation.qmd).
 
-### `JAX`
+Where conditioning sets get large, the course writes the factorisation out in full rather than abbreviating it. In hierarchical and latent-variable models, notation is a safeguard against conceptual error, and compressing it is how people end up conditioning on quantities they have already integrated out.
 
-`JAX` is introduced as Python-based infrastructure for automatic differentiation, vectorization, JIT compilation, optimization, and custom gradient-based Bayesian computation [@jax2018]. It is especially useful when one wants transparent control over objectives, gradients, Hessians, and algorithmic building blocks.
+## Licence
 
-## Executable Labs
-
-The website is static, but the repository is organized so that examples can be executed with minimal setup:
-
-- `labs/r/beta_binomial.R`
-- `labs/r/mh_sampler.R`
-- `labs/stan/eight_schools.stan`
-- `labs/r/fit_eight_schools.R`
-- `labs/jax/jax_logistic_map_hmc.py`
-
-The recommended hosting architecture is documented in [Deployment and online execution](deployment.qmd). The short version is:
-
-- host the Quarto site on GitHub Pages;
-- use Posit Cloud for `R` and `Stan` labs;
-- use Binder or Codespaces for Python/JAX notebooks and scripts;
-- keep all environments versioned in the repository.
-
-## Reading Strategy
-
-The course is intentionally layered.
-
-- Readers with strong mathematical background can move quickly through Part I and focus on computation and modeling.
-- Applied statisticians can begin with conjugate analysis, linear models, and workflow chapters, then circle back to measure-theoretic details.
-- Researchers implementing custom algorithms should pair Part III with the JAX chapter and the diagnostics material in Part V.
-
-## Quick Navigation
-
-- [Course blueprint](course-blueprint.qmd)
-- [Detailed syllabus and pacing](syllabus.qmd)
-- [Chapter-by-chapter expansion map](chapter-outline.qmd)
-- [Part I: Foundations](parts/part-i-foundations.qmd)
-- [Part III: Computational Bayesian methods](parts/part-iii-computation.qmd)
-- [Part VI: Software workflows](parts/part-vi-software-workflows.qmd)
-- [Part VII: Advanced topics](parts/part-vii-advanced-topics.qmd)
-- [Projects and capstones](projects.qmd)
-- [References and citation strategy](references.qmd)
-
-## License And Attribution
-
-- Course content: [CC BY-NC-SA 4.0](LICENSE-CONTENT.md)
-- Code examples: [MIT](LICENSE-CODE)
-- Site structure inspiration: [Claire David's Introduction to Machine Learning](https://clairedavid.github.io/intro_to_ml/intro.html)
-
-## Guiding Notation
-
-Throughout the course:
-
-- observed data are denoted by $y$ or $y_{1:n}$;
-- parameters are denoted by $\theta$;
-- priors by $\pi(\theta)$;
-- likelihoods by $p(y \mid \theta)$;
-- posteriors by $p(\theta \mid y)$;
-- posterior predictive distributions by $p(\tilde{y} \mid y)$.
-
-When conditioning sets become large, we privilege clarity over brevity and write full model factorizations explicitly. That is deliberate. In advanced Bayesian work, notation is not cosmetic; it is a safeguard against conceptual mistakes.
+Course content is licensed [CC BY-NC-SA 4.0](LICENSE-CONTENT.md); code examples are [MIT](LICENSE-CODE). The site structure follows @david2023, and the presentation of the notes owes a good deal to @ikosmidis2024.

@@ -1,34 +1,35 @@
 ---
-title: "Bayesian Final Project Report Template"
+title: "Bayesian final project report template"
+number-sections: false
 ---
 
-## Executive Summary
+## Executive summary
 
 State the scientific question, the main model, the main conclusion, and the main uncertainty caveat.
 
-## Data And Problem Setup
+## Data and problem setup
 
 - Data source
 - Units of analysis
 - Key measurement issues
 - Target estimand
 
-## Model Specification
+## Model specification
 
 Write the model carefully, including priors and parameterization choices.
 
-## Prior Predictive Checks
+## Prior predictive checks
 
 Summarize what the priors implied before fitting and any revisions made.
 
-## Posterior Computation
+## Posterior computation
 
 - Inference method
 - Tuning choices
 - Runtime
 - Convergence diagnostics
 
-## Posterior Results
+## Posterior results
 
 Report:
 
@@ -36,15 +37,15 @@ Report:
 - transformed scientific quantities;
 - predictive summaries.
 
-## Model Criticism
+## Model criticism
 
 Include posterior predictive checks, residual checks, or calibration checks as appropriate.
 
-## Sensitivity Analysis
+## Sensitivity analysis
 
 Document how the main conclusions changed under plausible alternative assumptions.
 
-## Predictive Or Decision Evaluation
+## Predictive or decision evaluation
 
 Explain how models were compared and why the reported metric matches the scientific goal.
 

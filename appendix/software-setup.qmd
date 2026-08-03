@@ -1,8 +1,9 @@
 ---
-title: "Tools and Setup"
+title: "Tools and setup"
+number-sections: false
 ---
 
-## Core Tools
+## Core tools
 
 The course assumes access to:
 
@@ -11,7 +12,7 @@ The course assumes access to:
 - Python 3.11 or newer for `JAX`;
 - `CmdStan` if you want to run the Stan labs locally.
 
-## Local Setup
+## Local setup
 
 ### Quarto
 
@@ -43,7 +44,7 @@ Install Python dependencies with:
 python -m pip install -r requirements.txt
 ```
 
-## Cloud Setup
+## Cloud setup
 
 Recommended cloud pathways:
 
@@ -51,7 +52,7 @@ Recommended cloud pathways:
 - Binder for lightweight JAX examples;
 - Codespaces for the full repository-backed experience.
 
-## Lab File Locations
+## Lab file locations
 
 | Language | Path | Purpose |
 |---|---|---|
@@ -86,14 +87,14 @@ Recommended cloud pathways:
 | Python/JAX | `labs/jax/jax_logistic_map_hmc.py` | Autodiff, MAP, and basic HMC-style demo |
 | Python/JAX | `labs/jax/hmc_gaussian_demo.py` | HMC geometry on a correlated Gaussian target |
 
-## Project Templates
+## Project templates
 
 The site also includes reusable authoring templates for longer project work:
 
 - `templates/project-proposal-template.qmd`
 - `templates/final-project-report-template.qmd`
 
-## Reproducibility Advice
+## Reproducibility advice
 
 - Fix random seeds in all stochastic examples.
 - Record package versions for each course release.

@@ -1,15 +1,16 @@
 ---
-title: "Deployment and Online Execution"
+title: "Deployment and online execution"
+number-sections: false
 ---
 
 ## Goal
 
 The website should be easy to host, easy to read, and as executable as possible without making the public site brittle. The recommended architecture separates **static presentation** from **interactive compute backends**.
 
-## Recommended Architecture
+## Recommended architecture
 
 ::: {.callout-important}
-## Recommended Production Setup
+## Recommended production setup
 
 Use a **Quarto website hosted on GitHub Pages** for the main course, then attach execution backends by language:
 
@@ -19,7 +20,7 @@ Use a **Quarto website hosted on GitHub Pages** for the main course, then attach
 This is the most robust practical design because Quarto Pages hosting is reliable and inexpensive, while `Stan` and `JAX` require compute environments that are not realistically supported in-browser in a static site.
 :::
 
-## Why Not Run Everything Directly In The Browser?
+## Why not run everything directly in the browser?
 
 ### `Stan`
 
@@ -33,7 +34,7 @@ Compiling and running realistic `Stan` models in-browser is not a good target fo
 
 Simple `R` code can be displayed in Quarto and copied easily, but public multi-user execution requires a hosted backend. Posit Cloud is the most straightforward option for teaching.
 
-## Execution Targets Compared
+## Execution targets compared
 
 | Option | Best for | Strengths | Limitations | Recommendation |
 |---|---|---|---|---|
@@ -43,7 +44,7 @@ Simple `R` code can be displayed in Quarto and copied easily, but public multi-u
 | GitHub Codespaces | Full stack | Closest to a real dev environment | Quota and startup cost | Best fallback for full reproducibility |
 | JupyterLite / Pyodide | Tiny Python demos | Runs in browser | Poor fit for real JAX, no Stan | Use only for trivial non-JAX demos |
 
-## Files Needed For A Reproducible Repository
+## Files needed for a reproducible repository
 
 This repository already includes the core files for a practical deployment:
 
@@ -64,7 +65,7 @@ If full Codespaces support is desired later, add:
 .devcontainer/postCreate.sh
 ```
 
-## GitHub Pages Workflow
+## GitHub pages workflow
 
 The included GitHub Actions workflow in `.github/workflows/publish.yml` renders the site and deploys `_site/` to GitHub Pages on pushes to `main`.
 
@@ -75,7 +76,7 @@ The included GitHub Actions workflow in `.github/workflows/publish.yml` renders 
 3. Use the GitHub Actions workflow for deployment.
 4. Set the repository URL in `_quarto.yml` when the final repo name is known.
 
-## Recommended Lab Strategy By Language
+## Recommended lab strategy by language
 
 ### `R` labs
 
@@ -104,7 +105,7 @@ Use Binder for lightweight examples and Codespaces for the full course environme
 - executable Python scripts or notebooks in `labs/jax/`;
 - package dependencies in `requirements.txt` and `environment.yml`.
 
-## Best Practical Hosting Pattern
+## Best practical hosting pattern
 
 For a serious university course, the best operational compromise is:
 
@@ -115,7 +116,7 @@ For a serious university course, the best operational compromise is:
 
 This keeps the reading experience fast and stable while still offering authentic execution environments.
 
-## Reproducibility Checklist
+## Reproducibility checklist
 
 Every lab should have:
 
@@ -125,14 +126,14 @@ Every lab should have:
 - comments explaining how to run it;
 - expected outputs or diagnostic targets.
 
-## Limitations To State Clearly To Learners
+## Limitations to state clearly to learners
 
 - Browser-based execution is limited for heavy Bayesian computation.
 - `Stan` compilation can be slow on teaching platforms.
 - Binder sessions are ephemeral and not suitable for long-running models.
 - JAX examples on CPU are sufficient for pedagogy, but not for large-scale production inference.
 
-## Recommended Next Deployment Steps
+## Recommended next deployment steps
 
 1. Create the GitHub repository and set its public URL.
 2. Add badges or links from the homepage to Posit Cloud and Binder/Codespaces.
