@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap");
 
 $body-bg: #fbfbf8;
-$body-color: #21303f;
+$body-color: #1e2c3a;
 $link-color: #1b5ea9;
 $navbar-bg: rgba(251, 251, 248, 0.95);
 $primary: #1b5ea9;
@@ -10,10 +10,31 @@ $secondary: #5b6e82;
 $success: #146c43;
 $warning: #8a5a00;
 
+// Larger base type for long-form reading.
+$font-size-root: 18px;
+$toc-font-size: 0.9rem;
+$code-font-size: 0.88em;
+
 /*-- scss:rules --*/
 body {
   font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
-  line-height: 1.72;
+  font-size: 1.06rem;
+  line-height: 1.75;
+}
+
+// Comfortable measure and generous spacing in the main column.
+main.content {
+  padding-top: 0.5rem;
+}
+
+main.content > p,
+main.content > ul,
+main.content > ol {
+  margin-bottom: 1.15rem;
+}
+
+main.content li {
+  margin-bottom: 0.3rem;
 }
 
 .navbar,
@@ -41,10 +62,43 @@ h1, h2, h3, h4, h5 {
   font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
   letter-spacing: -0.02em;
   color: #152435;
+  line-height: 1.25;
 }
 
 h1.title {
-  font-size: 2.55rem;
+  font-size: 2.7rem;
+  margin-bottom: 0.4rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #5b6e82;
+  font-weight: 400;
+}
+
+// Clear hierarchy, with air above each new section.
+h2 {
+  font-size: 1.85rem;
+  margin-top: 2.6rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(21, 36, 53, 0.1);
+}
+
+h3 {
+  font-size: 1.4rem;
+  margin-top: 1.9rem;
+  margin-bottom: 0.65rem;
+}
+
+h4 {
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+// Display maths needs room to breathe at this text size.
+.display, mjx-container[display="true"] {
+  margin: 1.4rem 0 !important;
 }
 
 .quarto-title-meta,
@@ -234,6 +288,39 @@ table {
 
 .cell-output-display, figure {
   overflow-x: auto;
+}
+
+// The bibliography now sits at the foot of the page rather than the margin.
+#refs {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid rgba(21, 36, 53, 0.12);
+  font-size: 0.96rem;
+}
+
+#refs .csl-entry {
+  margin-bottom: 0.75rem;
+  padding-left: 1.6rem;
+  text-indent: -1.6rem;
+}
+
+// Tabsets, used for showing the same model in R, Stan and JAX.
+.panel-tabset {
+  margin: 1.5rem 0;
+}
+
+.panel-tabset .nav-tabs .nav-link {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+// Wider tables read better with a little row separation.
+table th, table td {
+  padding: 0.5rem 0.7rem;
+}
+
+table tbody tr:nth-child(odd) {
+  background: rgba(21, 36, 53, 0.022);
 }
 
 .page-columns .column-margin .aside {

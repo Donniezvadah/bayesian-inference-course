@@ -29,20 +29,14 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - text: About This Course
+      - text: Start here
         menu:
           - href: teaching-philosophy.qmd
-            text: Teaching Philosophy
-          - href: instructor-and-credits.qmd
-            text: Instructor & Credits
-          - href: course-blueprint.qmd
-            text: Course Blueprint
-          - href: syllabus.qmd
-            text: Schedule
+            text: How this course works
           - href: appendix/software-setup.qmd
-            text: Tools and Setup
-          - href: evaluation.qmd
-            text: Evaluation
+            text: Install the tools
+          - href: syllabus.qmd
+            text: Schedule and pacing
       - text: Parts
         menu:
           - href: parts/part-i-foundations.qmd
@@ -70,16 +64,12 @@ website:
     collapse-level: 1
     search: true
     contents:
-      - section: "About This Course"
+      - section: "Start here"
         contents:
           - index.qmd
           - teaching-philosophy.qmd
-          - instructor-and-credits.qmd
-          - course-blueprint.qmd
-          - syllabus.qmd
           - appendix/software-setup.qmd
-          - evaluation.qmd
-          - chapter-outline.qmd
+          - syllabus.qmd
       - section: "Part I"
         contents:
           - parts/part-i-foundations.qmd
@@ -133,16 +123,24 @@ website:
           - chapters/advanced/bayesian-experimental-design.qmd
           - chapters/advanced/communication-and-interpretation.qmd
           - chapters/advanced/capstone-projects.qmd
-      - section: "Course Assets"
+      - section: "Practice"
         contents:
           - exercises.qmd
           - projects.qmd
-          - deployment.qmd
-          - appendix/notation.qmd
-          - appendix/measure-probability-review.qmd
           - templates/project-proposal-template.qmd
           - templates/final-project-report-template.qmd
+      - section: "Reference"
+        contents:
+          - appendix/notation.qmd
+          - appendix/measure-probability-review.qmd
           - references.qmd
+      - section: "Course information"
+        contents:
+          - instructor-and-credits.qmd
+          - evaluation.qmd
+          - course-blueprint.qmd
+          - chapter-outline.qmd
+          - deployment.qmd
 
 bibliography: bibliography/references.bib
 
@@ -151,18 +149,36 @@ format:
     theme:
       light: [cosmo, styles/styles.scss]
       dark: [darkly, styles/styles-dark.scss]
+    # Wide reading column. The margin column now only carries the TOC,
+    # so the body gets the space that margin citations used to reserve.
+    grid:
+      sidebar-width: 290px
+      body-width: 1180px
+      margin-width: 220px
+      gutter-width: 1.6rem
     toc: true
     toc-depth: 3
+    toc-title: "On this page"
     number-sections: true
     number-depth: 3
     code-copy: true
+    code-tools: true
     code-overflow: wrap
+    code-line-numbers: false
+    highlight-style: github
     link-external-newwindow: true
-    citation-location: margin
+    link-external-icon: true
+    # Citations and the bibliography go at the foot of the page, not the margin.
+    citation-location: document
+    reference-location: document
+    link-citations: true
     html-math-method: mathjax
     callout-appearance: simple
     fig-align: center
-    reference-location: document
+    fig-responsive: true
+    anchor-sections: true
+    smooth-scroll: true
+    tbl-cap-location: bottom
 
 execute:
   freeze: auto

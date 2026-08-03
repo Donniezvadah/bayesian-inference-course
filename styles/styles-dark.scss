@@ -8,10 +8,25 @@ $navbar-bg: rgba(15, 23, 32, 0.94);
 $primary: #8fc8ff;
 $secondary: #a7bacd;
 
+$font-size-root: 18px;
+$toc-font-size: 0.9rem;
+$code-font-size: 0.88em;
+
 /*-- scss:rules --*/
 body {
   font-family: "Source Sans 3", "Helvetica Neue", sans-serif;
-  line-height: 1.72;
+  font-size: 1.06rem;
+  line-height: 1.75;
+}
+
+main.content > p,
+main.content > ul,
+main.content > ol {
+  margin-bottom: 1.15rem;
+}
+
+main.content li {
+  margin-bottom: 0.3rem;
 }
 
 .navbar,
@@ -33,6 +48,72 @@ h1, h2, h3, h4, h5 {
 
 h1, h2, h3, h4, h5 {
   color: #f2f7fb;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+h1.title {
+  font-size: 2.7rem;
+  margin-bottom: 0.4rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #a7bacd;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 1.85rem;
+  margin-top: 2.6rem;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(231, 237, 243, 0.12);
+}
+
+h3 {
+  font-size: 1.4rem;
+  margin-top: 1.9rem;
+  margin-bottom: 0.65rem;
+}
+
+h4 {
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+.display, mjx-container[display="true"] {
+  margin: 1.4rem 0 !important;
+}
+
+#refs {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid rgba(231, 237, 243, 0.16);
+  font-size: 0.96rem;
+}
+
+#refs .csl-entry {
+  margin-bottom: 0.75rem;
+  padding-left: 1.6rem;
+  text-indent: -1.6rem;
+}
+
+.panel-tabset {
+  margin: 1.5rem 0;
+}
+
+.panel-tabset .nav-tabs .nav-link {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+table th, table td {
+  padding: 0.5rem 0.7rem;
+}
+
+table tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.025);
 }
 
 code,
